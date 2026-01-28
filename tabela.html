@@ -3,27 +3,30 @@
 <head>
 <meta charset="UTF-8" />
 <title>Klasyfikacja</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="style.css">
 
 <style>
 #loader {
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  height:40vh;
-  font-size:18px;
-  color:#666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40vh;
+  font-size: 18px;
+  color: #666;
 }
 .spinner {
-  width:40px;
-  height:40px;
-  border:4px solid #ddd;
-  border-top:4px solid #c00;
-  border-radius:50%;
-  animation:spin 1s linear infinite;
-  margin-right:12px;
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ddd;
+  border-top: 4px solid #c00;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 12px;
 }
-@keyframes spin { to { transform:rotate(360deg); } }
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
 </style>
 </head>
 
@@ -31,7 +34,9 @@
 
 <header class="site-header">
   <div class="header-inner">
-    <div class="header-title">Hardstyle Kettlebell European Championship</div>
+    <div class="header-title">
+      Hardstyle Kettlebell European Championship
+    </div>
     <div class="header-links">
       <a id="liveLink" href="#" target="_blank" style="display:none">🔴 LIVE</a>
       <a href="kontakt.html">Kontakt</a>
@@ -51,6 +56,7 @@
     </div>
 
     <div id="content" style="display:none">
+
       <h2>🏆 Klasyfikacja generalna</h2>
       <table id="generalka">
         <thead><tr></tr></thead>
@@ -58,31 +64,19 @@
       </table>
 
       <div id="boje"></div>
-    </div>
 
+    </div>
   </div>
 </div>
 
 <script>
+/* ================= CONFIG ================= */
 const API_URL = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
 const params = new URLSearchParams(location.search);
 const CATEGORY = decodeURIComponent(params.get("arkusz") || "");
 document.getElementById("categoryTitle").textContent = CATEGORY;
 
-/* ===== LIVE ===== */
-fetch(`${API_URL}?settings=1`)
-  .then(r => r.json())
-  .then(res => {
-    const btn = document.getElementById("liveLink");
-    if (res?.settings?.live_url) {
-      btn.href = res.settings.live_url;
-      btn.textContent = res.settings.live_text || "🔴 LIVE";
-      btn.style.display = "inline-block";
-    }
-  })
-  .catch(()=>{});
-
-/* ===== HELPERS ===== */
+/* ================= HELPERS ================= */
 function norm(s){
   return String(s||"")
     .replace(/\u00A0/g," ")
@@ -91,13 +85,26 @@ function norm(s){
     .toLowerCase();
 }
 
-/* ===== CACHE ===== */
+/* ================= LIVE ================= */
+fetch(`${API_URL}?settings=1`)
+  .then(r=>r.json())
+  .then(res=>{
+    const btn=document.getElementById("liveLink");
+    if(res?.settings?.live_url){
+      btn.href=res.settings.live_url;
+      btn.textContent=res.settings.live_text||"🔴 LIVE";
+      btn.style.display="inline-block";
+    }
+  })
+  .catch(()=>{});
+
+/* ================= CACHE FIRST ================= */
 function getCache(){
   try {
     return {
-      view: JSON.parse(localStorage.getItem("api_view") || "null"),
-      extra: JSON.parse(localStorage.getItem("api_extra") || "null"),
-      boje: JSON.parse(localStorage.getItem("api_boje") || "null")
+      view: JSON.parse(localStorage.getItem("api_view")||"null"),
+      extra: JSON.parse(localStorage.getItem("api_extra")||"null"),
+      boje: JSON.parse(localStorage.getItem("api_boje")||"null")
     };
   } catch {
     return {};
@@ -105,133 +112,162 @@ function getCache(){
 }
 
 function renderAll(baseRes, extraRes, bojeRows){
-  const baseRows = (baseRes.data||[]).filter(r =>
-    norm(r.KATEGORIA) === norm(CATEGORY)
-  );
+  const baseRows=(baseRes.data||[]).filter(r=>norm(r.KATEGORIA)===norm(CATEGORY));
+  const extraRows=(extraRes.data||[]).filter(r=>norm(r.KATEGORIA_DODATKOWA)===norm(CATEGORY));
+  buildGeneralka([...baseRows,...extraRows]);
 
-  const extraRows = (extraRes.data||[]).filter(r =>
-    norm(r.KATEGORIA_DODATKOWA) === norm(CATEGORY)
-  );
-
-  buildGeneralka([...baseRows, ...extraRows]);
-
-  const filteredBoje = (bojeRows||[]).filter(r =>
-    norm(r.kategoria) === norm(CATEGORY) ||
-    norm(r.kategoria_dodatkowa) === norm(CATEGORY)
+  const filteredBoje=(bojeRows||[]).filter(r =>
+    norm(r.kategoria)===norm(CATEGORY) ||
+    norm(r.kategoria_dodatkowa)===norm(CATEGORY)
   );
 
   buildBoje(filteredBoje);
 }
 
-/* ===== 1️⃣ render z cache ===== */
-const cache = getCache();
+/* ===== render z cache ===== */
+const cache=getCache();
 if(cache.view && cache.extra && cache.boje){
   renderAll(cache.view, cache.extra, cache.boje);
-  document.getElementById("loader").style.display="none";
-  document.getElementById("content").style.display="block";
 }
 
-/* ===== 2️⃣ fetch w tle ===== */
+/* ===== fetch w tle ===== */
 Promise.all([
   fetch(`${API_URL}?arkusz=API_VIEW`).then(r=>r.json()).catch(()=>({data:[]})),
   fetch(`${API_URL}?arkusz=API_DODATKOWE`).then(r=>r.json()).catch(()=>({data:[]})),
   fetch(`${API_URL}?api=boje`).then(r=>r.json()).catch(()=>[])
 ])
-.then(([baseRes, extraRes, bojeRows])=>{
-  localStorage.setItem("api_view", JSON.stringify(baseRes));
-  localStorage.setItem("api_extra", JSON.stringify(extraRes));
-  localStorage.setItem("api_boje", JSON.stringify(bojeRows));
-  renderAll(baseRes, extraRes, bojeRows);
+.then(([view,extra,boje])=>{
+  localStorage.setItem("api_view",JSON.stringify(view));
+  localStorage.setItem("api_extra",JSON.stringify(extra));
+  localStorage.setItem("api_boje",JSON.stringify(boje));
+  renderAll(view,extra,boje);
 })
 .finally(()=>{
   document.getElementById("loader").style.display="none";
   document.getElementById("content").style.display="block";
 });
 
-/* ===== GENERALKA ===== */
+/* ================= GENERALKA ================= */
 function buildGeneralka(rows){
   if(!rows.length) return;
 
-  const competitions=[...new Set(rows.map(r=>r.KONKURENCJA))];
-  const COMP_ORDER=["SNUB3'","TIEBREAK"];
-  const ordered=[
-    ...competitions.filter(c=>!COMP_ORDER.includes(c)),
-    ...COMP_ORDER.filter(c=>competitions.includes(c))
-  ];
-
+  const comps=[...new Set(rows.map(r=>r.KONKURENCJA))];
   const byAth={};
+
   rows.forEach(r=>{
     if(!byAth[r.ZAWODNIK]){
-      byAth[r.ZAWODNIK]={name:r.ZAWODNIK,klub:r.KLUB||"-",waga:r.WAGA||"-",points:{},sum:r.PKT_SUM};
+      byAth[r.ZAWODNIK]={
+        name:r.ZAWODNIK,
+        klub:r.KLUB||"-",
+        waga:r.WAGA||"-",
+        sum:r.PKT_SUM,
+        pts:{}
+      };
     }
-    byAth[r.ZAWODNIK].points[r.KONKURENCJA]=r.PKT;
+    byAth[r.ZAWODNIK].pts[r.KONKURENCJA]=r.PKT;
   });
 
-  const data=Object.values(byAth).sort((a,b)=>a.sum-b.sum);
-  document.querySelector("#generalka thead tr").innerHTML=
-    `<th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th>`+
-    ordered.map(c=>`<th>PKT ${c}</th>`).join("")+
-    `<th>PKT SUM</th>`;
+  document.querySelector("#generalka thead tr").innerHTML=`
+    <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th>
+    ${comps.map(c=>`<th>PKT ${c}</th>`).join("")}
+    <th>SUMA</th>`;
 
   const tbody=document.querySelector("#generalka tbody");
   tbody.innerHTML="";
-  data.forEach((r,i)=>{
-    tbody.insertAdjacentHTML("beforeend",
-      `<tr>
+  Object.values(byAth).sort((a,b)=>a.sum-b.sum).forEach((r,i)=>{
+    tbody.insertAdjacentHTML("beforeend",`
+      <tr>
         <td>${i+1}</td>
         <td>${r.name}</td>
         <td>${r.klub}</td>
         <td>${r.waga}</td>
-        ${ordered.map(c=>`<td>${r.points[c]??"-"}</td>`).join("")}
+        ${comps.map(c=>`<td>${r.pts[c]??"-"}</td>`).join("")}
         <td>${r.sum}</td>
-      </tr>`
-    );
+      </tr>`);
   });
 }
 
-/* ===== BOJE ===== */
+/* ================= BOJE ================= */
 function buildBoje(rows){
-  const container=document.getElementById("boje");
-  container.innerHTML="";
+  const box=document.getElementById("boje");
+  box.innerHTML="";
   if(!rows.length){
-    container.innerHTML="<p>Brak wyników bojów</p>";
+    box.innerHTML="<p>Brak wyników</p>";
     return;
   }
 
   const byComp={};
-  rows.forEach(r=>(byComp[r.konkurencja]=byComp[r.konkurencja]||[]).push(r));
+  rows.forEach(r=>{
+    if(!byComp[r.konkurencja]) byComp[r.konkurencja]=[];
+    byComp[r.konkurencja].push(r);
+  });
 
-  Object.entries(byComp).forEach(([comp,data])=>{
-    container.insertAdjacentHTML("beforeend",`<h2>🏋️ ${comp}</h2>`);
+  Object.keys(byComp).forEach(comp=>{
+    box.insertAdjacentHTML("beforeend",`<h2>🏋️ ${comp}</h2>`);
+    const data=byComp[comp];
 
     let html=`<table><thead><tr>
-      <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th><th>Wynik</th>
-    </tr></thead><tbody>`;
+      <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th>`;
+
+    if(/^TIEBREAK$/i.test(comp)){
+      html+=`<th>Wynik</th>`;
+    } else if(/SN/i.test(comp)){
+      html+=`<th>Odważnik</th><th>Powt.</th><th>Wynik</th>`;
+    } else {
+      html+=`<th>P1</th><th>P2</th><th>P3</th><th>MAX</th><th>% MC</th>`;
+    }
+
+    html+=`</tr></thead><tbody>`;
 
     const byAth={};
-    data.forEach(r=>(byAth[r.zawodnik]=byAth[r.zawodnik]||[]).push(r));
+    data.forEach(r=>{
+      if(!byAth[r.zawodnik]) byAth[r.zawodnik]=[];
+      byAth[r.zawodnik].push(r);
+    });
 
     Object.entries(byAth).forEach(([name,arr],i)=>{
       const base=arr[0];
-      const max=Math.max(...arr.map(x=>x.wynik||0));
       html+=`<tr>
         <td>${i+1}</td>
         <td>${name}</td>
         <td>${base.klub||"-"}</td>
-        <td>${base.waga||"-"}</td>
-        <td>${max}</td>
-      </tr>`;
+        <td>${base.waga||"-"}</td>`;
+
+      if(/^TIEBREAK$/i.test(comp)){
+        html+=`<td>${base.wynik}</td>`;
+      }
+      else if(/SN/i.test(comp)){
+        html+=`<td>${base.odciezar}</td><td>${base.powtorzenia}</td><td>${base.wynik}</td>`;
+      }
+      else {
+        const p=arr.sort((a,b)=>a.proba-b.proba).map(x=>x.wynik);
+        const max=Math.max(...p);
+        const pct=base.waga?(max/base.waga*100).toFixed(2):"-";
+        html+=`
+          <td>${p[0]??"-"}</td>
+          <td>${p[1]??"-"}</td>
+          <td>${p[2]??"-"}</td>
+          <td>${max}</td>
+          <td>${pct}</td>`;
+      }
+      html+=`</tr>`;
     });
 
-    html+="</tbody></table>";
-    container.insertAdjacentHTML("beforeend",html);
+    html+=`</tbody></table>`;
+    box.insertAdjacentHTML("beforeend",html);
   });
 }
 
-/* ===== SERVICE WORKER ===== */
-if ("serviceWorker" in navigator) {
+/* ================= SERVICE WORKER ================= */
+if("serviceWorker"in navigator){
   navigator.serviceWorker.register("service-worker.js");
 }
+window.addEventListener("pageshow",e=>{
+  if(e.persisted){
+    document.getElementById("loader").style.display="none";
+    document.getElementById("content").style.display="block";
+  }
+});
 </script>
 
 </body>
