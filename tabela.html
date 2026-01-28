@@ -4,6 +4,30 @@
 <meta charset="UTF-8" />
 <title>Klasyfikacja</title>
 <link rel="stylesheet" href="style.css">
+
+<style>
+/* ===== LOADER ===== */
+#loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40vh;
+  font-size: 18px;
+  color: #666;
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #ddd;
+  border-top: 4px solid #c00;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 12px;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+</style>
 </head>
 
 <body>
@@ -27,13 +51,24 @@
     <a href="index.html">← Powrót</a>
     <h1 id="categoryTitle"></h1>
 
-    <h2>🏆 Klasyfikacja generalna</h2>
-    <table id="generalka">
-      <thead><tr></tr></thead>
-      <tbody></tbody>
-    </table>
+    <!-- ===== LOADER ===== -->
+    <div id="loader">
+      <div class="spinner"></div>
+      <div>Ładowanie wyników…</div>
+    </div>
 
-    <div id="boje"></div>
+    <!-- ===== CONTENT ===== -->
+    <div id="content" style="display:none">
+
+      <h2>🏆 Klasyfikacja generalna</h2>
+      <table id="generalka">
+        <thead><tr></tr></thead>
+        <tbody></tbody>
+      </table>
+
+      <div id="boje"></div>
+
+    </div>
 
   </div>
 </div>
@@ -66,12 +101,14 @@ function norm(s){
     .toLowerCase();
 }
 
-/* ================= LOAD GENERALKA ================= */
+/* ================= LOAD ALL DATA ================= */
 Promise.all([
   fetch(`${API_URL}?arkusz=API_VIEW`).then(r=>r.json()),
-  fetch(`${API_URL}?arkusz=API_DODATKOWE`).then(r=>r.json())
-]).then(([baseRes, extraRes])=>{
+  fetch(`${API_URL}?arkusz=API_DODATKOWE`).then(r=>r.json()),
+  fetch(`${API_URL}?api=boje`).then(r=>r.json())
+]).then(([baseRes, extraRes, bojeRows])=>{
 
+  /* ===== GENERALKA ===== */
   const baseRows = baseRes.data.filter(r =>
     norm(r.KATEGORIA) === norm(CATEGORY)
   );
@@ -81,6 +118,18 @@ Promise.all([
   );
 
   buildGeneralka([...baseRows, ...extraRows]);
+
+  /* ===== BOJE ===== */
+  const filteredBoje = bojeRows.filter(r =>
+    norm(r.kategoria) === norm(CATEGORY) ||
+    norm(r.kategoria_dodatkowa) === norm(CATEGORY)
+  );
+
+  buildBoje(filteredBoje);
+
+  /* ===== SHOW CONTENT ===== */
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("content").style.display = "block";
 });
 
 /* ================= GENERALKA ================= */
@@ -134,17 +183,6 @@ function buildGeneralka(rows){
     `);
   });
 }
-
-/* ================= LOAD BOJE ================= */
-fetch(`${API_URL}?api=boje`)
-.then(r=>r.json())
-.then(rows=>{
-  const filtered = rows.filter(r =>
-    norm(r.kategoria) === norm(CATEGORY) ||
-    norm(r.kategoria_dodatkowa) === norm(CATEGORY)
-  );
-  buildBoje(filtered);
-});
 
 /* ================= BOJE ================= */
 function buildBoje(rows){
