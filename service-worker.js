@@ -7,7 +7,9 @@ function isApiRequest(url) {
     (
       url.includes("arkusz=API_VIEW") ||
       url.includes("arkusz=API_DODATKOWE") ||
-      url.includes("api=boje")
+      url.includes("api=boje") ||
+      // SETTINGS = request bez parametrów
+      url.endsWith("/exec")
     )
   );
 }
@@ -46,3 +48,4 @@ self.addEventListener("fetch", event => {
     )
   );
 });
+
