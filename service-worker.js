@@ -1,17 +1,4 @@
-const CACHE_NAME = "hkec-api-v1";
-
-// które requesty cache’ujemy
-function isApiRequest(url) {
-  return (
-    url.includes("script.google.com/macros") &&
-    (
-      url.includes("arkusz=API_VIEW") ||
-      url.includes("arkusz=API_DODATKOWE") ||
-      url.includes("api=boje")
-      url.includes("settings=1")
-    )
-  );
-}
+const CACHE_NAME = "api-cache-v1";
 
 self.addEventListener("install", event => {
   self.skipWaiting();
@@ -21,32 +8,41 @@ self.addEventListener("activate", event => {
   event.waitUntil(self.clients.claim());
 });
 
-self.addEventListener("fetch", event => {
-  const req = event.request;
-  const url = req.url;
+function isApiRequest(url) {
+  return (
+    url.includes("script.google.com/macros") &&
+    (
+      url.includes("arkusz=API_VIEW") ||
+      url.includes("arkusz=API_DODATKOWE") ||
+      url.includes("api=boje") ||
+      url.includes("settings=1")
+    )
+  );
+}
 
-  if (!isApiRequest(url)) return;
+self.addEventListener("fetch", event => {
+  const url = event.request.url;
+
+  if (!isApiRequest(url)) {
+    return;
+  }
 
   event.respondWith(
-    caches.open(CACHE_NAME).then(cache =>
-      cache.match(req).then(cached => {
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.match(event.request).then(cached => {
 
-        // fetch w tle (aktualizacja cache)
-        const fetchPromise = fetch(req)
-          .then(res => {
-            if (res && res.status === 200) {
-              cache.put(req, res.clone());
+        const networkFetch = fetch(event.request)
+          .then(response => {
+            if (response && response.status === 200) {
+              cache.put(event.request, response.clone());
             }
-            return res;
+            return response;
           })
           .catch(() => cached);
 
-        // cache-first
-        return cached || fetchPromise;
-      })
-    )
+        // jeśli mamy cache → daj od razu
+        return cached || networkFetch;
+      });
+    })
   );
 });
-
-
-
