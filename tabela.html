@@ -227,11 +227,12 @@ function buildBoje(rows){
 
     Object.entries(byAth).forEach(([name,arr],i)=>{
       const base=arr[0];
+
       html+=`<tr>
         <td>${i+1}</td>
         <td>${name}</td>
         <td>${base.klub ?? "-"}</td>
-<td>${base.waga && base.waga > 1 ? base.waga : "-"}</td>
+        <td>${base.waga && base.waga > 1 ? base.waga : "-"}</td>`;
 
       if(/^TIEBREAK$/i.test(comp)){
         html+=`<td>${base.wynik}</td>`;
@@ -243,9 +244,10 @@ function buildBoje(rows){
         const p=arr.sort((a,b)=>a.proba-b.proba).map(x=>x.wynik);
         const max=Math.max(...p);
         const pct =
-  base.waga && base.waga > 1
-    ? (max / base.waga * 100).toFixed(2)
-    : "-";
+          base.waga && base.waga > 1
+            ? (max / base.waga * 100).toFixed(2)
+            : "-";
+
         html+=`
           <td>${p[0]??"-"}</td>
           <td>${p[1]??"-"}</td>
@@ -253,6 +255,7 @@ function buildBoje(rows){
           <td>${max}</td>
           <td>${pct}</td>`;
       }
+
       html+=`</tr>`;
     });
 
@@ -275,4 +278,3 @@ window.addEventListener("pageshow",e=>{
 
 </body>
 </html>
-
