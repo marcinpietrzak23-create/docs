@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
@@ -61,18 +61,104 @@
 <div class="page">
   <div class="panel">
 
-    <!-- (SEKCJE I KARTY – BEZ ZMIAN) -->
-    <!-- … zostawiam dokładnie jak u Ciebie … -->
+    <!-- JUNIOR -->
+    <div class="section">
+      <h2>JUNIOR 18 / U18</h2>
+      <div class="cards">
+        <a class="card split-button" data-arkusz="K:Ch U18 Junior">
+          <span class="row top">JUNIOR 18 CHŁOPCÓW</span>
+          <span class="row bottom">BOYS JUNIOR 18</span>
+        </a>
+        <a class="card split-button" data-arkusz="K:Dz U18 Junior">
+          <span class="row top">JUNIOR 18 DZIEWCZĄT</span>
+          <span class="row bottom">GIRLS JUNIOR 18</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- AMATOR -->
+    <div class="section">
+      <h2>AMATOR / AMATEUR</h2>
+      <div class="cards">
+        <a class="card split-button" data-arkusz="K:K Amator +65kg">
+          <span class="row top">AMATOR KOBIET +65 KG</span>
+          <span class="row bottom">WOMAN AMATEUR +65 KG</span>
+        </a>
+        <a class="card split-button" data-arkusz="K:K Amator 65kg">
+          <span class="row top">AMATOR KOBIET 65 KG</span>
+          <span class="row bottom">WOMAN AMATEUR 65 KG</span>
+        </a>
+        <a class="card split-button" data-arkusz="K:M Amator +85kg">
+          <span class="row top">AMATOR MĘŻCZYZN +85 KG</span>
+          <span class="row bottom">MAN AMATEUR +85 KG</span>
+        </a>
+        <a class="card split-button" data-arkusz="K:M Amator 85kg">
+          <span class="row top">AMATOR MĘŻCZYZN 85 KG</span>
+          <span class="row bottom">MAN AMATEUR 85 KG</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- PRO -->
+    <div class="section">
+      <h2>PRO / PROFESSIONAL</h2>
+      <div class="cards">
+        <a class="card split-button" data-arkusz="K:K PRO +65kg">
+          <span class="row top">PRO KOBIET +65 KG</span>
+          <span class="row bottom">WOMAN PROFESSIONAL +65 KG</span>
+        </a>
+        <a class="card split-button" data-arkusz="K:K PRO 65kg">
+          <span class="row top">PRO KOBIET 65 KG</span>
+          <span class="row bottom">WOMAN PROFESSIONAL 65 KG</span>
+        </a>
+        <a class="card split-button" data-arkusz="K:M PRO +85kg">
+          <span class="row top">PRO MĘŻCZYZN +85 KG</span>
+          <span class="row bottom">MAN PROFESSIONAL +85 KG</span>
+        </a>
+        <a class="card split-button" data-arkusz="K:M PRO 85kg">
+          <span class="row top">PRO MĘŻCZYZN 85 KG</span>
+          <span class="row bottom">MAN PROFESSIONAL 85 KG</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- MASTERS -->
+    <div class="section">
+      <h2>MASTERS</h2>
+      <div class="cards">
+        <a class="card split-button" data-arkusz="K:K Masters +45">
+          <span class="row top">MASTERS +45 KOBIET</span>
+          <span class="row bottom">WOMAN MASTERS +45</span>
+        </a>
+        <a class="card split-button" data-arkusz="K:M Masters +45">
+          <span class="row top">MASTERS +45 MĘŻCZYZN</span>
+          <span class="row bottom">MAN MASTERS +45</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- NAJLEPSZY -->
+    <div class="section">
+      <h2>NAJLEPSZY / BEST</h2>
+      <div class="cards">
+        <a class="card split-button" data-arkusz="K:K najlepsza ząbkowiczanka">
+          <span class="row top">NAJLEPSZA ZĄBKOWICZANKA</span>
+          <span class="row bottom">WOMAN LOCAL</span>
+        </a>
+        <a class="card split-button" data-arkusz="K:M najlepszy ząbkowiczanin">
+          <span class="row top">NAJLEPSZY ZĄBKOWICZANIN</span>
+          <span class="row bottom">MAN LOCAL</span>
+        </a>
+      </div>
+    </div>
 
   </div>
 </div>
 
+<!-- ===== LIVE BUTTON ===== -->
 <script>
-/* ================= CONFIG ================= */
 const API_URL = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
-const CACHE_TTL = 5 * 60 * 1000; // 5 minut
 
-/* ================= LIVE ================= */
 fetch(API_URL)
   .then(r=>r.json())
   .then(res=>{
@@ -83,31 +169,27 @@ fetch(API_URL)
       btn.style.display="inline-block";
     }
   });
+</script>
 
-/* ================= PRELOAD (W TLE) ================= */
+<!-- ===== PRELOAD + NAV ===== -->
+<script>
+/* ===== PRELOAD API (W TLE, NIE BLOKUJE) ===== */
 (function preloadAll(){
-  const now = Date.now();
-  const meta = JSON.parse(localStorage.getItem("api_meta") || "{}");
-
-  if(meta.ts && now - meta.ts < CACHE_TTL){
-    return; // cache świeży – nic nie robimy
-  }
-
-  Promise.all([
-    fetch(`${API_URL}?arkusz=API_VIEW`).then(r=>r.json()),
-    fetch(`${API_URL}?arkusz=API_DODATKOWE`).then(r=>r.json()),
-    fetch(`${API_URL}?api=boje`).then(r=>r.json())
-  ])
-  .then(([view, extra, boje])=>{
-    localStorage.setItem("api_view", JSON.stringify(view));
-    localStorage.setItem("api_extra", JSON.stringify(extra));
-    localStorage.setItem("api_boje", JSON.stringify(boje));
-    localStorage.setItem("api_meta", JSON.stringify({ ts: Date.now() }));
-  })
-  .catch(()=>{});
+  try {
+    Promise.all([
+      fetch(`${API_URL}?arkusz=API_VIEW`),
+      fetch(`${API_URL}?arkusz=API_DODATKOWE`),
+      fetch(`${API_URL}?api=boje`)
+    ]).then(responses => Promise.all(responses.map(r=>r.json())))
+      .then(([view, extra, boje])=>{
+        localStorage.setItem("api_view", JSON.stringify(view));
+        localStorage.setItem("api_extra", JSON.stringify(extra));
+        localStorage.setItem("api_boje", JSON.stringify(boje));
+      });
+  } catch(e){}
 })();
 
-/* ================= NAV + LOADER ================= */
+/* ===== NAV + LOADER ===== */
 document.querySelectorAll("a[data-arkusz]").forEach(a=>{
   a.href = "tabela.html?arkusz=" + encodeURIComponent(a.dataset.arkusz);
   a.addEventListener("click", ()=>{
