@@ -6,38 +6,32 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-/* ===== LOADER ===== */
 #loader {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 40vh;
-  font-size: 18px;
-  color: #666;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:40vh;
+  font-size:18px;
+  color:#666;
 }
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #ddd;
-  border-top: 4px solid #c00;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-right: 12px;
+  width:40px;
+  height:40px;
+  border:4px solid #ddd;
+  border-top:4px solid #c00;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin-right:12px;
 }
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform:rotate(360deg); } }
 </style>
 </head>
 
 <body>
 
-<!-- ===== HEADER ===== -->
 <header class="site-header">
   <div class="header-inner">
-    <div class="header-title">
-      Hardstyle Kettlebell European Championship
-    </div>
+    <div class="header-title">Hardstyle Kettlebell European Championship</div>
     <div class="header-links">
       <a id="liveLink" href="#" target="_blank" style="display:none">🔴 LIVE</a>
       <a href="kontakt.html">Kontakt</a>
@@ -51,15 +45,12 @@
     <a href="index.html">← Powrót</a>
     <h1 id="categoryTitle"></h1>
 
-    <!-- ===== LOADER ===== -->
     <div id="loader">
       <div class="spinner"></div>
       <div>Ładowanie wyników…</div>
     </div>
 
-    <!-- ===== CONTENT ===== -->
     <div id="content" style="display:none">
-
       <h2>🏆 Klasyfikacja generalna</h2>
       <table id="generalka">
         <thead><tr></tr></thead>
@@ -67,21 +58,19 @@
       </table>
 
       <div id="boje"></div>
-
     </div>
 
   </div>
 </div>
 
 <script>
-/* ================= CONFIG ================= */
 const API_URL = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
 const params = new URLSearchParams(location.search);
 const CATEGORY = decodeURIComponent(params.get("arkusz") || "");
 document.getElementById("categoryTitle").textContent = CATEGORY;
 
-/* ================= LIVE (SETTINGS) ================= */
-fetch(`${API_URL}?settings=1`
+/* ===== LIVE ===== */
+fetch(`${API_URL}?settings=1`)
   .then(r => r.json())
   .then(res => {
     const btn = document.getElementById("liveLink");
@@ -93,16 +82,16 @@ fetch(`${API_URL}?settings=1`
   })
   .catch(()=>{});
 
-/* ================= HELPERS ================= */
+/* ===== HELPERS ===== */
 function norm(s){
-  return String(s || "")
+  return String(s||"")
     .replace(/\u00A0/g," ")
     .trim()
     .replace(/\s+/g," ")
     .toLowerCase();
 }
 
-/* ================= CACHE FIRST ================= */
+/* ===== CACHE ===== */
 function getCache(){
   try {
     return {
@@ -116,17 +105,17 @@ function getCache(){
 }
 
 function renderAll(baseRes, extraRes, bojeRows){
-  const baseRows = (baseRes.data || []).filter(r =>
+  const baseRows = (baseRes.data||[]).filter(r =>
     norm(r.KATEGORIA) === norm(CATEGORY)
   );
 
-  const extraRows = (extraRes.data || []).filter(r =>
+  const extraRows = (extraRes.data||[]).filter(r =>
     norm(r.KATEGORIA_DODATKOWA) === norm(CATEGORY)
   );
 
   buildGeneralka([...baseRows, ...extraRows]);
 
-  const filteredBoje = (bojeRows || []).filter(r =>
+  const filteredBoje = (bojeRows||[]).filter(r =>
     norm(r.kategoria) === norm(CATEGORY) ||
     norm(r.kategoria_dodatkowa) === norm(CATEGORY)
   );
@@ -134,37 +123,34 @@ function renderAll(baseRes, extraRes, bojeRows){
   buildBoje(filteredBoje);
 }
 
-/* ===== 1️⃣ render z cache (jeśli jest) ===== */
+/* ===== 1️⃣ render z cache ===== */
 const cache = getCache();
 if(cache.view && cache.extra && cache.boje){
   renderAll(cache.view, cache.extra, cache.boje);
+  document.getElementById("loader").style.display="none";
+  document.getElementById("content").style.display="block";
 }
 
-/* ===== 2️⃣ zawsze fetch w tle ===== */
+/* ===== 2️⃣ fetch w tle ===== */
 Promise.all([
   fetch(`${API_URL}?arkusz=API_VIEW`).then(r=>r.json()).catch(()=>({data:[]})),
   fetch(`${API_URL}?arkusz=API_DODATKOWE`).then(r=>r.json()).catch(()=>({data:[]})),
   fetch(`${API_URL}?api=boje`).then(r=>r.json()).catch(()=>[])
 ])
-.then(([baseRes, extraRes, bojeRows]) => {
-
+.then(([baseRes, extraRes, bojeRows])=>{
   localStorage.setItem("api_view", JSON.stringify(baseRes));
   localStorage.setItem("api_extra", JSON.stringify(extraRes));
   localStorage.setItem("api_boje", JSON.stringify(bojeRows));
-
   renderAll(baseRes, extraRes, bojeRows);
 })
-.catch(err => {
-  console.error("Błąd ładowania:", err);
-})
-.finally(() => {
-  document.getElementById("loader").style.display = "none";
-  document.getElementById("content").style.display = "block";
+.finally(()=>{
+  document.getElementById("loader").style.display="none";
+  document.getElementById("content").style.display="block";
 });
 
-/* ================= GENERALKA ================= */
+/* ===== GENERALKA ===== */
 function buildGeneralka(rows){
-  if(!rows || !rows.length) return;
+  if(!rows.length) return;
 
   const competitions=[...new Set(rows.map(r=>r.KONKURENCJA))];
   const COMP_ORDER=["SNUB3'","TIEBREAK"];
@@ -176,138 +162,77 @@ function buildGeneralka(rows){
   const byAth={};
   rows.forEach(r=>{
     if(!byAth[r.ZAWODNIK]){
-      byAth[r.ZAWODNIK]={
-        name:r.ZAWODNIK,
-        klub:r.KLUB ?? "-",
-        waga:r.WAGA ?? "-",
-        points:{},
-        sum:r.PKT_SUM
-      };
+      byAth[r.ZAWODNIK]={name:r.ZAWODNIK,klub:r.KLUB||"-",waga:r.WAGA||"-",points:{},sum:r.PKT_SUM};
     }
     byAth[r.ZAWODNIK].points[r.KONKURENCJA]=r.PKT;
   });
 
   const data=Object.values(byAth).sort((a,b)=>a.sum-b.sum);
-
-  document.querySelector("#generalka thead tr").innerHTML=`
-    <th>M-ce</th>
-    <th>Zawodnik</th>
-    <th>Klub</th>
-    <th>Waga</th>
-    ${ordered.map(c=>`<th>PKT ${c}</th>`).join("")}
-    <th>PKT SUM</th>
-  `;
+  document.querySelector("#generalka thead tr").innerHTML=
+    `<th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th>`+
+    ordered.map(c=>`<th>PKT ${c}</th>`).join("")+
+    `<th>PKT SUM</th>`;
 
   const tbody=document.querySelector("#generalka tbody");
   tbody.innerHTML="";
   data.forEach((r,i)=>{
-    tbody.insertAdjacentHTML("beforeend",`
-      <tr>
+    tbody.insertAdjacentHTML("beforeend",
+      `<tr>
         <td>${i+1}</td>
         <td>${r.name}</td>
         <td>${r.klub}</td>
         <td>${r.waga}</td>
-        ${ordered.map(c=>`<td>${r.points[c] ?? "-"}</td>`).join("")}
+        ${ordered.map(c=>`<td>${r.points[c]??"-"}</td>`).join("")}
         <td>${r.sum}</td>
-      </tr>
-    `);
+      </tr>`
+    );
   });
 }
 
-/* ================= BOJE ================= */
+/* ===== BOJE ===== */
 function buildBoje(rows){
   const container=document.getElementById("boje");
   container.innerHTML="";
-  if(!rows || !rows.length){
-    container.innerHTML="<p>Brak wyników bojów dla tej kategorii</p>";
+  if(!rows.length){
+    container.innerHTML="<p>Brak wyników bojów</p>";
     return;
   }
 
   const byComp={};
-  rows.forEach(r=>{
-    if(!byComp[r.konkurencja]) byComp[r.konkurencja]=[];
-    byComp[r.konkurencja].push(r);
-  });
+  rows.forEach(r=>(byComp[r.konkurencja]=byComp[r.konkurencja]||[]).push(r));
 
-  const BOJE_ORDER=["SNUB3'","TIEBREAK"];
-  const ordered=[
-    ...Object.keys(byComp).filter(c=>!BOJE_ORDER.includes(c)),
-    ...BOJE_ORDER.filter(c=>byComp[c])
-  ];
-
-  ordered.forEach(comp=>{
-    const data=byComp[comp];
+  Object.entries(byComp).forEach(([comp,data])=>{
     container.insertAdjacentHTML("beforeend",`<h2>🏋️ ${comp}</h2>`);
 
     let html=`<table><thead><tr>
-      <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th>`;
-
-    if(/SN/i.test(comp)){
-      html+=`<th>Odważnik</th><th>Powt.</th><th>Wynik</th>`;
-    } else if(/TIEBREAK/i.test(comp)){
-      html+=`<th>Wynik</th>`;
-    } else {
-      html+=`<th>Próba 1</th><th>Próba 2</th><th>Próba 3</th><th>MAX</th><th>% MC</th>`;
-    }
-
-    html+=`</tr></thead><tbody>`;
+      <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th><th>Wynik</th>
+    </tr></thead><tbody>`;
 
     const byAth={};
-    data.forEach(r=>{
-      if(!byAth[r.zawodnik]) byAth[r.zawodnik]=[];
-      byAth[r.zawodnik].push(r);
+    data.forEach(r=>(byAth[r.zawodnik]=byAth[r.zawodnik]||[]).push(r));
+
+    Object.entries(byAth).forEach(([name,arr],i)=>{
+      const base=arr[0];
+      const max=Math.max(...arr.map(x=>x.wynik||0));
+      html+=`<tr>
+        <td>${i+1}</td>
+        <td>${name}</td>
+        <td>${base.klub||"-"}</td>
+        <td>${base.waga||"-"}</td>
+        <td>${max}</td>
+      </tr>`;
     });
 
-    Object.entries(byAth)
-      .sort((a,b)=>{
-        const maxA=Math.max(...a[1].map(x=>x.wynik||0));
-        const maxB=Math.max(...b[1].map(x=>x.wynik||0));
-        return maxB-maxA;
-      })
-      .forEach(([name,arr],i)=>{
-        const base=arr[0];
-        html+=`<tr>
-          <td>${i+1}</td>
-          <td>${name}</td>
-          <td>${base.klub ?? "-"}</td>
-          <td>${base.waga ?? "-"}</td>`;
-
-        if(/SN/i.test(comp)){
-          html+=`<td>${base.odciezar}</td><td>${base.powtorzenia}</td><td>${base.wynik}</td>`;
-        } else if(/TIEBREAK/i.test(comp)){
-          html+=`<td>${base.wynik}</td>`;
-        } else {
-          const p=arr.sort((a,b)=>a.proba-b.proba).map(x=>x.wynik);
-          const max=Math.max(...p);
-          const pct=base.waga?(max/base.waga*100).toFixed(2):"-";
-          html+=`<td>${p[0]??"-"}</td><td>${p[1]??"-"}</td><td>${p[2]??"-"}</td><td>${max}</td><td>${pct}</td>`;
-        }
-        html+=`</tr>`;
-      });
-
-    html+=`</tbody></table>`;
+    html+="</tbody></table>";
     container.insertAdjacentHTML("beforeend",html);
   });
 }
-</script>
-<script>
+
+/* ===== SERVICE WORKER ===== */
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
-window.addEventListener("pageshow", function (event) {
-  // jeśli strona wróciła z cache przeglądarki (Back/Forward)
-  if (event.persisted) {
-    const loader = document.getElementById("loader");
-    const content = document.getElementById("content");
-
-    if (loader) loader.style.display = "none";
-    if (content) content.style.display = "block";
-  }
-});
 </script>
 
 </body>
 </html>
-
-
-
