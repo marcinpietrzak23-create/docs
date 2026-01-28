@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hardstyle Kettlebell European Championship</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-title">
+      Hardstyle Kettlebell European Championship
+    </div>
+    <div class="header-links">
+      <a id="liveLink" href="#" target="_blank" style="display:none">🔴 LIVE</a>
+      <a href="kontakt.html">Kontakt</a>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+  
+
+  <div class="panel">
+
+    <!-- JUNIOR -->
+    <div class="section">
+      <h2>JUNIOR 18 / U18</h2>
+      <div class="cards">
+        <a class="card split-button" data-arkusz="K:Ch U18 Junior">
+          <span class="row top">JUNIOR 18 CHŁOPCÓW</span>
+          <span class="row bottom">BOYS JUNIOR 18</span>
+        </a>
+
+        <a class="card split-button" data-arkusz="K:Dz U18 Junior">
+          <span class="row top">JUNIOR 18 DZIEWCZĄT</span>
+          <span class="row bottom">GIRLS JUNIOR 18</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- AMATOR -->
+    <div class="section">
+      <h2>AMATOR / AMATEUR</h2>
+      <div class="cards">
+        <a class="card split-button" data-arkusz="K:K Amator +65kg">
+          <span class="row top">AMATOR KOBIET +65 KG</span>
+          <span class="row bottom">WOMAN AMATEUR +65 KG</span>
+        </a>
+
+        <a class="card split-button" data-arkusz="K:K Amator 65kg">
+          <span class="row top">AMATOR KOBIET 65 KG</span>
+          <span class="row bottom">WOMAN AMATEUR 65 KG</span>
+        </a>
+
+        <a class="card split-button" data-arkusz="K:M Amator +85kg">
+          <span class="row top">AMATOR MĘŻCZYZN +85 KG</span>
+          <span class="row bottom">MAN AMATEUR +85 KG</span>
+        </a>
+
+        <a class="card split-button" data-arkusz="K:M Amator 85kg">
+          <span class="row top">AMATOR MĘŻCZYZN 85 KG</span>
+          <span class="row bottom">MAN AMATEUR 85 KG</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- PRO -->
+    <div class="section">
+      <h2>PRO / PROFESSIONAL</h2>
+      <div class="cards">
+        <a class="card split-button" data-arkusz="K:K PRO +65kg">
+          <span class="row top">PRO KOBIET +65 KG</span>
+          <span class="row bottom">WOMAN PROFESSIONAL +65 KG</span>
+        </a>
+
+        <a class="card split-button" data-arkusz="K:K PRO 65kg">
+          <span class="row top">PRO KOBIET 65 KG</span>
+          <span class="row bottom">WOMAN PROFESSIONAL 65 KG</span>
+        </a>
+
+        <a class="card split-button" data-arkusz="K:M PRO +85kg">
+          <span class="row top">PRO MĘŻCZYZN +85 KG</span>
+          <span class="row bottom">MAN PROFESSIONAL +85 KG</span>
+        </a>
+
+        <a class="card split-button" data-arkusz="K:M PRO 85kg">
+          <span class="row top">PRO MĘŻCZYZN 85 KG</span>
+          <span class="row bottom">MAN PROFESSIONAL 85 KG</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- MASTERS -->
+    <div class="section">
+      <h2>MASTERS</h2>
+      <div class="cards">
+        <a class="card split-button" data-arkusz="K:K Masters +45">
+          <span class="row top">MASTERS +45 KOBIET</span>
+          <span class="row bottom">WOMAN MASTERS +45</span>
+        </a>
+
+        <a class="card split-button" data-arkusz="K:M Masters +45">
+          <span class="row top">MASTERS +45 MĘŻCZYZN</span>
+          <span class="row bottom">MAN MASTERS +45</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- NAJLEPSZY -->
+    <div class="section">
+      <h2>NAJLEPSZY / BEST</h2>
+      <div class="cards">
+        <a class="card split-button" data-arkusz="K:K najlepsza ząbkowiczanka">
+          <span class="row top">NAJLEPSZA ZĄBKOWICZANKA</span>
+          <span class="row bottom">WOMAN LOCAL</span>
+        </a>
+
+        <a class="card split-button" data-arkusz="K:M najlepszy ząbkowiczanin">
+          <span class="row top">NAJLEPSZY ZĄBKOWICZANIN</span>
+          <span class="row bottom">MAN LOCAL</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- LIVE BUTTON -->
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbw49YMbGFzbWu6Hyj627Pe8_wmUiHxafLCfjEOKJWJ9yvBJK3DX0Pjk1RfljQ_U5rxKbw/exec";
+fetch(API_URL)
+  .then(r=>r.json())
+  .then(res=>{
+    const btn=document.getElementById("liveLink");
+    if(res?.settings?.live_url){
+      btn.href=res.settings.live_url;
+      btn.textContent=res.settings.live_text||"🔴 LIVE";
+      btn.style.display="inline-block";
+    }
+  });
+</script>
+
+<script>
+document.querySelectorAll("a[data-arkusz]").forEach(a=>{
+  a.href="tabela.html?arkusz="+encodeURIComponent(a.dataset.arkusz);
+});
+</script>
+
+</body>
+</html>

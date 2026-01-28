@@ -1,0 +1,359 @@
+/* =========================
+   OGÓLNE
+========================= */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: linear-gradient(
+    135deg,
+    #6b0f1a 0%,
+    #a4161a 30%,
+    #c9184a 100%
+  );
+}
+
+/* =========================
+   STRONA GŁÓWNA
+========================= */
+.page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 60px 20px;
+}
+
+.panel {
+  background: linear-gradient(135deg, #0b1c2d 0%, #102a43 100%);
+  border-radius: 24px;
+  padding: 80px 60px;
+  min-height: 55vh;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;   /* 🔥 TO ROBI RÓŻNICĘ */
+  text-align: center;
+}
+
+.panel h1,
+.panel h2,
+.panel h3,
+.panel h4,
+.panel p {
+  color: #f1f5f9;
+}
+
+.hero-title {
+  font-size: 48px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 50px;
+}
+
+/* =========================
+   KARTY KATEGORII
+========================= */
+.cards {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center; /* 🔥 WYŚRODKOWANIE */
+}
+
+.split-button {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+  overflow: hidden;
+  text-decoration: none;
+  color: #0b1c2d;
+  width: 260px;
+  background: #f8fafc;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.split-button .row {
+  padding: 14px;
+}
+
+.split-button .top {
+  font-weight: bold;
+  background-color: #e2e8f0;
+}
+
+.split-button .bottom {
+  border-top: 1px solid #cbd5e1;
+  background-color: #f1f5f9;
+  font-size: 0.9em;
+}
+
+.split-button:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+}
+
+/* =========================
+   STRONA Z TABELĄ
+========================= */
+.table-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.table-panel {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 30px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+.table-panel a {
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.table-panel h1 {
+  margin-top: 0;
+}
+
+/* =========================
+   TABELA
+========================= */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+th {
+  background: #eee;
+}
+
+/* TOP 3 */
+.top1 { background-color: #fff3cd; font-weight: bold; }
+.top2 { background-color: #e2e3e5; }
+.top3 { background-color: #f8d7da; }
+
+/* =========================
+   MOBILE CARDS – DOMYŚLNIE
+========================= */
+.mobile-cards {
+  display: none;
+}
+
+/* =========================
+   MOBILE VIEW
+========================= */
+@media (max-width: 768px) {
+
+  .hero-title {
+    font-size: 32px;
+    margin-bottom: 30px;
+  }
+
+  .panel {
+    padding: 40px 20px;
+    min-height: auto;
+  }
+
+  /* tabela znika */
+  .table-panel table {
+    display: none !important;
+  }
+
+  /* karty mobile */
+  .mobile-cards {
+    display: grid !important;
+    gap: 12px;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .card.top1 { background: #fff3cd; font-weight: bold; }
+  .card.top2 { background: #e2e3e5; }
+  .card.top3 { background: #f8d7da; }
+
+  .card .name {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+
+  .card .club {
+    color: #555;
+    margin-bottom: 8px;
+  }
+
+  .card .row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .card .details {
+    display: none;
+    margin-top: 10px;
+  }
+
+  .card.open .details {
+    display: block;
+  }
+}
+  .card .place {
+  display: inline-block;
+  background: #0b1c2d;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+/* =========================
+   LIVE BUTTON
+========================= */
+.live-button {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+
+  background: #0b1c2d;           /* 🔵 TEN SAM GRANAT */
+  color: #ffffff;
+
+  padding: 12px 18px 12px 16px;
+  border-radius: 999px;
+  font-weight: bold;
+  text-decoration: none;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+  z-index: 999;
+
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.live-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.45);
+}
+
+/* 🔴 PULSUJĄCA KROPKA */
+.live-button::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  background: #dc2626;
+  border-radius: 50%;
+  box-shadow: 0 0 0 rgba(220,38,38, 0.7);
+  animation: pulse 1.6s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220,38,38, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(220,38,38, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220,38,38, 0);
+  }
+}
+/* =========================
+   HEADER
+========================= */
+.site-header {
+  padding: 20px 0;
+}
+
+.header-inner {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.header-links a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: bold;
+  margin-left: 20px;
+}
+
+.header-links a:hover {
+  text-decoration: underline;
+}
+/* =========================
+   KONTAKT
+========================= */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 60px;
+  margin-top: 50px;
+  width: 100%;
+}
+
+.contact-block h3 {
+  border-bottom: 1px solid #f59e0b;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.contact-block p {
+  margin: 6px 0;
+}
+
+@media (max-width: 900px) {
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+.contact-block a {
+  color: #f8fafc;
+  text-decoration: none;
+}
+
+.contact-block a:hover {
+  text-decoration: underline;
+}
+
+.contact-person {
+  cursor: pointer;
+  user-select: none;
+}
+
+.contact-person:hover {
+  opacity: 0.8;
+}
+
+.icon {
+  margin-right: 6px;
+}

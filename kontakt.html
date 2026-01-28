@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Kontakt – Hardstyle Kettlebell European Championship</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-title">
+      Hardstyle Kettlebell European Championship
+    </div>
+    <div class="header-links">
+      <a id="liveLink" href="#" target="_blank" style="display:none">🔴 LIVE</a>
+      <a href="index.html">Powrót</a>
+    </div>
+  </div>
+</header>
+
+<!-- ===== CONTENT ===== -->
+<div class="page">
+  <div class="panel">
+
+    <h1 id="contactTitle">Kontakt</h1>
+
+    <div class="contact-grid">
+
+      <!-- ORGANIZATOR -->
+      <div class="contact-block">
+        <h3>ORGANIZATOR GŁÓWNY</h3>
+
+        <p id="orgName"></p>
+        <p id="orgAddress"></p>
+
+        <p>
+          <span class="icon">✉️</span>
+          <a id="orgEmail" href="#"></a>
+        </p>
+
+        <p>
+          <span class="icon">📞</span>
+          <span id="orgPerson"
+                class="contact-person"
+                title="Kliknij aby skopiować numer"></span>
+        </p>
+      </div>
+
+      <!-- FACEBOOK -->
+      <div class="contact-block">
+        <h3>FACEBOOK</h3>
+        <p><a id="fb1" href="#" target="_blank" rel="noopener"></a></p>
+        <p><a id="fb2" href="#" target="_blank" rel="noopener"></a></p>
+      </div>
+
+      <!-- LOKALIZACJA -->
+      <div class="contact-block">
+        <h3>LOKALIZACJA ZAWODÓW</h3>
+        <p id="location"></p>
+      </div>
+
+    </div>
+
+    <!-- ===== MAPA GOOGLE ===== -->
+    <div class="map-wrapper" style="margin-top:40px;">
+      <h3 style="margin-bottom:16px;">🗺️ Dojazd</h3>
+      <iframe
+        id="googleMap"
+        width="100%"
+        height="380"
+        style="border:0;border-radius:16px;"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen>
+      </iframe>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== SETTINGS / LOGIKA ===== -->
+<script>
+const API_URL =
+  "https://script.google.com/macros/s/AKfycbw49YMbGFzbWu6Hyj627Pe8_wmUiHxafLCfjEOKJWJ9yvBJK3DX0Pjk1RfljQ_U5rxKbw/exec";
+
+fetch(API_URL)
+  .then(res => res.json())
+  .then(res => {
+    const s = res.settings || {};
+
+    /* ===== LIVE ===== */
+    const liveBtn = document.getElementById("liveLink");
+    if (s.live_url) {
+      liveBtn.href = s.live_url;
+      liveBtn.textContent = s.live_text || "🔴 LIVE";
+      liveBtn.style.display = "inline-block";
+    }
+
+    /* ===== TEKSTY ===== */
+    document.getElementById("contactTitle").textContent =
+      s.contact_title || "Kontakt";
+
+    document.getElementById("orgName").textContent =
+      s.contact_org_name || "";
+
+    document.getElementById("orgAddress").textContent =
+      s.contact_address || "";
+
+    /* ===== EMAIL ===== */
+    if (s.contact_email) {
+      const emailEl = document.getElementById("orgEmail");
+      emailEl.textContent = s.contact_email;
+      emailEl.href = "mailto:" + s.contact_email;
+    }
+
+    /* ===== UKRYTY TELEFON ===== */
+    if (s.contact_person) {
+      const personEl = document.getElementById("orgPerson");
+      personEl.textContent = s.contact_person;
+
+      if (s.contact_phone) {
+        personEl.style.cursor = "pointer";
+        personEl.addEventListener("click", () => {
+          navigator.clipboard.writeText(s.contact_phone);
+          personEl.textContent = s.contact_person + " (numer skopiowany)";
+          setTimeout(() => {
+            personEl.textContent = s.contact_person;
+          }, 2000);
+        });
+      }
+    }
+
+    /* ===== FACEBOOK ===== */
+    if (s.contact_fb_1_label && s.contact_fb_1_url) {
+      const fb1 = document.getElementById("fb1");
+      fb1.textContent = s.contact_fb_1_label;
+      fb1.href = s.contact_fb_1_url;
+    }
+
+    if (s.contact_fb_2_label && s.contact_fb_2_url) {
+      const fb2 = document.getElementById("fb2");
+      fb2.textContent = s.contact_fb_2_label;
+      fb2.href = s.contact_fb_2_url;
+    }
+
+    /* ===== LOKALIZACJA ===== */
+    document.getElementById("location").textContent =
+      s.contact_location || "";
+
+    /* ===== MAPA GOOGLE ===== */
+    if (s.contact_map_query) {
+      const map = document.getElementById("googleMap");
+      map.src =
+        "https://www.google.com/maps?q=" +
+        encodeURIComponent(s.contact_map_query) +
+        "&output=embed";
+    }
+  })
+  .catch(console.error);
+</script>
+
+</body>
+</html>

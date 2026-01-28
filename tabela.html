@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8" />
+<title>Klasyfikacja</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-title">
+      Hardstyle Kettlebell European Championship
+    </div>
+    <div class="header-links">
+      <a id="liveLink" href="#" target="_blank" style="display:none">🔴 LIVE</a>
+      <a href="kontakt.html">Kontakt</a>
+    </div>
+  </div>
+</header>
+
+<div class="page table-page">
+  <div class="table-panel">
+
+    <a href="index.html">← Powrót</a>
+    <h1 id="categoryTitle"></h1>
+
+    <h2>🏆 Klasyfikacja generalna</h2>
+    <table id="generalka">
+      <thead><tr></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <div id="boje"></div>
+
+  </div>
+</div>
+
+<script>
+/* ================= CONFIG ================= */
+const API_URL = "https://script.google.com/macros/s/AKfycbx9LDj_cTRG1EGsnAAbXNng1NuCerQqM9nmodCO_CsgbTWbHF7EpGSk-6gYJQX-6lZFdw/exec";
+const params = new URLSearchParams(location.search);
+const CATEGORY = decodeURIComponent(params.get("arkusz") || "");
+document.getElementById("categoryTitle").textContent = CATEGORY;
+
+/* ================= LIVE ================= */
+fetch(API_URL)
+  .then(r=>r.json())
+  .then(res=>{
+    const btn=document.getElementById("liveLink");
+    if(res?.settings?.live_url){
+      btn.href=res.settings.live_url;
+      btn.textContent=res.settings.live_text||"🔴 LIVE";
+      btn.style.display="inline-block";
+    }
+  });
+
+/* ================= HELPERS ================= */
+function norm(s){
+  return String(s || "")
+    .replace(/\u00A0/g," ")
+    .trim()
+    .replace(/\s+/g," ")
+    .toLowerCase();
+}
+
+/* ================= LOAD GENERALKA ================= */
+Promise.all([
+  fetch(`${API_URL}?arkusz=API_VIEW`).then(r=>r.json()),
+  fetch(`${API_URL}?arkusz=API_DODATKOWE`).then(r=>r.json())
+]).then(([baseRes, extraRes])=>{
+
+  const baseRows = baseRes.data.filter(r =>
+    norm(r.KATEGORIA) === norm(CATEGORY)
+  );
+
+  const extraRows = extraRes.data.filter(r =>
+    norm(r.KATEGORIA_DODATKOWA) === norm(CATEGORY)
+  );
+
+  buildGeneralka([...baseRows, ...extraRows]);
+});
+
+/* ================= GENERALKA ================= */
+function buildGeneralka(rows){
+  if(!rows.length) return;
+
+  const competitions=[...new Set(rows.map(r=>r.KONKURENCJA))];
+  const COMP_ORDER=["SNUB3'","TIEBREAK"];
+  const ordered=[
+    ...competitions.filter(c=>!COMP_ORDER.includes(c)),
+    ...COMP_ORDER.filter(c=>competitions.includes(c))
+  ];
+
+  const byAth={};
+  rows.forEach(r=>{
+    if(!byAth[r.ZAWODNIK]){
+      byAth[r.ZAWODNIK]={
+        name:r.ZAWODNIK,
+        klub:r.KLUB ?? "-",
+        waga:r.WAGA ?? "-",
+        points:{},
+        sum:r.PKT_SUM
+      };
+    }
+    byAth[r.ZAWODNIK].points[r.KONKURENCJA]=r.PKT;
+  });
+
+  const data=Object.values(byAth).sort((a,b)=>a.sum-b.sum);
+
+  document.querySelector("#generalka thead tr").innerHTML=`
+    <th>M-ce</th>
+    <th>Zawodnik</th>
+    <th>Klub</th>
+    <th>Waga</th>
+    ${ordered.map(c=>`<th>PKT ${c}</th>`).join("")}
+    <th>PKT SUM</th>
+  `;
+
+  const tbody=document.querySelector("#generalka tbody");
+  tbody.innerHTML="";
+  data.forEach((r,i)=>{
+    tbody.insertAdjacentHTML("beforeend",`
+      <tr>
+        <td>${i+1}</td>
+        <td>${r.name}</td>
+        <td>${r.klub}</td>
+        <td>${r.waga}</td>
+        ${ordered.map(c=>`<td>${r.points[c] ?? "-"}</td>`).join("")}
+        <td>${r.sum}</td>
+      </tr>
+    `);
+  });
+}
+
+/* ================= LOAD BOJE ================= */
+fetch(`${API_URL}?api=boje`)
+.then(r=>r.json())
+.then(rows=>{
+  const filtered = rows.filter(r =>
+    norm(r.kategoria) === norm(CATEGORY) ||
+    norm(r.kategoria_dodatkowa) === norm(CATEGORY)
+  );
+  buildBoje(filtered);
+});
+
+/* ================= BOJE ================= */
+function buildBoje(rows){
+  const container=document.getElementById("boje");
+  container.innerHTML="";
+  if(!rows.length){
+    container.innerHTML="<p>Brak wyników bojów dla tej kategorii</p>";
+    return;
+  }
+
+  const byComp={};
+  rows.forEach(r=>{
+    if(!byComp[r.konkurencja]) byComp[r.konkurencja]=[];
+    byComp[r.konkurencja].push(r);
+  });
+
+  const BOJE_ORDER=["SNUB3'","TIEBREAK"];
+  const ordered=[
+    ...Object.keys(byComp).filter(c=>!BOJE_ORDER.includes(c)),
+    ...BOJE_ORDER.filter(c=>byComp[c])
+  ];
+
+  ordered.forEach(comp=>{
+    const data=byComp[comp];
+    container.insertAdjacentHTML("beforeend",`<h2>🏋️ ${comp}</h2>`);
+
+    let html=`<table><thead><tr>
+      <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th>`;
+
+    if(/SN/i.test(comp)){
+      html+=`<th>Odważnik</th><th>Powt.</th><th>Wynik</th>`;
+    } else if(/TIEBREAK/i.test(comp)){
+      html+=`<th>Wynik</th>`;
+    } else {
+      html+=`<th>Próba 1</th><th>Próba 2</th><th>Próba 3</th><th>MAX</th><th>% MC</th>`;
+    }
+
+    html+=`</tr></thead><tbody>`;
+
+    const byAth={};
+    data.forEach(r=>{
+      if(!byAth[r.zawodnik]) byAth[r.zawodnik]=[];
+      byAth[r.zawodnik].push(r);
+    });
+
+    Object.entries(byAth)
+      .sort((a,b)=>{
+        const maxA=Math.max(...a[1].map(x=>x.wynik||0));
+        const maxB=Math.max(...b[1].map(x=>x.wynik||0));
+        return maxB-maxA;
+      })
+      .forEach(([name,arr],i)=>{
+        const base=arr[0];
+        html+=`<tr>
+          <td>${i+1}</td>
+          <td>${name}</td>
+          <td>${base.klub ?? "-"}</td>
+          <td>${base.waga ?? "-"}</td>`;
+
+        if(/SN/i.test(comp)){
+          html+=`<td>${base.odciezar}</td><td>${base.powtorzenia}</td><td>${base.wynik}</td>`;
+        } else if(/TIEBREAK/i.test(comp)){
+          html+=`<td>${base.wynik}</td>`;
+        } else {
+          const p=arr.sort((a,b)=>a.proba-b.proba).map(x=>x.wynik);
+          const max=Math.max(...p);
+          const pct=base.waga?(max/base.waga*100).toFixed(2):"-";
+          html+=`<td>${p[0]??"-"}</td><td>${p[1]??"-"}</td><td>${p[2]??"-"}</td><td>${max}</td><td>${pct}</td>`;
+        }
+        html+=`</tr>`;
+      });
+
+    html+=`</tbody></table>`;
+    container.insertAdjacentHTML("beforeend",html);
+  });
+}
+</script>
+
+</body>
+</html>
