@@ -90,7 +90,8 @@ fetch(API_URL)
       btn.textContent = res.settings.live_text || "🔴 LIVE";
       btn.style.display = "inline-block";
     }
-  });
+  })
+  .catch(()=>{});
 
 /* ================= HELPERS ================= */
 function norm(s){
@@ -101,40 +102,44 @@ function norm(s){
     .toLowerCase();
 }
 
-/* ================= LOAD ALL DATA ================= */
+/* ================= MAIN LOAD ================= */
 Promise.all([
-  fetch(`${API_URL}?arkusz=API_VIEW`).then(r=>r.json()),
-  fetch(`${API_URL}?arkusz=API_DODATKOWE`).then(r=>r.json()),
-  fetch(`${API_URL}?api=boje`).then(r=>r.json())
-]).then(([baseRes, extraRes, bojeRows])=>{
+  fetch(`${API_URL}?arkusz=API_VIEW`).then(r=>r.json()).catch(()=>({data:[]})),
+  fetch(`${API_URL}?arkusz=API_DODATKOWE`).then(r=>r.json()).catch(()=>({data:[]})),
+  fetch(`${API_URL}?api=boje`).then(r=>r.json()).catch(()=>[])
+])
+.then(([baseRes, extraRes, bojeRows]) => {
 
   /* ===== GENERALKA ===== */
-  const baseRows = baseRes.data.filter(r =>
+  const baseRows = (baseRes.data || []).filter(r =>
     norm(r.KATEGORIA) === norm(CATEGORY)
   );
 
-  const extraRows = extraRes.data.filter(r =>
+  const extraRows = (extraRes.data || []).filter(r =>
     norm(r.KATEGORIA_DODATKOWA) === norm(CATEGORY)
   );
 
   buildGeneralka([...baseRows, ...extraRows]);
 
   /* ===== BOJE ===== */
-  const filteredBoje = bojeRows.filter(r =>
+  const filteredBoje = (bojeRows || []).filter(r =>
     norm(r.kategoria) === norm(CATEGORY) ||
     norm(r.kategoria_dodatkowa) === norm(CATEGORY)
   );
 
   buildBoje(filteredBoje);
-
-  /* ===== SHOW CONTENT ===== */
+})
+.catch(err => {
+  console.error("Błąd ładowania:", err);
+})
+.finally(() => {
   document.getElementById("loader").style.display = "none";
   document.getElementById("content").style.display = "block";
 });
 
 /* ================= GENERALKA ================= */
 function buildGeneralka(rows){
-  if(!rows.length) return;
+  if(!rows || !rows.length) return;
 
   const competitions=[...new Set(rows.map(r=>r.KONKURENCJA))];
   const COMP_ORDER=["SNUB3'","TIEBREAK"];
@@ -188,7 +193,7 @@ function buildGeneralka(rows){
 function buildBoje(rows){
   const container=document.getElementById("boje");
   container.innerHTML="";
-  if(!rows.length){
+  if(!rows || !rows.length){
     container.innerHTML="<p>Brak wyników bojów dla tej kategorii</p>";
     return;
   }
