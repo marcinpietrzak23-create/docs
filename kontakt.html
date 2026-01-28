@@ -5,6 +5,30 @@
   <title>Kontakt – Hardstyle Kettlebell European Championship</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* ===== LOADER ===== */
+    #loader {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 40vh;
+      font-size: 18px;
+      color: #666;
+      gap: 12px;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #ddd;
+      border-top: 4px solid #c00;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 
 <body>
@@ -22,63 +46,73 @@
   </div>
 </header>
 
-<!-- ===== CONTENT ===== -->
+<!-- ===== PAGE ===== -->
 <div class="page">
   <div class="panel">
 
-    <h1 id="contactTitle">Kontakt</h1>
+    <!-- ===== LOADER ===== -->
+    <div id="loader">
+      <div class="spinner"></div>
+      <div>Ładowanie danych kontaktowych…</div>
+    </div>
 
-    <div class="contact-grid">
+    <!-- ===== CONTENT (UKRYTE DO CZASU FETCHA) ===== -->
+    <div id="content" style="display:none">
 
-      <!-- ORGANIZATOR -->
-      <div class="contact-block">
-        <h3>ORGANIZATOR GŁÓWNY</h3>
+      <h1 id="contactTitle">Kontakt</h1>
 
-        <p id="orgName"></p>
-        <p id="orgAddress"></p>
+      <div class="contact-grid">
 
-        <p>
-          <span class="icon">✉️</span>
-          <a id="orgEmail" href="#"></a>
-        </p>
+        <!-- ORGANIZATOR -->
+        <div class="contact-block">
+          <h3>ORGANIZATOR GŁÓWNY</h3>
 
-        <p>
-          <span class="icon">📞</span>
-          <span id="orgPerson"
-                class="contact-person"
-                title="Kliknij aby skopiować numer"></span>
-        </p>
+          <p id="orgName"></p>
+          <p id="orgAddress"></p>
+
+          <p>
+            <span class="icon">✉️</span>
+            <a id="orgEmail" href="#"></a>
+          </p>
+
+          <p>
+            <span class="icon">📞</span>
+            <span id="orgPerson"
+                  class="contact-person"
+                  title="Kliknij aby skopiować numer"></span>
+          </p>
+        </div>
+
+        <!-- FACEBOOK -->
+        <div class="contact-block">
+          <h3>FACEBOOK</h3>
+          <p><a id="fb1" href="#" target="_blank" rel="noopener"></a></p>
+          <p><a id="fb2" href="#" target="_blank" rel="noopener"></a></p>
+        </div>
+
+        <!-- LOKALIZACJA -->
+        <div class="contact-block">
+          <h3>LOKALIZACJA ZAWODÓW</h3>
+          <p id="location"></p>
+        </div>
+
       </div>
 
-      <!-- FACEBOOK -->
-      <div class="contact-block">
-        <h3>FACEBOOK</h3>
-        <p><a id="fb1" href="#" target="_blank" rel="noopener"></a></p>
-        <p><a id="fb2" href="#" target="_blank" rel="noopener"></a></p>
-      </div>
-
-      <!-- LOKALIZACJA -->
-      <div class="contact-block">
-        <h3>LOKALIZACJA ZAWODÓW</h3>
-        <p id="location"></p>
+      <!-- ===== MAPA GOOGLE ===== -->
+      <div class="map-wrapper" style="margin-top:40px;">
+        <h3 style="margin-bottom:16px;">🗺️ Dojazd</h3>
+        <iframe
+          id="googleMap"
+          width="100%"
+          height="380"
+          style="border:0;border-radius:16px;"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          allowfullscreen>
+        </iframe>
       </div>
 
     </div>
-
-    <!-- ===== MAPA GOOGLE ===== -->
-    <div class="map-wrapper" style="margin-top:40px;">
-      <h3 style="margin-bottom:16px;">🗺️ Dojazd</h3>
-      <iframe
-        id="googleMap"
-        width="100%"
-        height="380"
-        style="border:0;border-radius:16px;"
-        loading="lazy"
-        referrerpolicy="no-referrer-when-downgrade"
-        allowfullscreen>
-      </iframe>
-    </div>
-
   </div>
 </div>
 
@@ -117,7 +151,7 @@ fetch(API_URL)
       emailEl.href = "mailto:" + s.contact_email;
     }
 
-    /* ===== UKRYTY TELEFON ===== */
+    /* ===== TELEFON ===== */
     if (s.contact_person) {
       const personEl = document.getElementById("orgPerson");
       personEl.textContent = s.contact_person;
@@ -151,16 +185,21 @@ fetch(API_URL)
     document.getElementById("location").textContent =
       s.contact_location || "";
 
-    /* ===== MAPA GOOGLE ===== */
+    /* ===== MAPA ===== */
     if (s.contact_map_query) {
-      const map = document.getElementById("googleMap");
-      map.src =
+      document.getElementById("googleMap").src =
         "https://www.google.com/maps?q=" +
         encodeURIComponent(s.contact_map_query) +
         "&output=embed";
     }
   })
-  .catch(console.error);
+  .catch(err => {
+    console.error("Błąd SETTINGS:", err);
+  })
+  .finally(() => {
+    document.getElementById("loader").style.display = "none";
+    document.getElementById("content").style.display = "block";
+  });
 </script>
 
 </body>
