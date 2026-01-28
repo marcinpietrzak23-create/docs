@@ -294,8 +294,19 @@ function buildBoje(rows){
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
+window.addEventListener("pageshow", function (event) {
+  // jeśli strona wróciła z cache przeglądarki (Back/Forward)
+  if (event.persisted) {
+    const loader = document.getElementById("loader");
+    const content = document.getElementById("content");
+
+    if (loader) loader.style.display = "none";
+    if (content) content.style.display = "block";
+  }
+});
 </script>
 
 </body>
 </html>
+
 
