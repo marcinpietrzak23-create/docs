@@ -81,7 +81,7 @@ const CATEGORY = decodeURIComponent(params.get("arkusz") || "");
 document.getElementById("categoryTitle").textContent = CATEGORY;
 
 /* ================= LIVE (SETTINGS) ================= */
-fetch(API_URL)
+fetch(`${API_URL}?settings=1`
   .then(r => r.json())
   .then(res => {
     const btn = document.getElementById("liveLink");
@@ -308,5 +308,6 @@ window.addEventListener("pageshow", function (event) {
 
 </body>
 </html>
+
 
 
