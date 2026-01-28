@@ -121,7 +121,7 @@
 const API_URL =
   "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
 
-fetch(API_URL)
+fetch(`${API_URL}?settings=1`)
   .then(res => res.json())
   .then(res => {
     const s = res.settings || {};
@@ -204,3 +204,4 @@ fetch(API_URL)
 
 </body>
 </html>
+
