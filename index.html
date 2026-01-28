@@ -159,7 +159,8 @@
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
 
-fetch(API_URL)
+fetch(`${API_URL}?settings=1`)
+
   .then(r=>r.json())
   .then(res=>{
     const btn=document.getElementById("liveLink");
@@ -205,4 +206,5 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
