@@ -155,49 +155,44 @@
   </div>
 </div>
 
-<!-- ===== LIVE BUTTON ===== -->
+<!-- ===== SCRIPTS ===== -->
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
 
+/* ===== LIVE BUTTON ===== */
 fetch(`${API_URL}?settings=1`)
-
-  .then(r=>r.json())
-  .then(res=>{
-    const btn=document.getElementById("liveLink");
-    if(res?.settings?.live_url){
-      btn.href=res.settings.live_url;
-      btn.textContent=res.settings.live_text||"🔴 LIVE";
-      btn.style.display="inline-block";
+  .then(r => r.json())
+  .then(res => {
+    const btn = document.getElementById("liveLink");
+    if (res?.settings?.live_url) {
+      btn.href = res.settings.live_url;
+      btn.textContent = res.settings.live_text || "🔴 LIVE";
+      btn.style.display = "inline-block";
     }
-  });
-</script>
+  })
+  .catch(()=>{});
 
-<!-- ===== PRELOAD + NAV ===== -->
-<script>
 /* ===== PRELOAD API (W TLE, NIE BLOKUJE) ===== */
 (function preloadAll(){
-  try {
-    [
-      `${API_URL}?settings=1`,
-      `${API_URL}?arkusz=API_VIEW`,
-      `${API_URL}?arkusz=API_DODATKOWE`,
-      `${API_URL}?api=boje`
-    ].forEach(url => {
-      fetch(url).catch(()=>{});
-    });
-  } catch(e){}
+  [
+    `${API_URL}?settings=1`,
+    `${API_URL}?arkusz=API_VIEW`,
+    `${API_URL}?arkusz=API_DODATKOWE`,
+    `${API_URL}?api=boje`
+  ].forEach(url => {
+    fetch(url).catch(()=>{});
+  });
 })();
-</script>
 
 /* ===== NAV + LOADER ===== */
-document.querySelectorAll("a[data-arkusz]").forEach(a=>{
+document.querySelectorAll("a[data-arkusz]").forEach(a => {
   a.href = "tabela.html?arkusz=" + encodeURIComponent(a.dataset.arkusz);
-  a.addEventListener("click", ()=>{
+  a.addEventListener("click", () => {
     document.getElementById("pageLoader").classList.add("active");
   });
 });
-</script>
-<script>
+
+/* ===== SERVICE WORKER ===== */
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
@@ -205,6 +200,3 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
-
-
-
