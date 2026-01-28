@@ -102,15 +102,20 @@ function norm(s){
     .toLowerCase();
 }
 
-/* ================= MAIN LOAD ================= */
-Promise.all([
-  fetch(`${API_URL}?arkusz=API_VIEW`).then(r=>r.json()).catch(()=>({data:[]})),
-  fetch(`${API_URL}?arkusz=API_DODATKOWE`).then(r=>r.json()).catch(()=>({data:[]})),
-  fetch(`${API_URL}?api=boje`).then(r=>r.json()).catch(()=>[])
-])
-.then(([baseRes, extraRes, bojeRows]) => {
+/* ================= CACHE FIRST ================= */
+function getCache(){
+  try {
+    return {
+      view: JSON.parse(localStorage.getItem("api_view") || "null"),
+      extra: JSON.parse(localStorage.getItem("api_extra") || "null"),
+      boje: JSON.parse(localStorage.getItem("api_boje") || "null")
+    };
+  } catch {
+    return {};
+  }
+}
 
-  /* ===== GENERALKA ===== */
+function renderAll(baseRes, extraRes, bojeRows){
   const baseRows = (baseRes.data || []).filter(r =>
     norm(r.KATEGORIA) === norm(CATEGORY)
   );
@@ -121,13 +126,33 @@ Promise.all([
 
   buildGeneralka([...baseRows, ...extraRows]);
 
-  /* ===== BOJE ===== */
   const filteredBoje = (bojeRows || []).filter(r =>
     norm(r.kategoria) === norm(CATEGORY) ||
     norm(r.kategoria_dodatkowa) === norm(CATEGORY)
   );
 
   buildBoje(filteredBoje);
+}
+
+/* ===== 1️⃣ render z cache (jeśli jest) ===== */
+const cache = getCache();
+if(cache.view && cache.extra && cache.boje){
+  renderAll(cache.view, cache.extra, cache.boje);
+}
+
+/* ===== 2️⃣ zawsze fetch w tle ===== */
+Promise.all([
+  fetch(`${API_URL}?arkusz=API_VIEW`).then(r=>r.json()).catch(()=>({data:[]})),
+  fetch(`${API_URL}?arkusz=API_DODATKOWE`).then(r=>r.json()).catch(()=>({data:[]})),
+  fetch(`${API_URL}?api=boje`).then(r=>r.json()).catch(()=>[])
+])
+.then(([baseRes, extraRes, bojeRows]) => {
+
+  localStorage.setItem("api_view", JSON.stringify(baseRes));
+  localStorage.setItem("api_extra", JSON.stringify(extraRes));
+  localStorage.setItem("api_boje", JSON.stringify(bojeRows));
+
+  renderAll(baseRes, extraRes, bojeRows);
 })
 .catch(err => {
   console.error("Błąd ładowania:", err);
