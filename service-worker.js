@@ -8,6 +8,7 @@ function isApiRequest(url) {
       url.includes("arkusz=API_VIEW") ||
       url.includes("arkusz=API_DODATKOWE") ||
       url.includes("api=boje")
+      url.includes("settings=1")
     )
   );
 }
@@ -46,5 +47,6 @@ self.addEventListener("fetch", event => {
     )
   );
 });
+
 
 
