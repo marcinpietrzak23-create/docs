@@ -177,18 +177,17 @@ fetch(`${API_URL}?settings=1`)
 /* ===== PRELOAD API (W TLE, NIE BLOKUJE) ===== */
 (function preloadAll(){
   try {
-    Promise.all([
-      fetch(`${API_URL}?arkusz=API_VIEW`),
-      fetch(`${API_URL}?arkusz=API_DODATKOWE`),
-      fetch(`${API_URL}?api=boje`)
-    ]).then(responses => Promise.all(responses.map(r=>r.json())))
-      .then(([view, extra, boje])=>{
-        localStorage.setItem("api_view", JSON.stringify(view));
-        localStorage.setItem("api_extra", JSON.stringify(extra));
-        localStorage.setItem("api_boje", JSON.stringify(boje));
-      });
+    [
+      `${API_URL}?settings=1`,
+      `${API_URL}?arkusz=API_VIEW`,
+      `${API_URL}?arkusz=API_DODATKOWE`,
+      `${API_URL}?api=boje`
+    ].forEach(url => {
+      fetch(url).catch(()=>{});
+    });
   } catch(e){}
 })();
+</script>
 
 /* ===== NAV + LOADER ===== */
 document.querySelectorAll("a[data-arkusz]").forEach(a=>{
@@ -206,5 +205,6 @@ if ("serviceWorker" in navigator) {
 
 </body>
 </html>
+
 
 
