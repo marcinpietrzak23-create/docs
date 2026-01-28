@@ -45,15 +45,15 @@ const params = new URLSearchParams(location.search);
 const CATEGORY = decodeURIComponent(params.get("arkusz") || "");
 document.getElementById("categoryTitle").textContent = CATEGORY;
 
-/* ================= LIVE ================= */
+/* ================= LIVE (SETTINGS) ================= */
 fetch(API_URL)
-  .then(r=>r.json())
-  .then(res=>{
-    const btn=document.getElementById("liveLink");
-    if(res?.settings?.live_url){
-      btn.href=res.settings.live_url;
-      btn.textContent=res.settings.live_text||"🔴 LIVE";
-      btn.style.display="inline-block";
+  .then(r => r.json())
+  .then(res => {
+    const btn = document.getElementById("liveLink");
+    if (res?.settings?.live_url) {
+      btn.href = res.settings.live_url;
+      btn.textContent = res.settings.live_text || "🔴 LIVE";
+      btn.style.display = "inline-block";
     }
   });
 
