@@ -396,3 +396,46 @@ th {
   margin-top: 50px;
   color: #f1f5f9;
 }
+/* =========================
+   TABLE PAGE – NADPISANIA MINIMALNE
+========================= */
+
+/* panel tabeli */
+.table-page .table-panel {
+  background: linear-gradient(135deg, #0b1c2d 0%, #102a43 100%);
+  color: #ffffff;
+}
+
+/* filtr – tylko korekta szerokości */
+.table-page #filterInput {
+  max-width: 420px;
+}
+
+/* tabela – tylko kolory, bez ruszania layoutu */
+.table-page th {
+  background: #102a43;
+  color: #ffffff;
+}
+
+.table-page td {
+  color: #ffffff;
+  border-bottom-color: #2a3f55;
+}
+
+/* hover */
+.table-page tbody tr:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+/* TOP 3 */
+.table-page tbody tr:nth-child(1) {
+  background: linear-gradient(90deg, rgba(255,215,0,0.25), transparent);
+  font-weight: bold;
+}
+.table-page tbody tr:nth-child(2) {
+  background: linear-gradient(90deg, rgba(192,192,192,0.25), transparent);
+}
+.table-page tbody tr:nth-child(3) {
+  background: linear-gradient(90deg, rgba(205,127,50,0.25), transparent);
+}
+
