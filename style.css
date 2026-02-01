@@ -438,4 +438,71 @@ th {
 .table-page tbody tr:nth-child(3) {
   background: linear-gradient(90deg, rgba(205,127,50,0.25), transparent);
 }
+/* =========================================================
+   ====== INDEX PAGE – KATEGORIE (KOSMETYKA) ======
+   Nadpisania tylko dla strony głównej
+========================================================= */
+
+/* Sekcje kategorii */
+.page .panel .section {
+  width: 100%;
+  text-align: left;
+  margin-bottom: 60px;
+  padding-left: 24px;
+  border-left: 3px solid rgba(255,255,255,0.15);
+}
+
+/* Nagłówki sekcji */
+.page .panel .section h2 {
+  margin-bottom: 24px;
+  color: #f8fafc;
+  letter-spacing: 0.5px;
+}
+
+/* Karty – wyrównanie do lewej */
+.page .panel .cards {
+  justify-content: flex-start;
+}
+
+/* Kafle kategorii */
+.page .panel .split-button {
+  background: linear-gradient(135deg, #071a2a 0%, #0b2a45 100%);
+  color: #f8fafc;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+
+/* Górna linia (PL) */
+.page .panel .split-button .top {
+  background: transparent;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+/* Dolna linia (EN) */
+.page .panel .split-button .bottom {
+  background: transparent;
+  color: #9fb4c8;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Hover – delikatne podświetlenie */
+.page .panel .split-button:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.25),
+    0 12px 28px rgba(0,0,0,0.45);
+  background: linear-gradient(135deg, #0b2a45 0%, #103a5e 100%);
+}
+
+/* Hover – tekst */
+.page .panel .split-button:hover .top {
+  color: #ffffff;
+}
+
+.page .panel .split-button:hover .bottom {
+  color: #dbeafe;
+}
+
 
