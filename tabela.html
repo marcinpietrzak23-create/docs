@@ -75,8 +75,7 @@
 /* ================= CONFIG ================= */
 const API_URL = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
 const params = new URLSearchParams(location.search);
-const CATEGORY = decodeURIComponent(params.get("arkusz") || "");
-document.getElementById("categoryTitle").textContent = CATEGORY;
+const CATEGORY_KEY = decodeURIComponent(params.get("arkusz") || "");
 
 /* ================= HELPERS ================= */
 function norm(s){
@@ -87,93 +86,83 @@ function norm(s){
     .toLowerCase();
 }
 
-/* ================= SETTINGS – KOLEJNOŚĆ KONKURENCJI ================= */
+/* ================= GLOBAL STATE ================= */
 let COMP_ORDER = [];
+let CATEGORY_LABEL = "Wyniki: " + CATEGORY_KEY;
 
-fetch(`${API_URL}?settings=1`)
-  .then(r=>r.json())
-  .then(res=>{
-    const s = res?.settings || {};
+/* ================= LOAD ALL ================= */
+async function loadAll(){
 
-    Object.keys(s)
-      .map(k => k.trim())
-      .filter(k => k.startsWith("competition_"))
-      .map(k => ({
-        idx: parseInt(k.replace("competition_",""),10),
-        key: s[k]
-      }))
-      .filter(o => o.key)
-      .sort((a,b)=>a.idx-b.idx)
-      .forEach(o => COMP_ORDER.push(o.key));
+  /* ---- SETTINGS FIRST ---- */
+  const settingsRes = await fetch(`${API_URL}?settings=1`).then(r=>r.json());
+  const s = settingsRes?.settings || {};
 
-    const btn=document.getElementById("liveLink");
-    if(s.live_url){
-      btn.href=s.live_url;
-      btn.textContent=s.live_text||"🔴 LIVE";
-      btn.style.display="inline-block";
-    }
-  })
-  .catch(()=>{});
-
-/* ================= CACHE FIRST ================= */
-function getCache(){
-  try {
-    return {
-      view: JSON.parse(localStorage.getItem("api_view")||"null"),
-      extra: JSON.parse(localStorage.getItem("api_extra")||"null"),
-      boje: JSON.parse(localStorage.getItem("api_boje")||"null")
-    };
-  } catch {
-    return {};
+  if(s[CATEGORY_KEY]){
+    CATEGORY_LABEL = "Wyniki: " + s[CATEGORY_KEY];
   }
-}
+  document.getElementById("categoryTitle").textContent = CATEGORY_LABEL;
 
-function renderAll(baseRes, extraRes, bojeRows){
-  const baseRows=(baseRes.data||[]).filter(r=>norm(r.KATEGORIA_PODSTAWOWA||r.KATEGORIA)===norm(CATEGORY));
-  const extraRows=(extraRes.data||[]).filter(r=>norm(r.KATEGORIA_DODATKOWA)===norm(CATEGORY));
-  buildGeneralka([...baseRows,...extraRows]);
+  Object.keys(s)
+    .filter(k=>k.startsWith("competition_"))
+    .map(k=>({ idx:parseInt(k.replace("competition_",""),10), key:s[k] }))
+    .filter(o=>o.key)
+    .sort((a,b)=>a.idx-b.idx)
+    .forEach(o=>COMP_ORDER.push(o.key));
 
-  const filteredBoje=(bojeRows||[]).filter(r =>
-    norm(r.kategoria)===norm(CATEGORY) ||
-    norm(r.kategoria_dodatkowa)===norm(CATEGORY)
-  );
+  const btn=document.getElementById("liveLink");
+  if(s.live_url){
+    btn.href=s.live_url;
+    btn.textContent=s.live_text||"🔴 LIVE";
+    btn.style.display="inline-block";
+  }
 
-  buildBoje(filteredBoje);
-}
+  /* ---- CACHE ---- */
+  let cacheView=null, cacheExtra=null, cacheBoje=null;
+  try{
+    cacheView=JSON.parse(localStorage.getItem("api_view"));
+    cacheExtra=JSON.parse(localStorage.getItem("api_extra"));
+    cacheBoje=JSON.parse(localStorage.getItem("api_boje"));
+  }catch{}
 
-/* ===== render z cache ===== */
-const cache=getCache();
-if(cache.view && cache.extra && cache.boje){
-  renderAll(cache.view, cache.extra, cache.boje);
-}
+  if(cacheView && cacheExtra && cacheBoje){
+    renderAll(cacheView, cacheExtra, cacheBoje);
+  }
 
-/* ===== fetch w tle ===== */
-Promise.all([
-  fetch(`${API_URL}?arkusz=API_VIEW`).then(r=>r.json()).catch(()=>({data:[]})),
-  fetch(`${API_URL}?arkusz=API_DODATKOWE`).then(r=>r.json()).catch(()=>({data:[]})),
-  fetch(`${API_URL}?api=boje`).then(r=>r.json()).catch(()=>[])
-])
-.then(([view,extra,boje])=>{
+  /* ---- FETCH API ---- */
+  const [view,extra,boje] = await Promise.all([
+    fetch(`${API_URL}?arkusz=API_VIEW`).then(r=>r.json()).catch(()=>({data:[]})),
+    fetch(`${API_URL}?arkusz=API_DODATKOWE`).then(r=>r.json()).catch(()=>({data:[]})),
+    fetch(`${API_URL}?api=boje`).then(r=>r.json()).catch(()=>[])
+  ]);
+
   localStorage.setItem("api_view",JSON.stringify(view));
   localStorage.setItem("api_extra",JSON.stringify(extra));
   localStorage.setItem("api_boje",JSON.stringify(boje));
+
   renderAll(view,extra,boje);
-})
-.finally(()=>{
+
   document.getElementById("loader").style.display="none";
   document.getElementById("content").style.display="block";
-});
+}
+
+/* ================= RENDER ================= */
+function renderAll(baseRes, extraRes, bojeRows){
+  const baseRows=(baseRes.data||[]).filter(r=>norm(r.KATEGORIA_PODSTAWOWA||r.KATEGORIA)===norm(CATEGORY_KEY));
+  const extraRows=(extraRes.data||[]).filter(r=>norm(r.KATEGORIA_DODATKOWA)===norm(CATEGORY_KEY));
+  buildGeneralka([...baseRows,...extraRows]);
+
+  const filteredBoje=(bojeRows||[]).filter(r =>
+    norm(r.kategoria)===norm(CATEGORY_KEY) ||
+    norm(r.kategoria_dodatkowa)===norm(CATEGORY_KEY)
+  );
+  buildBoje(filteredBoje);
+}
 
 /* ================= GENERALKA ================= */
 function buildGeneralka(rows){
   if(!rows.length) return;
 
-  const comps = COMP_ORDER.length
-    ? COMP_ORDER
-    : [...new Set(rows.map(r=>r.KONKURENCJA))];
-
   const byAth={};
-
   rows.forEach(r=>{
     if(!byAth[r.ZAWODNIK]){
       byAth[r.ZAWODNIK]={
@@ -188,34 +177,27 @@ function buildGeneralka(rows){
   });
 
   document.querySelector("#generalka thead tr").innerHTML=`
-    <th>M-ce</th>
-    <th>Zawodnik</th>
-    <th>Klub</th>
-    <th>Waga</th>
-    <th>SUMA</th>
-    ${comps.map(c=>`<th>${c}</th>`).join("")}
+    <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th><th>SUMA</th>
+    ${COMP_ORDER.map(c=>`<th>${c}</th>`).join("")}
   `;
 
   const tbody=document.querySelector("#generalka tbody");
   tbody.innerHTML="";
-
-  Object.values(byAth)
-    .sort((a,b)=>a.sum-b.sum)
-    .forEach((r,i)=>{
-      tbody.insertAdjacentHTML("beforeend",`
-        <tr>
-          <td>${i+1}</td>
-          <td>${r.name}</td>
-          <td>${r.klub}</td>
-          <td>${r.waga}</td>
-          <td>${r.sum}</td>
-          ${comps.map(c=>`<td>${r.pts[c] ?? "-"}</td>`).join("")}
-        </tr>
-      `);
-    });
+  Object.values(byAth).sort((a,b)=>a.sum-b.sum).forEach((r,i)=>{
+    tbody.insertAdjacentHTML("beforeend",`
+      <tr>
+        <td>${i+1}</td>
+        <td>${r.name}</td>
+        <td>${r.klub}</td>
+        <td>${r.waga}</td>
+        <td>${r.sum}</td>
+        ${COMP_ORDER.map(c=>`<td>${r.pts[c] ?? "-"}</td>`).join("")}
+      </tr>
+    `);
+  });
 }
 
-/* ================= BOJE – FINAL ================= */
+/* ================= BOJE ================= */
 function buildBoje(rows){
   const box=document.getElementById("boje");
   box.innerHTML="";
@@ -224,72 +206,55 @@ function buildBoje(rows){
     return;
   }
 
-  // konkurencja → zawodnik → agregacja
-  const byComp = {};
+  const byComp={};
   rows.forEach(r=>{
     if(!byComp[r.konkurencja]) byComp[r.konkurencja]={};
-
     if(!byComp[r.konkurencja][r.zawodnik]){
       byComp[r.konkurencja][r.zawodnik]={
-        zawodnik: r.zawodnik,
-        klub: r.klub,
-        waga: r.waga,
-        proby: [],
-        odciezar: r.odciezar,
-        powtorzenia: r.powtorzenia,
-        wynik: r.wynik
+        zawodnik:r.zawodnik,
+        klub:r.klub,
+        waga:r.waga,
+        proby:[],
+        odciezar:r.odciezar,
+        powtorzenia:r.powtorzenia,
+        wynik:r.wynik
       };
     }
-
-    // tylko STANDARD ma próby
     if(r.proba){
-      byComp[r.konkurencja][r.zawodnik].proby.push({
-        nr: r.proba,
-        val: r.wynik
-      });
+      byComp[r.konkurencja][r.zawodnik].proby.push({nr:r.proba,val:r.wynik});
     }
   });
 
-  const order = COMP_ORDER.length ? COMP_ORDER : Object.keys(byComp);
-
-  order.forEach(comp=>{
-    const athletes = byComp[comp];
+  COMP_ORDER.forEach(comp=>{
+    const athletes=byComp[comp];
     if(!athletes) return;
 
-    const list = Object.values(athletes);
+    const list=Object.values(athletes);
 
-    // SORTOWANIE
     if(/TIEBREAK/i.test(comp)){
-      list.sort((a,b)=>a.wynik - b.wynik);
-    }
-    else if(/SN/i.test(comp)){
-      list.sort((a,b)=>b.wynik - a.wynik);
-    }
-    else {
+      list.sort((a,b)=>a.wynik-b.wynik);
+    } else if(/SN/i.test(comp)){
+      list.sort((a,b)=>b.wynik-a.wynik);
+    } else {
       list.forEach(a=>{
-        const vals = a.proby.map(p=>p.val);
-        a.max = Math.max(...vals);
-        a.pct = a.waga ? a.max / a.waga : 0;
+        const vals=a.proby.map(p=>p.val);
+        a.max=Math.max(...vals);
+        a.pct=a.waga?a.max/a.waga:0;
       });
-      list.sort((a,b)=>b.pct - a.pct);
+      list.sort((a,b)=>b.pct-a.pct);
     }
 
     box.insertAdjacentHTML("beforeend",`<h2>🏋️ ${comp}</h2>`);
 
     let html=`<table><thead><tr>
-      <th>M-ce</th>
-      <th>Zawodnik</th>
-      <th>Klub</th>
-      <th>Waga</th>`;
+      <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th>`;
 
     if(/TIEBREAK/i.test(comp)){
       html+=`<th>Punkty</th>`;
-    }
-    else if(/SN/i.test(comp)){
+    } else if(/SN/i.test(comp)){
       html+=`<th>Odważnik</th><th>Powt.</th><th>Wynik</th>`;
-    }
-    else {
-      html+=`<th>Próba 1</th><th>Próba 2</th><th>Próba 3</th><th>MAX</th><th>%MC</th>`;
+    } else {
+      html+=`<th>P1</th><th>P2</th><th>P3</th><th>MAX</th><th>%MC</th>`;
     }
 
     html+=`</tr></thead><tbody>`;
@@ -303,12 +268,10 @@ function buildBoje(rows){
 
       if(/TIEBREAK/i.test(comp)){
         html+=`<td>${a.wynik}</td>`;
-      }
-      else if(/SN/i.test(comp)){
+      } else if(/SN/i.test(comp)){
         html+=`<td>${a.odciezar}</td><td>${a.powtorzenia}</td><td>${a.wynik}</td>`;
-      }
-      else {
-        const p = a.proby.sort((x,y)=>x.nr-y.nr).map(x=>x.val);
+      } else {
+        const p=a.proby.sort((x,y)=>x.nr-y.nr).map(x=>x.val);
         html+=`
           <td>${p[0]||"-"}</td>
           <td>${p[1]||"-"}</td>
@@ -316,7 +279,6 @@ function buildBoje(rows){
           <td>${a.max}</td>
           <td>${(a.pct*100).toFixed(2)}%</td>`;
       }
-
       html+=`</tr>`;
     });
 
@@ -327,9 +289,9 @@ function buildBoje(rows){
 
 /* ================= FILTER ================= */
 document.getElementById("filterInput").addEventListener("input",e=>{
-  const q = norm(e.target.value);
+  const q=norm(e.target.value);
   document.querySelectorAll("#generalka tbody tr, #boje tbody tr").forEach(tr=>{
-    tr.style.display = tr.textContent.toLowerCase().includes(q) ? "" : "none";
+    tr.style.display=tr.textContent.toLowerCase().includes(q)?"":"none";
   });
 });
 
@@ -337,12 +299,9 @@ document.getElementById("filterInput").addEventListener("input",e=>{
 if("serviceWorker"in navigator){
   navigator.serviceWorker.register("service-worker.js");
 }
-window.addEventListener("pageshow",e=>{
-  if(e.persisted){
-    document.getElementById("loader").style.display="none";
-    document.getElementById("content").style.display="block";
-  }
-});
+
+/* ================= START ================= */
+loadAll();
 </script>
 
 </body>
