@@ -196,7 +196,16 @@ document.querySelectorAll("a[data-arkusz]").forEach(a => {
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("service-worker.js");
 }
+  window.addEventListener("pageshow", function (e) {
+  if (e.persisted) {
+    const loader = document.getElementById("pageLoader");
+    if (loader) {
+      loader.classList.remove("active");
+    }
+  }
+});
 </script>
 
 </body>
 </html>
+
