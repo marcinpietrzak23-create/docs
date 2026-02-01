@@ -172,19 +172,27 @@ console.log("BASE ROWS:", baseRows);
 function buildGeneralka(rows){
   if(!rows.length) return;
 
-  const byAth={};
-  rows.forEach(r=>{
-    if(!byAth[r.ZAWODNIK]){
-      byAth[r.ZAWODNIK]={
-        name:r.ZAWODNIK,
-        klub:r.KLUB||"-",
-        waga:r.WAGA||"-",
-        sum:r.PKT_SUM,
-        pts:{}
-      };
-    }
-    byAth[r.ZAWODNIK].pts[r.KONKURENCJA]=r.PKT;
-  });
+ const byAth = {};
+rows.forEach(r => {
+  if (!byAth[r.ZAWODNIK]) {
+    byAth[r.ZAWODNIK] = {
+      name: r.ZAWODNIK,
+      klub: r.KLUB || "-",
+      waga: r.WAGA || "-",
+      sum: 0,
+      pts: {}
+    };
+  }
+
+  // zawsze bierzemy najwyższe PKT_SUM dla zawodnika
+  byAth[r.ZAWODNIK].sum = Math.max(
+    byAth[r.ZAWODNIK].sum,
+    r.PKT_SUM || 0
+  );
+
+  byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = r.PKT;
+});
+
 
   document.querySelector("#generalka thead tr").innerHTML=`
     <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th><th>SUMA</th>
@@ -316,5 +324,6 @@ loadAll();
 
 </body>
 </html>
+
 
 
