@@ -50,6 +50,9 @@
     <a href="index.html">← Powrót</a>
     <h1 id="categoryTitle"></h1>
 
+    <!-- NEW: filtr -->
+    <input id="filterInput" placeholder="Filtruj po zawodniku lub klubie…" />
+
     <div id="loader">
       <div class="spinner"></div>
       <div>Ładowanie wyników…</div>
@@ -85,14 +88,31 @@ function norm(s){
     .toLowerCase();
 }
 
-/* ================= LIVE ================= */
+/* ================= SETTINGS – KOLEJNOŚĆ KONKURENCJI ================= */
+// NEW
+let COMP_ORDER = [];
+
 fetch(`${API_URL}?settings=1`)
   .then(r=>r.json())
   .then(res=>{
+    const s = res?.settings || {};
+
+    Object.keys(s)
+      .map(k => k.trim())
+      .filter(k => k.startsWith("competition_"))
+      .map(k => ({
+        idx: parseInt(k.replace("competition_",""),10),
+        key: s[k]
+      }))
+      .filter(o => o.key)
+      .sort((a,b)=>a.idx-b.idx)
+      .forEach(o => COMP_ORDER.push(o.key));
+
+    // LIVE (jak było)
     const btn=document.getElementById("liveLink");
-    if(res?.settings?.live_url){
-      btn.href=res.settings.live_url;
-      btn.textContent=res.settings.live_text||"🔴 LIVE";
+    if(s.live_url){
+      btn.href=s.live_url;
+      btn.textContent=s.live_text||"🔴 LIVE";
       btn.style.display="inline-block";
     }
   })
@@ -112,7 +132,7 @@ function getCache(){
 }
 
 function renderAll(baseRes, extraRes, bojeRows){
-  const baseRows=(baseRes.data||[]).filter(r=>norm(r.KATEGORIA)===norm(CATEGORY));
+  const baseRows=(baseRes.data||[]).filter(r=>norm(r.KATEGORIA_PODSTAWOWA||r.KATEGORIA)===norm(CATEGORY));
   const extraRows=(extraRes.data||[]).filter(r=>norm(r.KATEGORIA_DODATKOWA)===norm(CATEGORY));
   buildGeneralka([...baseRows,...extraRows]);
 
@@ -151,7 +171,10 @@ Promise.all([
 function buildGeneralka(rows){
   if(!rows.length) return;
 
-  const comps=[...new Set(rows.map(r=>r.KONKURENCJA))];
+  const comps = COMP_ORDER.length
+    ? COMP_ORDER
+    : [...new Set(rows.map(r=>r.KONKURENCJA))];
+
   const byAth={};
 
   rows.forEach(r=>{
@@ -168,23 +191,31 @@ function buildGeneralka(rows){
   });
 
   document.querySelector("#generalka thead tr").innerHTML=`
-    <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th>
-    ${comps.map(c=>`<th>PKT ${c}</th>`).join("")}
-    <th>SUMA</th>`;
+    <th>M-ce</th>
+    <th>Zawodnik</th>
+    <th>Klub</th>
+    <th>Waga</th>
+    <th>SUMA</th>
+    ${comps.map(c=>`<th>${c}</th>`).join("")}
+  `;
 
   const tbody=document.querySelector("#generalka tbody");
   tbody.innerHTML="";
-  Object.values(byAth).sort((a,b)=>a.sum-b.sum).forEach((r,i)=>{
-    tbody.insertAdjacentHTML("beforeend",`
-      <tr>
-        <td>${i+1}</td>
-        <td>${r.name}</td>
-        <td>${r.klub}</td>
-        <td>${r.waga}</td>
-        ${comps.map(c=>`<td>${r.pts[c]??"-"}</td>`).join("")}
-        <td>${r.sum}</td>
-      </tr>`);
-  });
+
+  Object.values(byAth)
+    .sort((a,b)=>a.sum-b.sum)
+    .forEach((r,i)=>{
+      tbody.insertAdjacentHTML("beforeend",`
+        <tr>
+          <td>${i+1}</td>
+          <td>${r.name}</td>
+          <td>${r.klub}</td>
+          <td>${r.waga}</td>
+          <td>${r.sum}</td>
+          ${comps.map(c=>`<td>${r.pts[c] ?? "-"}</td>`).join("")}
+        </tr>
+      `);
+    });
 }
 
 /* ================= BOJE ================= */
@@ -202,9 +233,16 @@ function buildBoje(rows){
     byComp[r.konkurencja].push(r);
   });
 
-  Object.keys(byComp).forEach(comp=>{
+  const order = COMP_ORDER.length ? COMP_ORDER : Object.keys(byComp);
+
+  order.forEach(comp=>{
+    const data = byComp[comp];
+    if(!data) return;
+
+    // NEW: sort po %MC malejąco
+    data.sort((a,b)=>(b["%MC"]||0)-(a["%MC"]||0));
+
     box.insertAdjacentHTML("beforeend",`<h2>🏋️ ${comp}</h2>`);
-    const data=byComp[comp];
 
     let html=`<table><thead><tr>
       <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th>`;
@@ -214,46 +252,28 @@ function buildBoje(rows){
     } else if(/SN/i.test(comp)){
       html+=`<th>Odważnik</th><th>Powt.</th><th>Wynik</th>`;
     } else {
-      html+=`<th>P1</th><th>P2</th><th>P3</th><th>MAX</th><th>% MC</th>`;
+      html+=`<th>Wynik</th><th>%MC</th>`;
     }
 
     html+=`</tr></thead><tbody>`;
 
-    const byAth={};
-    data.forEach(r=>{
-      if(!byAth[r.zawodnik]) byAth[r.zawodnik]=[];
-      byAth[r.zawodnik].push(r);
-    });
-
-    Object.entries(byAth).forEach(([name,arr],i)=>{
-      const base=arr[0];
+    data.forEach((r,i)=>{
+      const pct = r["%MC"]!=null ? (r["%MC"]*100).toFixed(2)+"%" : "-";
 
       html+=`<tr>
         <td>${i+1}</td>
-        <td>${name}</td>
-        <td>${base.klub ?? "-"}</td>
-        <td>${base.waga && base.waga > 1 ? base.waga : "-"}</td>`;
+        <td>${r.zawodnik}</td>
+        <td>${r.klub ?? "-"}</td>
+        <td>${r.waga && r.waga > 1 ? r.waga : "-"}</td>`;
 
       if(/^TIEBREAK$/i.test(comp)){
-        html+=`<td>${base.wynik}</td>`;
+        html+=`<td>${r.wynik}</td>`;
       }
       else if(/SN/i.test(comp)){
-        html+=`<td>${base.odciezar}</td><td>${base.powtorzenia}</td><td>${base.wynik}</td>`;
+        html+=`<td>${r.odciezar}</td><td>${r.powtorzenia}</td><td>${r.wynik}</td>`;
       }
       else {
-        const p=arr.sort((a,b)=>a.proba-b.proba).map(x=>x.wynik);
-        const max=Math.max(...p);
-        const pct =
-          base.waga && base.waga > 1
-            ? (max / base.waga * 100).toFixed(2)
-            : "-";
-
-        html+=`
-          <td>${p[0]??"-"}</td>
-          <td>${p[1]??"-"}</td>
-          <td>${p[2]??"-"}</td>
-          <td>${max}</td>
-          <td>${pct}</td>`;
+        html+=`<td>${r.wynik}</td><td>${pct}</td>`;
       }
 
       html+=`</tr>`;
@@ -263,6 +283,15 @@ function buildBoje(rows){
     box.insertAdjacentHTML("beforeend",html);
   });
 }
+
+/* ================= FILTER ================= */
+// NEW
+document.getElementById("filterInput").addEventListener("input",e=>{
+  const q = norm(e.target.value);
+  document.querySelectorAll("#generalka tbody tr, #boje tbody tr").forEach(tr=>{
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? "" : "none";
+  });
+});
 
 /* ================= SERVICE WORKER ================= */
 if("serviceWorker"in navigator){
