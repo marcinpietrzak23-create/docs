@@ -152,7 +152,7 @@ function renderAll(baseRes, extraRes, bojeRows){
       norm(r.KATEGORIA_PODSTAWOWA)===norm(CATEGORY_KEY) ||
       norm(r.KATEGORIA)===norm(CATEGORY_KEY)
     );
-
+console.log("BASE ROWS:", baseRows);
   const extraRows=(extraRes.data||[])
     .filter(r=>norm(r.KATEGORIA_DODATKOWA)===norm(CATEGORY_KEY));
 
@@ -316,4 +316,5 @@ loadAll();
 
 </body>
 </html>
+
 
