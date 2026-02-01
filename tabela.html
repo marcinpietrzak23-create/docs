@@ -50,7 +50,6 @@
     <a href="index.html">← Powrót</a>
     <h1 id="categoryTitle"></h1>
 
-    <!-- NEW: filtr -->
     <input id="filterInput" placeholder="Filtruj po zawodniku lub klubie…" />
 
     <div id="loader">
@@ -89,7 +88,6 @@ function norm(s){
 }
 
 /* ================= SETTINGS – KOLEJNOŚĆ KONKURENCJI ================= */
-// NEW
 let COMP_ORDER = [];
 
 fetch(`${API_URL}?settings=1`)
@@ -108,7 +106,6 @@ fetch(`${API_URL}?settings=1`)
       .sort((a,b)=>a.idx-b.idx)
       .forEach(o => COMP_ORDER.push(o.key));
 
-    // LIVE (jak było)
     const btn=document.getElementById("liveLink");
     if(s.live_url){
       btn.href=s.live_url;
@@ -218,7 +215,7 @@ function buildGeneralka(rows){
     });
 }
 
-/* ================= BOJE ================= */
+/* ================= BOJE – FINAL ================= */
 function buildBoje(rows){
   const box=document.getElementById("boje");
   box.innerHTML="";
@@ -227,53 +224,97 @@ function buildBoje(rows){
     return;
   }
 
-  const byComp={};
+  // konkurencja → zawodnik → agregacja
+  const byComp = {};
   rows.forEach(r=>{
-    if(!byComp[r.konkurencja]) byComp[r.konkurencja]=[];
-    byComp[r.konkurencja].push(r);
+    if(!byComp[r.konkurencja]) byComp[r.konkurencja]={};
+
+    if(!byComp[r.konkurencja][r.zawodnik]){
+      byComp[r.konkurencja][r.zawodnik]={
+        zawodnik: r.zawodnik,
+        klub: r.klub,
+        waga: r.waga,
+        proby: [],
+        odciezar: r.odciezar,
+        powtorzenia: r.powtorzenia,
+        wynik: r.wynik
+      };
+    }
+
+    // tylko STANDARD ma próby
+    if(r.proba){
+      byComp[r.konkurencja][r.zawodnik].proby.push({
+        nr: r.proba,
+        val: r.wynik
+      });
+    }
   });
 
   const order = COMP_ORDER.length ? COMP_ORDER : Object.keys(byComp);
 
   order.forEach(comp=>{
-    const data = byComp[comp];
-    if(!data) return;
+    const athletes = byComp[comp];
+    if(!athletes) return;
 
-    // NEW: sort po %MC malejąco
-    data.sort((a,b)=>(b["%MC"]||0)-(a["%MC"]||0));
+    const list = Object.values(athletes);
+
+    // SORTOWANIE
+    if(/TIEBREAK/i.test(comp)){
+      list.sort((a,b)=>a.wynik - b.wynik);
+    }
+    else if(/SN/i.test(comp)){
+      list.sort((a,b)=>b.wynik - a.wynik);
+    }
+    else {
+      list.forEach(a=>{
+        const vals = a.proby.map(p=>p.val);
+        a.max = Math.max(...vals);
+        a.pct = a.waga ? a.max / a.waga : 0;
+      });
+      list.sort((a,b)=>b.pct - a.pct);
+    }
 
     box.insertAdjacentHTML("beforeend",`<h2>🏋️ ${comp}</h2>`);
 
     let html=`<table><thead><tr>
-      <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th>`;
+      <th>M-ce</th>
+      <th>Zawodnik</th>
+      <th>Klub</th>
+      <th>Waga</th>`;
 
-    if(/^TIEBREAK$/i.test(comp)){
-      html+=`<th>Wynik</th>`;
-    } else if(/SN/i.test(comp)){
+    if(/TIEBREAK/i.test(comp)){
+      html+=`<th>Punkty</th>`;
+    }
+    else if(/SN/i.test(comp)){
       html+=`<th>Odważnik</th><th>Powt.</th><th>Wynik</th>`;
-    } else {
-      html+=`<th>Wynik</th><th>%MC</th>`;
+    }
+    else {
+      html+=`<th>Próba 1</th><th>Próba 2</th><th>Próba 3</th><th>MAX</th><th>%MC</th>`;
     }
 
     html+=`</tr></thead><tbody>`;
 
-    data.forEach((r,i)=>{
-      const pct = r["%MC"]!=null ? (r["%MC"]*100).toFixed(2)+"%" : "-";
-
+    list.forEach((a,i)=>{
       html+=`<tr>
         <td>${i+1}</td>
-        <td>${r.zawodnik}</td>
-        <td>${r.klub ?? "-"}</td>
-        <td>${r.waga && r.waga > 1 ? r.waga : "-"}</td>`;
+        <td>${a.zawodnik}</td>
+        <td>${a.klub||"-"}</td>
+        <td>${a.waga||"-"}</td>`;
 
-      if(/^TIEBREAK$/i.test(comp)){
-        html+=`<td>${r.wynik}</td>`;
+      if(/TIEBREAK/i.test(comp)){
+        html+=`<td>${a.wynik}</td>`;
       }
       else if(/SN/i.test(comp)){
-        html+=`<td>${r.odciezar}</td><td>${r.powtorzenia}</td><td>${r.wynik}</td>`;
+        html+=`<td>${a.odciezar}</td><td>${a.powtorzenia}</td><td>${a.wynik}</td>`;
       }
       else {
-        html+=`<td>${r.wynik}</td><td>${pct}</td>`;
+        const p = a.proby.sort((x,y)=>x.nr-y.nr).map(x=>x.val);
+        html+=`
+          <td>${p[0]||"-"}</td>
+          <td>${p[1]||"-"}</td>
+          <td>${p[2]||"-"}</td>
+          <td>${a.max}</td>
+          <td>${(a.pct*100).toFixed(2)}%</td>`;
       }
 
       html+=`</tr>`;
@@ -285,7 +326,6 @@ function buildBoje(rows){
 }
 
 /* ================= FILTER ================= */
-// NEW
 document.getElementById("filterInput").addEventListener("input",e=>{
   const q = norm(e.target.value);
   document.querySelectorAll("#generalka tbody tr, #boje tbody tr").forEach(tr=>{
