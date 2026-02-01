@@ -147,16 +147,26 @@ async function loadAll(){
 
 /* ================= RENDER ================= */
 function renderAll(baseRes, extraRes, bojeRows){
-  const baseRows=(baseRes.data||[]).filter(r=>norm(r.KATEGORIA_PODSTAWOWA||r.KATEGORIA)===norm(CATEGORY_KEY));
-  const extraRows=(extraRes.data||[]).filter(r=>norm(r.KATEGORIA_DODATKOWA)===norm(CATEGORY_KEY));
+  const baseRows=(baseRes.data||[])
+    .filter(r =>
+      norm(r.KATEGORIA_PODSTAWOWA)===norm(CATEGORY_KEY) ||
+      norm(r.KATEGORIA)===norm(CATEGORY_KEY)
+    );
+
+  const extraRows=(extraRes.data||[])
+    .filter(r=>norm(r.KATEGORIA_DODATKOWA)===norm(CATEGORY_KEY));
+
   buildGeneralka([...baseRows,...extraRows]);
 
-  const filteredBoje=(bojeRows||[]).filter(r =>
-    norm(r.kategoria)===norm(CATEGORY_KEY) ||
-    norm(r.kategoria_dodatkowa)===norm(CATEGORY_KEY)
-  );
+  const filteredBoje=(bojeRows||[])
+    .filter(r =>
+      norm(r.kategoria)===norm(CATEGORY_KEY) ||
+      norm(r.kategoria_dodatkowa)===norm(CATEGORY_KEY)
+    );
+
   buildBoje(filteredBoje);
 }
+
 
 /* ================= GENERALKA ================= */
 function buildGeneralka(rows){
@@ -306,3 +316,4 @@ loadAll();
 
 </body>
 </html>
+
