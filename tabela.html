@@ -27,6 +27,15 @@
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+.generalka-hidden {
+  margin: 30px 0;
+  padding: 18px 20px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.08);
+  color: #f1f5f9;
+  text-align: center;
+  font-weight: bold;
+}
 </style>
 </head>
 
@@ -60,6 +69,11 @@
     <div id="content" style="display:none">
 
       <h2>🏆 Klasyfikacja generalna</h2>
+
+      <div id="generalkaInfo" class="generalka-hidden" style="display:none">
+        Klasyfikacja generalna zostanie opublikowana podczas rozpoczęcia dekoracji
+      </div>
+
       <table id="generalka">
         <thead><tr></tr></thead>
         <tbody></tbody>
@@ -89,6 +103,7 @@ function norm(s){
 /* ================= GLOBAL STATE ================= */
 let COMP_ORDER = [];
 let CATEGORY_LABEL = "Wyniki: " + CATEGORY_KEY;
+let SHOW_GENERALKA = true;
 
 /* ================= LOAD ALL ================= */
 async function loadAll(){
@@ -96,6 +111,8 @@ async function loadAll(){
   /* ---- SETTINGS FIRST ---- */
   const settingsRes = await fetch(`${API_URL}?settings=1`).then(r=>r.json());
   const s = settingsRes?.settings || {};
+
+  SHOW_GENERALKA = String(s.show_generalka ?? "1") === "1";
 
   if(s[CATEGORY_KEY]){
     CATEGORY_LABEL = "Wyniki: " + s[CATEGORY_KEY];
@@ -152,7 +169,7 @@ function renderAll(baseRes, extraRes, bojeRows){
       norm(r.KATEGORIA_PODSTAWOWA)===norm(CATEGORY_KEY) ||
       norm(r.KATEGORIA)===norm(CATEGORY_KEY)
     );
-console.log("BASE ROWS:", baseRows);
+
   const extraRows=(extraRes.data||[])
     .filter(r=>norm(r.KATEGORIA_DODATKOWA)===norm(CATEGORY_KEY));
 
@@ -167,32 +184,33 @@ console.log("BASE ROWS:", baseRows);
   buildBoje(filteredBoje);
 }
 
-
 /* ================= GENERALKA ================= */
 function buildGeneralka(rows){
   if(!rows.length) return;
 
- const byAth = {};
-rows.forEach(r => {
-  if (!byAth[r.ZAWODNIK]) {
-    byAth[r.ZAWODNIK] = {
-      name: r.ZAWODNIK,
-      klub: r.KLUB || "-",
-      waga: r.WAGA || "-",
-      sum: 0,
-      pts: {}
-    };
+  if(!SHOW_GENERALKA){
+    document.getElementById("generalka").style.display="none";
+    document.getElementById("generalkaInfo").style.display="block";
+    return;
   }
 
-  // zawsze bierzemy najwyższe PKT_SUM dla zawodnika
-  byAth[r.ZAWODNIK].sum = Math.max(
-    byAth[r.ZAWODNIK].sum,
-    r.PKT_SUM || 0
-  );
+  document.getElementById("generalka").style.display="";
+  document.getElementById("generalkaInfo").style.display="none";
 
-  byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = r.PKT;
-});
-
+  const byAth = {};
+  rows.forEach(r => {
+    if (!byAth[r.ZAWODNIK]) {
+      byAth[r.ZAWODNIK] = {
+        name: r.ZAWODNIK,
+        klub: r.KLUB || "-",
+        waga: r.WAGA || "-",
+        sum: 0,
+        pts: {}
+      };
+    }
+    byAth[r.ZAWODNIK].sum = Math.max(byAth[r.ZAWODNIK].sum, r.PKT_SUM || 0);
+    byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = r.PKT;
+  });
 
   document.querySelector("#generalka thead tr").innerHTML=`
     <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th><th>SUMA</th>
@@ -216,6 +234,7 @@ rows.forEach(r => {
 }
 
 /* ================= BOJE ================= */
+/* --- BEZ ZMIAN --- */
 function buildBoje(rows){
   const box=document.getElementById("boje");
   box.innerHTML="";
@@ -324,6 +343,3 @@ loadAll();
 
 </body>
 </html>
-
-
-
