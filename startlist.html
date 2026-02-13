@@ -168,12 +168,17 @@ function renderTable(category) {
 function exportPDF() {
 
   const element = document.getElementById("content");
+  const category = document.querySelector("#content h2")?.textContent || "lista-startowa";
 
   html2pdf()
     .set({
-      margin: 10,
-      filename: "lista-startowa.pdf",
-      html2canvas: { scale: 2 },
+      margin: [5, 5, 5, 5],
+      filename: category.replace(/\s+/g, "_") + ".pdf",
+      pagebreak: { mode: ["css", "legacy"] },
+      html2canvas: {
+        scale: 2,
+        scrollY: 0
+      },
       jsPDF: {
         unit: "mm",
         format: "a4",
@@ -183,6 +188,7 @@ function exportPDF() {
     .from(element)
     .save();
 }
+
 
 </script>
 
