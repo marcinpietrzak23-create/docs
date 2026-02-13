@@ -505,4 +505,74 @@ th {
   color: #dbeafe;
 }
 
+/* =========================================================
+   STARTLIST PAGE
+========================================================= */
+
+.startlist-page table {
+  background: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.startlist-page th {
+  background: #102a43;
+  color: #ffffff;
+  border-bottom: 1px solid #2a3f55;
+}
+
+.startlist-page td {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* hover */
+.startlist-page tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* tytuł kategorii */
+.startlist-page h2 {
+  margin-top: 30px;
+  margin-bottom: 14px;
+}
+
+/* tabs */
+.tabs button {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+}
+
+.tabs button:hover {
+  background: #f1f5f9;
+}
+
+/* ===== DRUK / PDF ===== */
+@media print {
+
+  body {
+    background: white;
+  }
+
+  .site-header,
+  .tabs,
+  .startlist-actions {
+    display: none !important;
+  }
+
+  .panel {
+    background: white;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  table {
+    font-size: 11px;
+  }
+
+  tr {
+    page-break-inside: avoid;
+  }
+}
+
 
