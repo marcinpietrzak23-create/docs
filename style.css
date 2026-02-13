@@ -575,7 +575,7 @@ th {
   }
 }
 /* =========================================================
-   STICKY TABLE HEADER (GLOBAL)
+   STICKY HEADER – WSZYSTKIE TABELE
 ========================================================= */
 
 table thead th {
@@ -583,6 +583,18 @@ table thead th {
   top: 0;
   z-index: 5;
 }
+
+/* jasne tabele */
+table thead th {
+  background: #eee;
+}
+
+/* ciemne tabele wyników */
+.table-page thead th {
+  background: #102a43;
+}
+
+
 
 
 
