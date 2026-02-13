@@ -166,6 +166,7 @@ function renderTable(category) {
 }
 
 function exportPDF() {
+
   const element = document.getElementById("content");
 
   html2pdf()
@@ -173,11 +174,16 @@ function exportPDF() {
       margin: 10,
       filename: "lista-startowa.pdf",
       html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+      jsPDF: {
+        unit: "mm",
+        format: "a4",
+        orientation: "landscape"
+      }
     })
     .from(element)
     .save();
 }
+
 </script>
 
 </body>
