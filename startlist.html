@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Listy startowe</title>
+
+<style>
+body {
+  font-family: Arial;
+  margin: 20px;
+}
+
+.tabs {
+  margin-bottom: 12px;
+}
+
+.tabs button {
+  padding: 8px 12px;
+  margin-right: 6px;
+  cursor: pointer;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 6px;
+}
+
+h2 {
+  margin-top: 10px;
+}
+
+.print-btn {
+  margin-top: 12px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Listy startowe</h1>
+
+<div class="tabs" id="tabs"></div>
+<div id="content"></div>
+
+<button class="print-btn" onclick="window.print()">Drukuj</button>
+
+<script>
+const API_URL =
+"https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec?api=startlist";
+
+let grouped = {};
+
+init();
+
+async function init() {
+  const res = await fetch(API_URL);
+  const data = await res.json();
+
+  grouped = groupByCategory(data);
+
+  renderTabs();
+  showFirst();
+}
+
+function groupByCategory(rows) {
+  const g = {};
+  rows.forEach(r => {
+    if (!g[r.kategoria]) g[r.kategoria] = [];
+    g[r.kategoria].push(r);
+  });
+  return g;
+}
+
+function renderTabs() {
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML = "";
+
+  Object.keys(grouped).forEach(cat => {
+    const btn = document.createElement("button");
+    btn.textContent = cat;
+    btn.onclick = () => renderTable(cat);
+    tabs.appendChild(btn);
+  });
+}
+
+function showFirst() {
+  const first = Object.keys(grouped)[0];
+  if (first) renderTable(first);
+}
+
+function renderTable(category) {
+
+  const rows = grouped[category];
+  const container = document.getElementById("content");
+
+  let html = `
+    <h2>${category}</h2>
+    <table>
+      <tr>
+        <th>LP</th>
+        <th>Zawodnik</th>
+        <th>Klub</th>
+        <th>Kategoria dodatkowa</th>
+        <th>Waga</th>
+      </tr>
+  `;
+
+  rows.forEach(r => {
+    html += `
+      <tr>
+        <td>${r.lp || ""}</td>
+        <td>${r.zawodnik || ""}</td>
+        <td>${r.klub || ""}</td>
+        <td>${r.kategoria_dodatkowa || ""}</td>
+        <td>${r.waga || ""}</td>
+      </tr>
+    `;
+  });
+
+  html += "</table>";
+  container.innerHTML = html;
+}
+</script>
+
+</body>
+</html>
