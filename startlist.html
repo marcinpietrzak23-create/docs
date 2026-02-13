@@ -95,7 +95,13 @@ function showFirst() {
 
 function renderTable(category) {
 
-  const rows = grouped[category];
+  const rows = [...grouped[category]];
+
+  // sortowanie alfabetyczne po zawodniku
+  rows.sort((a, b) =>
+    (a.zawodnik || "").localeCompare(b.zawodnik || "", "pl")
+  );
+
   const container = document.getElementById("content");
 
   let html = `
@@ -110,10 +116,10 @@ function renderTable(category) {
       </tr>
   `;
 
-  rows.forEach(r => {
+  rows.forEach((r, i) => {
     html += `
       <tr>
-        <td>${r.lp || ""}</td>
+        <td>${i + 1}</td>
         <td>${r.zawodnik || ""}</td>
         <td>${r.klub || ""}</td>
         <td>${r.kategoria_dodatkowa || ""}</td>
@@ -125,6 +131,7 @@ function renderTable(category) {
   html += "</table>";
   container.innerHTML = html;
 }
+
 </script>
 
 </body>
