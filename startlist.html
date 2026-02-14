@@ -195,6 +195,13 @@ function exportPDF() {
     .from(element)
     .save();
 }
+function saveWeight(zawodnik, waga) {
+
+  fetch(
+    "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec" +
+    `?api=saveWeight&zawodnik=${encodeURIComponent(zawodnik)}&waga=${waga}`
+  );
+}
 
 
 </script>
