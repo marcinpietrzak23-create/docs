@@ -156,7 +156,14 @@ function renderTable(category) {
         <td>${r.zawodnik || ""}</td>
         <td>${r.klub || ""}</td>
         <td>${r.kategoria_dodatkowa || ""}</td>
-        <td>${r.waga || ""}</td>
+        <td>
+  <input
+    type="number"
+    value="${r.waga || ""}"
+    style="width:70px"
+    onchange="saveWeight('${r.zawodnik}', this.value)"
+  >
+</td>
       </tr>
     `;
   });
