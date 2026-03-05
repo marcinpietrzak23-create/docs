@@ -108,6 +108,13 @@ Hardstyle Kettlebell European Championship
 Tylko niezważeni
 </label>
 
+<input 
+id="searchAthlete"
+placeholder="Szukaj zawodnika..."
+onkeyup="filterSearch()"
+style="margin-left:20px;padding:6px;width:220px"
+>
+
 </div>
 
 <div id="content"></div>
@@ -302,8 +309,8 @@ function renderTable(category){
     <td>
 
       <input id="w_${i}" type="number"
-      value="${r.waga||""}"
-      style="width:70px">
+value="${r.waga||""}"
+style="width:80px;padding:4px;font-weight:bold;text-align:center">
 
       <button onclick="saveWeight('${r.zawodnik}',${i})">
       Zapisz
@@ -396,7 +403,26 @@ function filterUnweighted(){
   });
 
 }
+function filterSearch(){
 
+  const q = document
+    .getElementById("searchAthlete")
+    .value
+    .toLowerCase();
+
+  document.querySelectorAll("#content tbody tr").forEach(tr=>{
+
+    const name = tr.children[1]?.innerText.toLowerCase() || "";
+
+    if(name.includes(q)){
+      tr.style.display="";
+    }else{
+      tr.style.display="none";
+    }
+
+  });
+
+}
 
 /* =======================
    PDF
