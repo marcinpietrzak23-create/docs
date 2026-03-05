@@ -16,7 +16,7 @@ body {
    STRONA GŁÓWNA
 ========================= */
 
-tbody tr:nth-child(even){
+.table-page tbody tr:nth-child(even){
   background:#f6f6f6;
 }
 
@@ -672,6 +672,7 @@ table tr:first-child th {
 .startlist-page .weighted{
   background:#e7f6e7;
 }
+
 
 
 
