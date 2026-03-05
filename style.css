@@ -346,3 +346,50 @@ PRINT
   }
 
 }
+.startlist-actions{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  margin-bottom:20px;
+  flex-wrap:wrap;
+}
+
+.filter-box{
+  background:#ffffff;
+  padding:6px 12px;
+  border-radius:6px;
+  font-weight:bold;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.filter-box input{
+  transform:scale(1.4);
+}
+
+.startlist-page table thead th{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:#102a43;
+}
+#searchInput{
+  padding:8px 12px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  width:220px;
+}
+.startlist-actions button{
+  padding:6px 12px;
+  border-radius:6px;
+  border:1px solid #ccc;
+  background:#ffffff;
+  cursor:pointer;
+}
+
+.startlist-actions button:hover{
+  background:#f1f5f9;
+}
