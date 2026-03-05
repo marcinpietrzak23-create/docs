@@ -1,22 +1,30 @@
+/* ===== STARTLIST.CSS – CZYSTA WERSJA ===== */
+
+/* tabela */
 body.startlist-page table{
-  width:100%;
+  width:95%;
+  margin:0 auto;
   border-collapse:collapse;
   background:white;
 }
 
+/* komórki */
 body.startlist-page th,
 body.startlist-page td{
   border:1px solid #ccc;
   padding:8px;
 }
 
+/* nagłówek */
 body.startlist-page thead th{
   background:#102a43;
   color:#ffffff;
   position:sticky;
   top:0;
+  z-index:10;
 }
 
+/* zebra rows */
 body.startlist-page tbody tr:nth-child(even){
   background:#f3f4f6;
 }
@@ -25,58 +33,52 @@ body.startlist-page tbody tr:nth-child(odd){
   background:#ffffff;
 }
 
+/* ważeni */
 body.startlist-page tbody tr.weighted{
   background:#e7f6e7;
 }
-/* ===== STARTLIST FIXES ===== */
 
-/* sticky header */
-body.startlist-page thead th{
-  position:sticky;
-  top:0;
-  z-index:5;
-}
+/* ===== GÓRNY PANEL ===== */
 
-/* kategorie w jednej linii */
 body.startlist-page .tabs{
   display:flex;
   flex-wrap:wrap;
   justify-content:center;
   gap:6px;
+  margin-bottom:10px;
 }
 
 body.startlist-page .tabs button{
   white-space:nowrap;
 }
 
-/* ukryj zapisz przy drukowaniu */
-@media print{
-
-  body.startlist-page .save-weight{
-    display:none !important;
-  }
-
-}
-/* ===== GÓRNY PANEL STARTLIST ===== */
-
+/* panel przycisków */
 body.startlist-page .startlist-actions{
   display:flex;
   justify-content:center;
   align-items:center;
   gap:16px;
   flex-wrap:wrap;
-  margin-top:10px;
+  margin-bottom:10px;
 }
 
 body.startlist-page .startlist-actions input[type="text"]{
   width:240px;
 }
 
+/* checkbox */
 body.startlist-page .filter-box{
   display:flex;
   align-items:center;
   gap:6px;
 }
-body.startlist-page .panel{
-  display:block;
+
+/* ===== DRUK ===== */
+
+@media print{
+
+  body.startlist-page .save-weight{
+    display:none !important;
+  }
+
 }
