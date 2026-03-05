@@ -85,7 +85,26 @@ th, td {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
-const API_KEY = "kb_admin_2025";
+const PAGE_TOKEN = "sedzia2025";
+
+if (location.hash !== "#" + PAGE_TOKEN) {
+
+  document.body.innerHTML = `
+    <div style="
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      font-family:Arial;
+      font-size:22px;
+    ">
+      Brak dostępu
+    </div>
+  `;
+
+  throw new Error("Unauthorized");
+}
+  const API_KEY = "kb_admin_2025";
 
 const API_URL =
 "https://script.google.com/macros/s/.../exec?api=startlist&key=" + API_KEY;
