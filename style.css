@@ -691,6 +691,12 @@ table tr:first-child th {
 .startlist-page tbody tr:nth-child(odd){
   background:#ffffff !important;
 }
+/* ===== STARTLIST SCROLL FIX ===== */
+
+.startlist-page #content{
+  max-height:70vh;
+  overflow-y:auto;
+}
 
 
 
