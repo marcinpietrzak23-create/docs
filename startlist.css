@@ -77,3 +77,6 @@ body.startlist-page .filter-box{
   align-items:center;
   gap:6px;
 }
+body.startlist-page .panel{
+  display:block;
+}
