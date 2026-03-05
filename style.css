@@ -614,12 +614,7 @@ table thead th {
   background: #102a43;
 }
 
-table tr:first-child th {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: #eee;
-}
+
 
 /* tabela wyników (ciemna) */
 .table-page table tr:first-child th {
@@ -651,6 +646,54 @@ table tr:first-child th {
 }
 
 
+/* =========================
+   STARTLIST – NAGŁÓWKI
+========================= */
 
+.startlist-page thead th{
+  background:#102a43;
+  color:#ffffff;
+  font-weight:600;
+  border-bottom:2px solid #2a3f55;
+}
+.startlist-page thead th{
+  background:#102a43;
+}
+.startlist-page tbody tr:nth-child(even){
+  background:#f3f4f6;
+}
 
+.startlist-page tbody tr:nth-child(odd){
+  background:#ffffff;
+}
+@media print {
 
+  .save-weight{
+    display:none !important;
+  }
+
+}
+.save-weight{
+  padding:6px 10px;
+  border:1px solid #cbd5e1;
+  background:#f1f5f9;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+.save-weight:hover{
+  background:#e2e8f0;
+}
+.startlist-page input[type="number"]{
+  width:70px;
+  padding:6px;
+  border:1px solid #cbd5e1;
+  border-radius:4px;
+}
+.startlist-page th:first-child,
+.startlist-page td:first-child{
+  position:sticky;
+  left:0;
+  background:#ffffff;
+  z-index:10;
+}
