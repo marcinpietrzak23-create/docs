@@ -393,3 +393,20 @@ PRINT
 .startlist-actions button:hover{
   background:#f1f5f9;
 }
+.startlist-page table tr:first-child th{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:#102a43;
+  color:white;
+}
+.startlist-page th{
+  border-bottom:2px solid #1f3b57;
+}
+
+.startlist-page td{
+  border-bottom:1px solid #d1d5db;
+}
+.startlist-page table tr:first-child th{
+  top:10px;
+}
