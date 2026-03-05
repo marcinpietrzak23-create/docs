@@ -1,6 +1,7 @@
 /* =========================
    OGÓLNE
 ========================= */
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -16,13 +17,6 @@ body {
    STRONA GŁÓWNA
 ========================= */
 
-tbody tr:nth-child(even){
-  background:#f6f6f6;
-}
-
-tbody tr:hover{
-  background:#e2f1ff;
-}
 .page {
   max-width: 1400px;
   margin: 0 auto;
@@ -57,6 +51,11 @@ tbody tr:hover{
   color: #ffffff;
   margin-bottom: 50px;
 }
+
+/* =========================
+   FILTRY
+========================= */
+
 .filter-box{
   margin-left:20px;
   background:#ffffff;
@@ -70,9 +69,11 @@ tbody tr:hover{
   transform:scale(1.3);
   margin-right:6px;
 }
+
 /* =========================
    KARTY KATEGORII
 ========================= */
+
 .cards {
   display: flex;
   gap: 16px;
@@ -117,6 +118,7 @@ tbody tr:hover{
 /* =========================
    STRONA Z TABELĄ
 ========================= */
+
 .table-page {
   max-width: 1200px;
   margin: 0 auto;
@@ -140,8 +142,9 @@ tbody tr:hover{
 }
 
 /* =========================
-   TABELA (GLOBAL – ZOSTAJE)
+   TABELA GLOBAL
 ========================= */
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -157,21 +160,32 @@ th {
   background: #eee;
 }
 
+/* zebra tylko dla wyników */
+
+.table-page tbody tr:nth-child(even){
+  background:#f6f6f6;
+}
+
+/* hover wyników */
+
+.table-page tbody tr:hover{
+  background:#e2f1ff;
+}
+
 /* TOP 3 */
+
 .top1 { background-color: #fff3cd; font-weight: bold; }
 .top2 { background-color: #e2e3e5; }
 .top3 { background-color: #f8d7da; }
 
 /* =========================
-   MOBILE CARDS – DOMYŚLNIE
+   MOBILE
 ========================= */
+
 .mobile-cards {
   display: none;
 }
 
-/* =========================
-   MOBILE VIEW
-========================= */
 @media (max-width: 768px) {
 
   .hero-title {
@@ -202,97 +216,12 @@ th {
     cursor: pointer;
   }
 
-  .card.top1 { background: #fff3cd; font-weight: bold; }
-  .card.top2 { background: #e2e3e5; }
-  .card.top3 { background: #f8d7da; }
-
-  .card .name {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 6px;
-  }
-
-  .card .club {
-    color: #555;
-    margin-bottom: 8px;
-  }
-
-  .card .row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
-  }
-
-  .card .details {
-    display: none;
-    margin-top: 10px;
-  }
-
-  .card.open .details {
-    display: block;
-  }
-}
-
-.card .place {
-  display: inline-block;
-  background: #0b1c2d;
-  color: #fff;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-weight: bold;
-  margin-bottom: 8px;
-}
-
-/* =========================
-   LIVE BUTTON
-========================= */
-.live-button {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-
-  background: #0b1c2d;
-  color: #ffffff;
-
-  padding: 12px 18px 12px 16px;
-  border-radius: 999px;
-  font-weight: bold;
-  text-decoration: none;
-
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-  z-index: 999;
-
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-.live-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.45);
-}
-
-.live-button::before {
-  content: "";
-  width: 10px;
-  height: 10px;
-  background: #dc2626;
-  border-radius: 50%;
-  box-shadow: 0 0 0 rgba(220,38,38, 0.7);
-  animation: pulse 1.6s infinite;
-}
-
-@keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(220,38,38, 0.7); }
-  70% { box-shadow: 0 0 0 10px rgba(220,38,38, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(220,38,38, 0); }
 }
 
 /* =========================
    HEADER
 ========================= */
+
 .site-header {
   padding: 20px 0;
 }
@@ -324,207 +253,6 @@ th {
   text-decoration: underline;
 }
 
-/* =========================
-   KONTAKT
-========================= */
-.contact-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 60px;
-  margin-top: 50px;
-  width: 100%;
-}
-
-.contact-block h3 {
-  border-bottom: 1px solid #f59e0b;
-  padding-bottom: 10px;
-  margin-bottom: 20px;
-}
-
-.contact-block p {
-  margin: 6px 0;
-}
-
-@media (max-width: 900px) {
-  .contact-grid {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-}
-
-.contact-block a {
-  color: #f8fafc;
-  text-decoration: none;
-}
-
-.contact-block a:hover {
-  text-decoration: underline;
-}
-
-.contact-person {
-  cursor: pointer;
-  user-select: none;
-}
-
-.contact-person:hover {
-  opacity: 0.8;
-}
-
-.icon {
-  margin-right: 6px;
-}
-
-/* =========================================================
-   ====== NOWE STYLE – TYLKO NADPISANIA (TABLE PAGE) ======
-   NIC POWYŻEJ NIE ZOSTAŁO USUNIĘTE
-========================================================= */
-
-/* Panel tabeli – granat zamiast białego */
-.table-page .table-panel {
-  background: linear-gradient(135deg, #0b1c2d 0%, #102a43 100%);
-  color: #ffffff;
-}
-
-/* Input filtra */
-#filterInput {
-  width: 100%;
-  padding: 12px 14px;
-  margin: 20px 0 30px 0;
-  border-radius: 8px;
-  border: none;
-  font-size: 15px;
-}
-
-/* Tabele wyników – tylko na stronie tabeli */
-.table-page table {
-  background: transparent;
-}
-
-.table-page th {
-  background: #102a43;
-  color: #ffffff;
-  border-bottom: 1px solid #2a3f55;
-}
-
-.table-page td {
-  color: #ffffff;
-  border-bottom: 1px solid #2a3f55;
-}
-
-/* Nagłówki konkurencji */
-.table-page h2 {
-  margin-top: 50px;
-  color: #f1f5f9;
-}
-/* =========================
-   TABLE PAGE – NADPISANIA MINIMALNE
-========================= */
-
-/* panel tabeli */
-.table-page .table-panel {
-  background: linear-gradient(135deg, #0b1c2d 0%, #102a43 100%);
-  color: #ffffff;
-}
-
-/* filtr – tylko korekta szerokości */
-.table-page #filterInput {
-  max-width: 420px;
-}
-
-/* tabela – tylko kolory, bez ruszania layoutu */
-.table-page th {
-  background: #102a43;
-  color: #ffffff;
-}
-
-.table-page td {
-  color: #ffffff;
-  border-bottom-color: #2a3f55;
-}
-
-/* hover */
-.table-page tbody tr:hover {
-  background: rgba(255,255,255,0.05);
-}
-
-/* TOP 3 */
-.table-page tbody tr:nth-child(1) {
-  background: linear-gradient(90deg, rgba(255,215,0,0.25), transparent);
-  font-weight: bold;
-}
-.table-page tbody tr:nth-child(2) {
-  background: linear-gradient(90deg, rgba(192,192,192,0.25), transparent);
-}
-.table-page tbody tr:nth-child(3) {
-  background: linear-gradient(90deg, rgba(205,127,50,0.25), transparent);
-}
-/* =========================================================
-   ====== INDEX PAGE – KATEGORIE (KOSMETYKA) ======
-   Nadpisania tylko dla strony głównej
-========================================================= */
-
-/* Sekcje kategorii */
-.page .panel .section {
-  width: 100%;
-  text-align: left;
-  margin-bottom: 60px;
-  padding-left: 24px;
-  border-left: 3px solid rgba(255,255,255,0.15);
-}
-
-/* Nagłówki sekcji */
-.page .panel .section h2 {
-  margin-bottom: 24px;
-  color: #f8fafc;
-  letter-spacing: 0.5px;
-}
-
-/* Karty – wyrównanie do lewej */
-.page .panel .cards {
-  justify-content: flex-start;
-}
-
-/* Kafle kategorii */
-.page .panel .split-button {
-  background: linear-gradient(135deg, #071a2a 0%, #0b2a45 100%);
-  color: #f8fafc;
-  border: 1px solid rgba(255,255,255,0.15);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-}
-
-/* Górna linia (PL) */
-.page .panel .split-button .top {
-  background: transparent;
-  color: #ffffff;
-  font-weight: 700;
-  letter-spacing: 0.4px;
-}
-
-/* Dolna linia (EN) */
-.page .panel .split-button .bottom {
-  background: transparent;
-  color: #9fb4c8;
-  border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-/* Hover – delikatne podświetlenie */
-.page .panel .split-button:hover {
-  transform: translateY(-3px);
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,0.25),
-    0 12px 28px rgba(0,0,0,0.45);
-  background: linear-gradient(135deg, #0b2a45 0%, #103a5e 100%);
-}
-
-/* Hover – tekst */
-.page .panel .split-button:hover .top {
-  color: #ffffff;
-}
-
-.page .panel .split-button:hover .bottom {
-  color: #dbeafe;
-}
-
 /* =========================================================
    STARTLIST PAGE
 ========================================================= */
@@ -545,18 +273,42 @@ th {
   border-bottom: 1px solid #e5e7eb;
 }
 
-/* hover */
-.startlist-page tbody tr:hover {
+/* hover ale nie nadpisuj wagi */
+
+.startlist-page tbody tr:hover:not(.weighted) {
   background: #f8fafc;
 }
 
-/* tytuł kategorii */
-.startlist-page h2 {
-  margin-top: 30px;
-  margin-bottom: 14px;
+/* wiersz z wagą */
+
+.weighted{
+  background:#dff5df !important;
+}
+
+/* input wagi */
+
+.startlist-page input[type="number"]{
+  font-weight:bold;
+  text-align:center;
+  padding:4px;
+  width:80px;
+}
+
+/* przycisk zapisu */
+
+.startlist-page button{
+  padding:4px 10px;
+  border-radius:4px;
+  border:1px solid #ccc;
+  cursor:pointer;
+}
+
+.startlist-page button:hover{
+  background:#f1f5f9;
 }
 
 /* tabs */
+
 .tabs button {
   background: #ffffff;
   border: 1px solid #cbd5e1;
@@ -567,7 +319,44 @@ th {
   background: #f1f5f9;
 }
 
-/* ===== DRUK / PDF ===== */
+/* =========================
+   STICKY HEADER
+========================= */
+
+table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+/* =========================
+   LOGIN
+========================= */
+
+#loginBox{
+  max-width:400px;
+  margin:80px auto;
+  padding:30px;
+  background:white;
+  border-radius:10px;
+  text-align:center;
+}
+
+#loginBox input{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+}
+
+#loginBox button{
+  padding:10px 20px;
+  cursor:pointer;
+}
+
+/* =========================
+   DRUK
+========================= */
+
 @media print {
 
   body {
@@ -593,65 +382,5 @@ th {
   tr {
     page-break-inside: avoid;
   }
+
 }
-/* =========================================================
-   STICKY HEADER – WSZYSTKIE TABELE
-========================================================= */
-
-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-}
-
-/* jasne tabele */
-table thead th {
-  background: #eee;
-}
-
-/* ciemne tabele wyników */
-.table-page thead th {
-  background: #102a43;
-}
-
-table tr:first-child th {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: #eee;
-}
-
-/* tabela wyników (ciemna) */
-.table-page table tr:first-child th {
-  background: #102a43;
-}
-
-#loginBox{
-  max-width:400px;
-  margin:80px auto;
-  padding:30px;
-  background:white;
-  border-radius:10px;
-  text-align:center;
-}
-
-#loginBox input{
-  width:100%;
-  padding:10px;
-  margin:10px 0;
-}
-
-#loginBox button{
-  padding:10px 20px;
-  cursor:pointer;
-}
-
-.weighted{
-  background:#e7f6e7;
-}
-
-
-
-
-
-
