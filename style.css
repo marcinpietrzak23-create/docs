@@ -667,6 +667,30 @@ table tr:first-child th {
   color:#ffffff;
 }
 
+/* =========================
+   STARTLIST HARD FIX
+========================= */
+
+.startlist-page table{
+  border-collapse:separate !important;
+  border-spacing:0;
+}
+
+.startlist-page thead th{
+  position:sticky !important;
+  top:0;
+  z-index:50;
+  background:#102a43 !important;
+  color:#ffffff !important;
+}
+
+.startlist-page tbody tr:nth-child(even){
+  background:#f3f4f6 !important;
+}
+
+.startlist-page tbody tr:nth-child(odd){
+  background:#ffffff !important;
+}
 
 
 
