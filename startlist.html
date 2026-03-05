@@ -96,6 +96,28 @@ th, td {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
+
+  async function loginJudge(){
+
+  const login = document.getElementById("login").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch(
+    API_BASE +
+    `?api=login&login=${login}&password=${password}`
+  );
+
+  const data = await res.json();
+
+  if(data.ok){
+
+    localStorage.setItem("session_token",data.token);
+
+    location.reload();
+
+  }
+
+}
 const PAGE_TOKEN = "sedzia2025";
 
 if (location.hash !== "#" + PAGE_TOKEN) {
@@ -123,7 +145,12 @@ const API_URL =
 let grouped = {};
 
 init();
+const TOKEN = localStorage.getItem("session_token");
 
+if(!TOKEN){
+  document.getElementById("loginBox").style.display = "block";
+  return;
+}
 async function init() {
   const res = await fetch(API_URL);
   const data = await res.json();
@@ -227,12 +254,15 @@ function exportPDF() {
     .from(element)
     .save();
 }
-function saveWeight(zawodnik, waga) {
+function saveWeight(zawodnik, waga){
+
+  const token = localStorage.getItem("session_token");
 
   fetch(
-    "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec" +
-    `?api=saveWeight&key=${API_KEY}&zawodnik=${encodeURIComponent(zawodnik)}&waga=${waga}`
+    API_BASE +
+    `?api=saveWeight&token=${token}&zawodnik=${encodeURIComponent(zawodnik)}&waga=${waga}`
   );
+
 }
 
 
