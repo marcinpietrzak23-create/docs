@@ -8,51 +8,57 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-.tabs {
-  margin-bottom: 14px;
+
+.tabs{
+  margin-bottom:14px;
 }
 
-.tabs button {
-  padding: 8px 12px;
-  margin: 4px;
-  cursor: pointer;
+.tabs button{
+  padding:8px 12px;
+  margin:4px;
+  cursor:pointer;
 }
 
-.startlist-actions {
-  margin-bottom: 12px;
+.startlist-actions{
+  margin-bottom:12px;
 }
 
-table {
-  border-collapse: collapse;
-  width: 100%;
-  background: white;
+table{
+  border-collapse:collapse;
+  width:100%;
+  background:white;
 }
 
-th, td {
-  border: 1px solid #ccc;
-  padding: 6px;
+th,td{
+  border:1px solid #ccc;
+  padding:6px;
 }
 
-@media print {
+@media print{
+
   header,
   .tabs,
-  .startlist-actions {
-    display: none;
+  .startlist-actions{
+    display:none;
   }
 
-  body {
-    background: white;
+  body{
+    background:white;
   }
 
-  table {
-    font-size: 12px;
+  table{
+    font-size:12px;
   }
+
 }
+
 </style>
 </head>
 
 <body class="startlist-page">
-  <div id="loginBox">
+
+<!-- LOGIN -->
+<div id="loginBox">
 
 <h2>Logowanie sędziego</h2>
 
@@ -64,50 +70,86 @@ th, td {
 
 </div>
 
+
 <header class="site-header">
-  <div class="header-inner">
-    <div class="header-title">
-      Hardstyle Kettlebell European Championship
-    </div>
-    <div class="header-links">
-      <a href="index.html">Wyniki</a>
-      <a href="#" onclick="window.print()">Drukuj</a>
-    </div>
-  </div>
+<div class="header-inner">
+
+<div class="header-title">
+Hardstyle Kettlebell European Championship
+</div>
+
+<div class="header-links">
+<a href="index.html">Wyniki</a>
+<a href="#" onclick="window.print()">Drukuj</a>
+</div>
+
+</div>
 </header>
 
-<div class="page">
-  <div class="panel">
 
-    <h1>Listy startowe</h1>
+<div class="page" id="startlistApp" style="display:none">
 
-    <div class="tabs" id="tabs"></div>
+<div class="panel">
 
-    <div class="startlist-actions">
-      <button onclick="window.print()">Drukuj</button>
-      <button onclick="exportPDF()">PDF</button>
-    </div>
+<h1>Listy startowe</h1>
 
-    <div id="content"></div>
+<div class="tabs" id="tabs"></div>
 
-  </div>
+<div class="startlist-actions">
+<button onclick="window.print()">Drukuj</button>
+<button onclick="exportPDF()">PDF</button>
 </div>
+
+<div id="content"></div>
+
+</div>
+</div>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
 
-  async function loginJudge(){
+const API_BASE =
+"https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
 
-  const login = document.getElementById("login").value;
-  const password = document.getElementById("password").value;
+let grouped={};
 
-  const res = await fetch(
-    API_BASE +
+/* =======================
+   SPRAWDZENIE SESJI
+======================= */
+
+const TOKEN=localStorage.getItem("session_token");
+
+if(TOKEN){
+
+  document.getElementById("loginBox").style.display="none";
+  document.getElementById("startlistApp").style.display="block";
+
+  init();
+
+}else{
+
+  document.getElementById("loginBox").style.display="block";
+
+}
+
+
+/* =======================
+   LOGIN
+======================= */
+
+async function loginJudge(){
+
+  const login=document.getElementById("login").value;
+  const password=document.getElementById("password").value;
+
+  const res=await fetch(
+    API_BASE+
     `?api=login&login=${login}&password=${password}`
   );
 
-  const data = await res.json();
+  const data=await res.json();
 
   if(data.ok){
 
@@ -115,156 +157,214 @@ th, td {
 
     location.reload();
 
+  }else{
+
+    alert("Błędny login lub hasło");
+
   }
 
 }
-const PAGE_TOKEN = "sedzia2025";
 
-if (location.hash !== "#" + PAGE_TOKEN) {
 
-  document.body.innerHTML = `
-    <div style="
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      height:100vh;
-      font-family:Arial;
-      font-size:22px;
-    ">
-      Brak dostępu
-    </div>
-  `;
+/* =======================
+   STARTLIST
+======================= */
 
-  throw new Error("Unauthorized");
-}
-const API_KEY = "kb_admin_2025";
+async function init(){
 
-const API_URL =
-"https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec?api=startlist&key=" + API_KEY;
+  const res=await fetch(API_BASE+"?api=startlist");
 
-let grouped = {};
+  const data=await res.json();
 
-init();
-const TOKEN = localStorage.getItem("session_token");
+  grouped=groupByCategory(data);
 
-if(!TOKEN){
-  document.getElementById("loginBox").style.display = "block";
-  return;
-}
-async function init() {
-  const res = await fetch(API_URL);
-  const data = await res.json();
-
-  grouped = groupByCategory(data);
   renderTabs();
+
   showFirst();
+
 }
 
-function groupByCategory(rows) {
-  const g = {};
-  rows.forEach(r => {
-    if (!g[r.kategoria]) g[r.kategoria] = [];
+
+/* =======================
+   GROUP
+======================= */
+
+function groupByCategory(rows){
+
+  const g={};
+
+  rows.forEach(r=>{
+
+    if(!g[r.kategoria]) g[r.kategoria]=[];
+
     g[r.kategoria].push(r);
+
   });
+
   return g;
+
 }
 
-function renderTabs() {
-  const tabs = document.getElementById("tabs");
-  tabs.innerHTML = "";
 
-  Object.keys(grouped).forEach(cat => {
-    const btn = document.createElement("button");
-    btn.textContent = cat;
-    btn.onclick = () => renderTable(cat);
+/* =======================
+   TABS
+======================= */
+
+function renderTabs(){
+
+  const tabs=document.getElementById("tabs");
+
+  tabs.innerHTML="";
+
+  Object.keys(grouped).forEach(cat=>{
+
+    const btn=document.createElement("button");
+
+    btn.textContent=cat;
+
+    btn.onclick=()=>renderTable(cat);
+
     tabs.appendChild(btn);
+
   });
+
 }
 
-function showFirst() {
-  const first = Object.keys(grouped)[0];
-  if (first) renderTable(first);
+
+/* =======================
+   FIRST TAB
+======================= */
+
+function showFirst(){
+
+  const first=Object.keys(grouped)[0];
+
+  if(first) renderTable(first);
+
 }
 
-function renderTable(category) {
 
-  const rows = [...grouped[category]];
+/* =======================
+   TABLE
+======================= */
 
-  rows.sort((a, b) =>
-    (a.zawodnik || "").localeCompare(b.zawodnik || "", "pl")
+function renderTable(category){
+
+  const rows=[...grouped[category]];
+
+  rows.sort((a,b)=>
+    (a.zawodnik||"").localeCompare(b.zawodnik||"","pl")
   );
 
-  const container = document.getElementById("content");
+  const container=document.getElementById("content");
 
-  let html = `
-    <h2>${category}</h2>
-    <table>
-      <tr>
-        <th>LP</th>
-        <th>Zawodnik</th>
-        <th>Klub</th>
-        <th>Kategoria dodatkowa</th>
-        <th>Waga</th>
-      </tr>
+  let html=`
+  <h2>${category}</h2>
+  <table>
+
+  <tr>
+  <th>LP</th>
+  <th>Zawodnik</th>
+  <th>Klub</th>
+  <th>Kategoria dodatkowa</th>
+  <th>Waga</th>
+  </tr>
   `;
 
-  rows.forEach((r, i) => {
-    html += `
-      <tr>
-        <td>${i + 1}</td>
-        <td>${r.zawodnik || ""}</td>
-        <td>${r.klub || ""}</td>
-        <td>${r.kategoria_dodatkowa || ""}</td>
-        <td>
-  <input
-    type="number"
-    value="${r.waga || ""}"
-    style="width:70px"
-    onchange="saveWeight('${r.zawodnik}', this.value)"
-  >
-</td>
-      </tr>
+  rows.forEach((r,i)=>{
+
+    html+=`
+
+    <tr>
+
+    <td>${i+1}</td>
+
+    <td>${r.zawodnik||""}</td>
+
+    <td>${r.klub||""}</td>
+
+    <td>${r.kategoria_dodatkowa||""}</td>
+
+    <td>
+
+      <input id="w_${i}" type="number"
+      value="${r.waga||""}"
+      style="width:70px">
+
+      <button onclick="saveWeight('${r.zawodnik}',${i})">
+      Zapisz
+      </button>
+
+    </td>
+
+    </tr>
+
     `;
+
   });
 
-  html += "</table>";
-  container.innerHTML = html;
+  html+="</table>";
+
+  container.innerHTML=html;
+
 }
 
-function exportPDF() {
 
-  const element = document.getElementById("content");
-  const category = document.querySelector("#content h2")?.textContent || "lista-startowa";
+/* =======================
+   SAVE WEIGHT
+======================= */
 
-  html2pdf()
-    .set({
-      margin: [5, 5, 5, 5],
-      filename: category.replace(/\s+/g, "_") + ".pdf",
-      pagebreak: { mode: ["css", "legacy"] },
-      html2canvas: {
-        scale: 2,
-        scrollY: 0
-      },
-      jsPDF: {
-        unit: "mm",
-        format: "a4",
-        orientation: "landscape"
-      }
-    })
-    .from(element)
-    .save();
-}
-function saveWeight(zawodnik, waga){
+function saveWeight(zawodnik,i){
 
-  const token = localStorage.getItem("session_token");
+  const waga=document.getElementById("w_"+i).value;
+
+  const token=localStorage.getItem("session_token");
 
   fetch(
-    API_BASE +
-    `?api=saveWeight&token=${token}&zawodnik=${encodeURIComponent(zawodnik)}&waga=${waga}`
+
+    API_BASE+
+    `?api=saveWeight`+
+    `&token=${token}`+
+    `&zawodnik=${encodeURIComponent(zawodnik)}`+
+    `&waga=${waga}`
+
   );
 
 }
 
+
+/* =======================
+   PDF
+======================= */
+
+function exportPDF(){
+
+  const element=document.getElementById("content");
+
+  const category=document.querySelector("#content h2")?.textContent || "lista-startowa";
+
+  html2pdf()
+  .set({
+
+    margin:[5,5,5,5],
+
+    filename:category.replace(/\s+/g,"_")+".pdf",
+
+    pagebreak:{mode:["css","legacy"]},
+
+    html2canvas:{scale:2,scrollY:0},
+
+    jsPDF:{
+      unit:"mm",
+      format:"a4",
+      orientation:"landscape"
+    }
+
+  })
+  .from(element)
+  .save();
+
+}
 
 </script>
 
