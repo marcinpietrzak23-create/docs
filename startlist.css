@@ -57,3 +57,23 @@ body.startlist-page .tabs button{
   }
 
 }
+/* ===== GÓRNY PANEL STARTLIST ===== */
+
+body.startlist-page .startlist-actions{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+body.startlist-page .startlist-actions input[type="text"]{
+  width:240px;
+}
+
+body.startlist-page .filter-box{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
