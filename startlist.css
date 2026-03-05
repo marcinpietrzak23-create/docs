@@ -1,0 +1,30 @@
+body.startlist-page table{
+  width:100%;
+  border-collapse:collapse;
+  background:white;
+}
+
+body.startlist-page th,
+body.startlist-page td{
+  border:1px solid #ccc;
+  padding:8px;
+}
+
+body.startlist-page thead th{
+  background:#102a43;
+  color:#ffffff;
+  position:sticky;
+  top:0;
+}
+
+body.startlist-page tbody tr:nth-child(even){
+  background:#f3f4f6;
+}
+
+body.startlist-page tbody tr:nth-child(odd){
+  background:#ffffff;
+}
+
+body.startlist-page tbody tr.weighted{
+  background:#e7f6e7;
+}
