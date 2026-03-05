@@ -614,18 +614,6 @@ table thead th {
   background: #102a43;
 }
 
-table tr:first-child th {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: #eee;
-}
-
-/* tabela wyników (ciemna) */
-.table-page table tr:first-child th {
-  background: #102a43;
-}
-
 #loginBox{
   max-width:400px;
   margin:80px auto;
@@ -714,6 +702,7 @@ table tr:first-child th {
 .startlist-page tbody tr:nth-child(odd){
   background:#ffffff;
 }
+
 
 
 
