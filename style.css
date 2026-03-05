@@ -615,12 +615,6 @@ table thead th {
 }
 
 
-
-/* tabela wyników (ciemna) */
-.table-page table tr:first-child th {
-  background: #102a43;
-}
-
 #loginBox{
   max-width:400px;
   margin:80px auto;
@@ -696,4 +690,8 @@ table thead th {
   left:0;
   background:#ffffff;
   z-index:10;
+}
+.startlist-page table{
+  border-collapse: separate;
+  border-spacing:0;
 }
