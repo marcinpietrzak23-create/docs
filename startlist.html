@@ -438,30 +438,44 @@ function filterSearch(){
 
 function exportPDF(){
 
-  const element=document.getElementById("content");
+  const element = document.getElementById("content");
 
-  const category=document.querySelector("#content h2")?.textContent || "lista-startowa";
+  const category =
+    document.querySelector("#content h2")?.textContent || "lista-startowa";
+
+  /* ukryj przyciski "Zapisz" */
+  const buttons = document.querySelectorAll(".save-weight");
+  buttons.forEach(btn => btn.style.display = "none");
 
   html2pdf()
-  .set({
+    .set({
 
-    margin:[5,5,5,5],
+      margin:[5,5,5,5],
 
-    filename:category.replace(/\s+/g,"_")+".pdf",
+      filename:category.replace(/\s+/g,"_")+".pdf",
 
-    pagebreak:{mode:["css","legacy"]},
+      pagebreak:{mode:["css","legacy"]},
 
-    html2canvas:{scale:2,scrollY:0},
+      html2canvas:{
+        scale:2,
+        scrollY:0
+      },
 
-    jsPDF:{
-      unit:"mm",
-      format:"a4",
-      orientation:"landscape"
-    }
+      jsPDF:{
+        unit:"mm",
+        format:"a4",
+        orientation:"landscape"
+      }
 
-  })
-  .from(element)
-  .save();
+    })
+    .from(element)
+    .save()
+    .then(() => {
+
+      /* przywróć przyciski po wygenerowaniu PDF */
+      buttons.forEach(btn => btn.style.display = "inline-block");
+
+    });
 
 }
 
