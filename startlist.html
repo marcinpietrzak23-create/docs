@@ -172,11 +172,15 @@ async function loginJudge(){
 
 async function init(){
 
-  const res=await fetch(API_BASE+"?api=startlist");
+  const token = localStorage.getItem("session_token");
 
-  const data=await res.json();
+  const res = await fetch(
+    API_BASE + "?api=startlist&token=" + token
+  );
 
-  grouped=groupByCategory(data);
+  const data = await res.json();
+
+  grouped = groupByCategory(data);
 
   renderTabs();
 
