@@ -57,7 +57,19 @@ tbody tr:hover{
   color: #ffffff;
   margin-bottom: 50px;
 }
+.filter-box{
+  margin-left:20px;
+  background:#ffffff;
+  padding:6px 12px;
+  border-radius:6px;
+  font-weight:bold;
+  cursor:pointer;
+}
 
+.filter-box input{
+  transform:scale(1.3);
+  margin-right:6px;
+}
 /* =========================
    KARTY KATEGORII
 ========================= */
@@ -637,6 +649,7 @@ table tr:first-child th {
 .weighted{
   background:#e7f6e7;
 }
+
 
 
 
