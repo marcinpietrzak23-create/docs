@@ -1,172 +1,180 @@
-/* =========================
-   OGÓLNE
-========================= */
+/* =========================================================
+   BASE
+========================================================= */
 
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  background: linear-gradient(
-    135deg,
-    #6b0f1a 0%,
-    #a4161a 30%,
-    #c9184a 100%
-  );
+body{
+  font-family:Arial,sans-serif;
+  margin:0;
+  background:linear-gradient(135deg,#6b0f1a 0%,#a4161a 30%,#c9184a 100%);
 }
 
-/* =========================
-   STRONA GŁÓWNA
-========================= */
-
-.page {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 60px 20px;
+.page{
+  max-width:1400px;
+  margin:0 auto;
+  padding:60px 20px;
 }
 
-.panel {
-  background: linear-gradient(135deg, #0b1c2d 0%, #102a43 100%);
-  border-radius: 24px;
-  padding: 80px 60px;
-  min-height: 55vh;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.35);
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+.panel{
+  background:linear-gradient(135deg,#0b1c2d 0%,#102a43 100%);
+  border-radius:24px;
+  padding:80px 60px;
+  min-height:55vh;
+  box-shadow:0 20px 40px rgba(0,0,0,0.35);
 }
 
 .panel h1,
 .panel h2,
 .panel h3,
 .panel h4,
-.panel p {
-  color: #f1f5f9;
+.panel p{
+  color:#f1f5f9;
 }
 
-.hero-title {
-  font-size: 48px;
-  font-weight: 800;
-  color: #ffffff;
-  margin-bottom: 50px;
+/* =========================================================
+   HEADER
+========================================================= */
+
+.site-header{
+  padding:20px 0;
 }
 
-/* =========================
-   FILTRY
-========================= */
+.header-inner{
+  max-width:1400px;
+  margin:auto;
+  padding:0 20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-.filter-box{
+.header-title{
+  font-size:22px;
+  font-weight:800;
+  color:#fff;
+}
+
+.header-links a{
+  color:#fff;
+  text-decoration:none;
   margin-left:20px;
-  background:#ffffff;
-  padding:6px 12px;
-  border-radius:6px;
   font-weight:bold;
-  cursor:pointer;
 }
 
-.filter-box input{
-  transform:scale(1.3);
-  margin-right:6px;
+.header-links a:hover{
+  text-decoration:underline;
 }
 
-/* =========================
-   KARTY KATEGORII
-========================= */
+/* =========================================================
+   INDEX PAGE (KATEGORIE)
+========================================================= */
 
-.cards {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
+.section{
+  width:100%;
+  text-align:left;
+  margin-bottom:60px;
+  padding-left:24px;
+  border-left:3px solid rgba(255,255,255,0.15);
 }
 
-.split-button {
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  border: 1px solid #1e293b;
-  border-radius: 10px;
-  overflow: hidden;
-  text-decoration: none;
-  color: #0b1c2d;
-  width: 260px;
-  background: #f8fafc;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+.section h2{
+  margin-bottom:24px;
 }
 
-.split-button .row {
-  padding: 14px;
+.cards{
+  display:flex;
+  gap:16px;
+  flex-wrap:wrap;
+  justify-content:flex-start;
 }
 
-.split-button .top {
-  font-weight: bold;
-  background-color: #e2e8f0;
+.split-button{
+  display:flex;
+  flex-direction:column;
+  text-align:center;
+  width:260px;
+  border-radius:10px;
+  text-decoration:none;
+  overflow:hidden;
+
+  background:linear-gradient(135deg,#071a2a 0%,#0b2a45 100%);
+  color:#f8fafc;
+
+  border:1px solid rgba(255,255,255,0.15);
+  box-shadow:0 6px 18px rgba(0,0,0,0.35);
+
+  transition:all .15s;
 }
 
-.split-button .bottom {
-  border-top: 1px solid #cbd5e1;
-  background-color: #f1f5f9;
-  font-size: 0.9em;
+.split-button:hover{
+  transform:translateY(-3px);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.25),
+    0 12px 28px rgba(0,0,0,0.45);
 }
 
-.split-button:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+.split-button .row{
+  padding:14px;
 }
 
-/* =========================
-   STRONA Z TABELĄ
-========================= */
-
-.table-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
+.split-button .top{
+  font-weight:700;
+  color:#fff;
 }
 
-.table-panel {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+.split-button .bottom{
+  border-top:1px solid rgba(255,255,255,0.1);
+  color:#9fb4c8;
 }
 
-.table-panel a {
-  display: inline-block;
-  margin-bottom: 20px;
+/* =========================================================
+   RESULTS PAGE
+========================================================= */
+
+.table-page{
+  max-width:1200px;
+  margin:auto;
+  padding:40px 20px;
 }
 
-.table-panel h1 {
-  margin-top: 0;
+.table-panel{
+  background:#fff;
+  border-radius:16px;
+  padding:30px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.25);
 }
 
-/* =========================
-   TABELA GLOBAL
-========================= */
+/* filtr */
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+#filterInput{
+  padding:10px;
+  margin-bottom:20px;
+  border-radius:6px;
+  border:1px solid #ccc;
 }
 
-th, td {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-  text-align: left;
+/* tabela */
+
+table{
+  width:100%;
+  border-collapse:collapse;
 }
 
-th {
-  background: #eee;
+th,td{
+  padding:10px;
+  border-bottom:1px solid #ddd;
 }
 
-/* zebra tylko dla wyników */
+th{
+  background:#eee;
+}
+
+/* zebra */
 
 .table-page tbody tr:nth-child(even){
   background:#f6f6f6;
 }
 
-/* hover wyników */
+/* hover */
 
 .table-page tbody tr:hover{
   background:#e2f1ff;
@@ -174,170 +182,88 @@ th {
 
 /* TOP 3 */
 
-.top1 { background-color: #fff3cd; font-weight: bold; }
-.top2 { background-color: #e2e3e5; }
-.top3 { background-color: #f8d7da; }
-
-/* =========================
-   MOBILE
-========================= */
-
-.mobile-cards {
-  display: none;
+.table-page tbody tr:nth-child(1){
+  background:#fff3cd;
+  font-weight:bold;
 }
 
-@media (max-width: 768px) {
-
-  .hero-title {
-    font-size: 32px;
-    margin-bottom: 30px;
-  }
-
-  .panel {
-    padding: 40px 20px;
-    min-height: auto;
-  }
-
-  .table-panel table {
-    display: none !important;
-  }
-
-  .mobile-cards {
-    display: grid !important;
-    gap: 12px;
-  }
-
-  .card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 14px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-    font-size: 14px;
-    cursor: pointer;
-  }
-
+.table-page tbody tr:nth-child(2){
+  background:#e2e3e5;
 }
 
-/* =========================
-   HEADER
-========================= */
-
-.site-header {
-  padding: 20px 0;
+.table-page tbody tr:nth-child(3){
+  background:#f8d7da;
 }
 
-.header-inner {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 20px;
+/* =========================================================
+   STICKY HEADER + STICKY COLUMN
+========================================================= */
 
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+table thead th{
+  position:sticky;
+  top:0;
+  z-index:5;
 }
 
-.header-title {
-  font-size: 22px;
-  font-weight: 800;
-  color: #ffffff;
-}
-
-.header-links a {
-  color: #ffffff;
-  text-decoration: none;
-  font-weight: bold;
-  margin-left: 20px;
-}
-
-.header-links a:hover {
-  text-decoration: underline;
+.table-page table th:first-child,
+.table-page table td:first-child{
+  position:sticky;
+  left:0;
+  background:#fff;
+  z-index:4;
 }
 
 /* =========================================================
    STARTLIST PAGE
 ========================================================= */
 
-.startlist-page table {
-  background: #ffffff;
-  border-radius: 8px;
-  overflow: hidden;
+.startlist-page table{
+  background:#fff;
+  border-radius:8px;
+  overflow:hidden;
 }
 
-.startlist-page th {
-  background: #102a43;
-  color: #ffffff;
-  border-bottom: 1px solid #2a3f55;
+.startlist-page th{
+  background:#102a43;
+  color:#fff;
 }
 
-.startlist-page td {
-  border-bottom: 1px solid #e5e7eb;
+.startlist-page td{
+  border-bottom:1px solid #e5e7eb;
 }
 
-/* hover ale nie nadpisuj wagi */
-
-.startlist-page tbody tr:hover:not(.weighted) {
-  background: #f8fafc;
+.startlist-page tbody tr:hover{
+  background:#f8fafc;
 }
-
-/* wiersz z wagą */
 
 .weighted{
-  background:#dff5df !important;
-}
-
-/* input wagi */
-
-.startlist-page input[type="number"]{
-  font-weight:bold;
-  text-align:center;
-  padding:4px;
-  width:80px;
-}
-
-/* przycisk zapisu */
-
-.startlist-page button{
-  padding:4px 10px;
-  border-radius:4px;
-  border:1px solid #ccc;
-  cursor:pointer;
-}
-
-.startlist-page button:hover{
-  background:#f1f5f9;
+  background:#e7f6e7;
 }
 
 /* tabs */
 
-.tabs button {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
+.tabs button{
+  background:#fff;
+  border:1px solid #cbd5e1;
+  border-radius:6px;
+  padding:8px 12px;
+  margin:4px;
+  cursor:pointer;
 }
 
-.tabs button:hover {
-  background: #f1f5f9;
+.tabs button:hover{
+  background:#f1f5f9;
 }
 
-/* =========================
-   STICKY HEADER
-========================= */
-
-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-}
-
-/* =========================
+/* =========================================================
    LOGIN
-========================= */
+========================================================= */
 
 #loginBox{
   max-width:400px;
   margin:80px auto;
   padding:30px;
-  background:white;
+  background:#fff;
   border-radius:10px;
   text-align:center;
 }
@@ -353,34 +279,42 @@ table thead th {
   cursor:pointer;
 }
 
-/* =========================
-   DRUK
-========================= */
+/* =========================================================
+   MOBILE
+========================================================= */
 
-@media print {
+@media(max-width:768px){
 
-  body {
-    background: white;
+  .cards{
+    justify-content:center;
+  }
+
+  .panel{
+    padding:40px 20px;
+  }
+
+}
+
+/* =========================================================
+   PRINT
+========================================================= */
+
+@media print{
+
+  body{
+    background:white;
   }
 
   .site-header,
   .tabs,
-  .startlist-actions {
-    display: none !important;
+  .startlist-actions{
+    display:none!important;
   }
 
-  .panel {
-    background: white;
-    box-shadow: none;
-    padding: 0;
-  }
-
-  table {
-    font-size: 11px;
-  }
-
-  tr {
-    page-break-inside: avoid;
+  .panel{
+    background:white;
+    box-shadow:none;
+    padding:0;
   }
 
 }
