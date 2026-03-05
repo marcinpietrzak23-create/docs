@@ -1,84 +1,89 @@
-/* ===== STARTLIST.CSS – CZYSTA WERSJA ===== */
+/* ===== STARTLIST CLEAN UI ===== */
 
-/* tabela */
 body.startlist-page table{
-  width:95%;
-  margin:0 auto;
+  width:92%;
+  margin:20px auto;
   border-collapse:collapse;
-  background:white;
+  background:#ffffff;
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:0 6px 18px rgba(0,0,0,0.15);
 }
 
-/* komórki */
 body.startlist-page th,
 body.startlist-page td{
-  border:1px solid #ccc;
-  padding:8px;
+  padding:10px 12px;
+  border-bottom:1px solid #e5e7eb;
 }
 
-/* nagłówek */
 body.startlist-page thead th{
   background:#102a43;
   color:#ffffff;
-  position:sticky;
-  top:0;
-  z-index:10;
+  font-weight:600;
 }
 
-/* zebra rows */
 body.startlist-page tbody tr:nth-child(even){
-  background:#f3f4f6;
+  background:#f9fafb;
 }
 
-body.startlist-page tbody tr:nth-child(odd){
-  background:#ffffff;
-}
-
-/* ważeni */
 body.startlist-page tbody tr.weighted{
   background:#e7f6e7;
 }
 
-/* ===== GÓRNY PANEL ===== */
+/* input wagi */
+body.startlist-page input[type="number"]{
+  width:70px;
+  padding:6px;
+  border:1px solid #cbd5e1;
+  border-radius:4px;
+  text-align:center;
+  font-weight:600;
+}
 
+/* przycisk zapisz */
+body.startlist-page .save-weight{
+  margin-left:6px;
+  padding:6px 10px;
+  border:1px solid #cbd5e1;
+  background:#f1f5f9;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+body.startlist-page .save-weight:hover{
+  background:#e2e8f0;
+}
+
+/* tabs kategorii */
 body.startlist-page .tabs{
   display:flex;
   flex-wrap:wrap;
   justify-content:center;
-  gap:6px;
-  margin-bottom:10px;
+  gap:8px;
+  margin-bottom:12px;
 }
 
 body.startlist-page .tabs button{
-  white-space:nowrap;
+  padding:6px 12px;
+  border:1px solid #cbd5e1;
+  background:#f8fafc;
+  border-radius:20px;
+  cursor:pointer;
 }
 
-/* panel przycisków */
+/* górny panel */
 body.startlist-page .startlist-actions{
   display:flex;
+  flex-wrap:wrap;
   justify-content:center;
   align-items:center;
-  gap:16px;
-  flex-wrap:wrap;
-  margin-bottom:10px;
+  gap:12px;
+  margin-bottom:20px;
 }
 
-body.startlist-page .startlist-actions input[type="text"]{
-  width:240px;
-}
-
-/* checkbox */
-body.startlist-page .filter-box{
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-/* ===== DRUK ===== */
-
+/* druk */
 @media print{
-
   body.startlist-page .save-weight{
     display:none !important;
   }
-
 }
