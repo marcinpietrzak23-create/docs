@@ -15,6 +15,14 @@ body {
 /* =========================
    STRONA GŁÓWNA
 ========================= */
+
+tbody tr:nth-child(even){
+  background:#f6f6f6;
+}
+
+tbody tr:hover{
+  background:#e2f1ff;
+}
 .page {
   max-width: 1400px;
   margin: 0 auto;
@@ -629,6 +637,7 @@ table tr:first-child th {
 .weighted{
   background:#e7f6e7;
 }
+
 
 
 
