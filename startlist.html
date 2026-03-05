@@ -34,6 +34,10 @@ th,td{
   padding:6px;
 }
 
+.weighted{
+  background:#e7f6e7;
+}
+
 @media print{
 
   header,
@@ -63,7 +67,6 @@ th,td{
 <h2>Logowanie sędziego</h2>
 
 <input id="login" placeholder="Login">
-
 <input id="password" type="password" placeholder="Hasło">
 
 <button onclick="loginJudge()">Zaloguj</button>
@@ -96,8 +99,15 @@ Hardstyle Kettlebell European Championship
 <div class="tabs" id="tabs"></div>
 
 <div class="startlist-actions">
+
 <button onclick="window.print()">Drukuj</button>
 <button onclick="exportPDF()">PDF</button>
+
+<label style="margin-left:20px">
+<input type="checkbox" id="onlyUnweighted" onchange="filterUnweighted()">
+Tylko niezważeni
+</label>
+
 </div>
 
 <div id="content"></div>
@@ -116,7 +126,7 @@ const API_BASE =
 let grouped={};
 
 /* =======================
-   SPRAWDZENIE SESJI
+   SESJA
 ======================= */
 
 const TOKEN=localStorage.getItem("session_token");
@@ -144,38 +154,21 @@ async function loginJudge(){
   const login=document.getElementById("login").value;
   const password=document.getElementById("password").value;
 
-  const url =
-  API_BASE + `?api=login&login=${login}&password=${password}`;
+  const res = await fetch(
+    API_BASE + `?api=login&login=${login}&password=${password}`
+  );
 
-  console.log("LOGIN URL:",url);
+  const data = await res.json();
 
-  try{
+  if(data.ok){
 
-    const res = await fetch(url);
+    localStorage.setItem("session_token",data.token);
 
-    const text = await res.text();
+    location.reload();
 
-    console.log("LOGIN RESPONSE:",text);
+  }else{
 
-    const data = JSON.parse(text);
-
-    if(data.ok){
-
-      localStorage.setItem("session_token",data.token);
-
-      console.log("TOKEN SAVED:",data.token);
-
-      location.reload();
-
-    }else{
-
-      alert("Błędny login");
-
-    }
-
-  }catch(e){
-
-    console.error("LOGIN ERROR:",e);
+    alert("Błędny login");
 
   }
 
@@ -281,6 +274,7 @@ function renderTable(category){
   let html=`
   <h2>${category}</h2>
   <table>
+  <tbody>
 
   <tr>
   <th>LP</th>
@@ -295,7 +289,7 @@ function renderTable(category){
 
     html+=`
 
-    <tr>
+    <tr class="${r.waga ? 'weighted' : ''}">
 
     <td>${i+1}</td>
 
@@ -323,7 +317,7 @@ function renderTable(category){
 
   });
 
-  html+="</table>";
+  html+="</tbody></table>";
 
   container.innerHTML=html;
 
@@ -334,13 +328,18 @@ function renderTable(category){
    SAVE WEIGHT
 ======================= */
 
-function saveWeight(zawodnik,i){
+async function saveWeight(zawodnik,i){
 
-  const waga=document.getElementById("w_"+i).value;
+  const waga = document.getElementById("w_"+i).value;
+  const token = localStorage.getItem("session_token");
 
-  const token=localStorage.getItem("session_token");
+  const btn = event.target;
+  const row = btn.closest("tr");
 
-  fetch(
+  btn.disabled = true;
+  btn.innerText = "Zapisywanie...";
+
+  const res = await fetch(
 
     API_BASE+
     `?api=saveWeight`+
@@ -349,6 +348,52 @@ function saveWeight(zawodnik,i){
     `&waga=${waga}`
 
   );
+
+  const data = await res.json();
+
+  if(data.ok){
+
+    btn.innerText="✔ Zapisano";
+    btn.style.background="#4CAF50";
+    btn.style.color="white";
+
+    row.classList.add("weighted");
+
+  }else{
+
+    btn.innerText="Błąd";
+    btn.style.background="#f44336";
+
+  }
+
+}
+
+
+/* =======================
+   FILTR NIEZWAŻONYCH
+======================= */
+
+function filterUnweighted(){
+
+  const only=document.getElementById("onlyUnweighted").checked;
+
+  document.querySelectorAll("#content tbody tr").forEach(tr=>{
+
+    const input=tr.querySelector("input");
+
+    if(!input) return;
+
+    if(only && input.value){
+
+      tr.style.display="none";
+
+    }else{
+
+      tr.style.display="";
+
+    }
+
+  });
 
 }
 
