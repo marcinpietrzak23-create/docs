@@ -691,12 +691,30 @@ table tr:first-child th {
 .startlist-page tbody tr:nth-child(odd){
   background:#ffffff !important;
 }
-/* ===== STARTLIST SCROLL FIX ===== */
+/* ===== STARTLIST STICKY FIX ===== */
 
-.startlist-page #content{
-  max-height:70vh;
-  overflow-y:auto;
+.startlist-page table{
+  border-collapse:separate;
+  border-spacing:0;
 }
+
+.startlist-page thead th{
+  position:sticky;
+  top:0;
+  z-index:30;
+  background:#102a43;
+  color:#ffffff;
+}
+
+/* zebra rows */
+.startlist-page tbody tr:nth-child(even){
+  background:#f3f4f6;
+}
+
+.startlist-page tbody tr:nth-child(odd){
+  background:#ffffff;
+}
+
 
 
 
