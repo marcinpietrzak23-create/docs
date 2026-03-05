@@ -626,6 +626,9 @@ table tr:first-child th {
   cursor:pointer;
 }
 
+.weighted{
+  background:#e7f6e7;
+}
 
 
 
