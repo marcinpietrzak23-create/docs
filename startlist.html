@@ -104,10 +104,10 @@ if (location.hash !== "#" + PAGE_TOKEN) {
 
   throw new Error("Unauthorized");
 }
-  const API_KEY = "kb_admin_2025";
+const API_KEY = "kb_admin_2025";
 
 const API_URL =
-"https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec=" + API_KEY;
+"https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec?api=startlist&key=" + API_KEY;
 
 let grouped = {};
 
