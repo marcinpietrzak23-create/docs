@@ -144,22 +144,38 @@ async function loginJudge(){
   const login=document.getElementById("login").value;
   const password=document.getElementById("password").value;
 
-  const res=await fetch(
-    API_BASE+
-    `?api=login&login=${login}&password=${password}`
-  );
+  const url =
+  API_BASE + `?api=login&login=${login}&password=${password}`;
 
-  const data=await res.json();
+  console.log("LOGIN URL:",url);
 
-  if(data.ok){
+  try{
 
-    localStorage.setItem("session_token",data.token);
+    const res = await fetch(url);
 
-    location.reload();
+    const text = await res.text();
 
-  }else{
+    console.log("LOGIN RESPONSE:",text);
 
-    alert("Błędny login lub hasło");
+    const data = JSON.parse(text);
+
+    if(data.ok){
+
+      localStorage.setItem("session_token",data.token);
+
+      console.log("TOKEN SAVED:",data.token);
+
+      location.reload();
+
+    }else{
+
+      alert("Błędny login");
+
+    }
+
+  }catch(e){
+
+    console.error("LOGIN ERROR:",e);
 
   }
 
