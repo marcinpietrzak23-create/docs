@@ -650,6 +650,28 @@ table tr:first-child th {
   background:#e7f6e7;
 }
 
+/* =========================
+   STARTLIST FIX
+========================= */
+
+.startlist-page thead th{
+  background:#102a43;
+  color:#ffffff;
+  font-weight:600;
+  border-bottom:2px solid #2a3f55;
+}
+
+.startlist-page tbody tr:nth-child(even){
+  background:#f3f4f6;
+}
+
+.startlist-page tbody tr:nth-child(odd){
+  background:#ffffff;
+}
+
+.startlist-page .weighted{
+  background:#e7f6e7;
+}
 
 
 
