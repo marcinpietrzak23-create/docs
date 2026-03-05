@@ -650,6 +650,22 @@ table tr:first-child th {
   background:#e7f6e7;
 }
 
+/* =========================
+   FIX STARTLIST STICKY
+========================= */
+
+.startlist-page table{
+  border-collapse: separate;
+  border-spacing:0;
+}
+
+.startlist-page thead th{
+  position: sticky;
+  top:0;
+  z-index:20;
+  background:#102a43;
+  color:#ffffff;
+}
 
 
 
