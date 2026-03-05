@@ -267,7 +267,6 @@ function showFirst(){
 /* =======================
    TABLE
 ======================= */
-
 function renderTable(category){
 
   const rows=[...grouped[category]];
@@ -280,9 +279,10 @@ function renderTable(category){
 
   let html=`
   <h2>${category}</h2>
-  <table>
-  <tbody>
 
+  <table>
+
+  <thead>
   <tr>
   <th>LP</th>
   <th>Zawodnik</th>
@@ -290,6 +290,9 @@ function renderTable(category){
   <th>Kategoria dodatkowa</th>
   <th>Waga</th>
   </tr>
+  </thead>
+
+  <tbody>
   `;
 
   rows.forEach((r,i)=>{
@@ -308,13 +311,19 @@ function renderTable(category){
 
     <td>
 
-      <input id="w_${i}" type="number"
-value="${r.waga||""}"
-style="width:80px;padding:4px;font-weight:bold;text-align:center">
+      <input
+        id="w_${i}"
+        type="number"
+        value="${r.waga||""}"
+        style="width:80px;padding:4px;font-weight:bold;text-align:center"
+      >
 
-      <button class="save-weight" onclick="saveWeight('${r.zawodnik}',${i})">
-  Zapisz
-</button>
+      <button
+        class="save-weight"
+        onclick="saveWeight('${r.zawodnik}',${i})"
+      >
+      Zapisz
+      </button>
 
     </td>
 
@@ -329,7 +338,6 @@ style="width:80px;padding:4px;font-weight:bold;text-align:center">
   container.innerHTML=html;
 
 }
-
 
 /* =======================
    SAVE WEIGHT
