@@ -1,7 +1,7 @@
 /* ===== STARTLIST CLEAN UI ===== */
 
 body.startlist-page table{
-  width:92%;
+  width:96%;
   margin:20px auto;
   border-collapse:collapse;
   background:#ffffff;
@@ -12,7 +12,7 @@ body.startlist-page table{
 
 body.startlist-page th,
 body.startlist-page td{
-  padding:10px 12px;
+  padding:6px 10px;
   border-bottom:1px solid #e5e7eb;
 }
 
@@ -86,4 +86,8 @@ body.startlist-page .startlist-actions{
   body.startlist-page .save-weight{
     display:none !important;
   }
+}
+.table-scroll{
+  max-height:70vh;
+  overflow-y:auto;
 }
