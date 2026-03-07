@@ -1,7 +1,7 @@
 /* ===== STARTLIST CLEAN UI ===== */
 
 body.startlist-page table{
-  width:96%;
+  width:98%;
   margin:20px auto;
   border-collapse:collapse;
   background:#ffffff;
@@ -90,4 +90,10 @@ body.startlist-page .startlist-actions{
 .table-scroll{
   max-height:70vh;
   overflow-y:auto;
+}
+body.startlist-page thead th{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:#102a43;
 }
