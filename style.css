@@ -532,7 +532,6 @@ th {
 .startlist-page table {
   background: #ffffff;
   border-radius: 8px;
-  overflow: hidden;
 }
 
 .startlist-page th {
@@ -598,12 +597,6 @@ th {
    STICKY HEADER – WSZYSTKIE TABELE
 ========================================================= */
 
-table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-}
-
 /* jasne tabele */
 table thead th {
   background: #eee;
@@ -612,13 +605,6 @@ table thead th {
 /* ciemne tabele wyników */
 .table-page thead th {
   background: #102a43;
-}
-
-table tr:first-child th {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: #eee;
 }
 
 /* tabela wyników (ciemna) */
@@ -672,6 +658,7 @@ table tr:first-child th {
 .startlist-page .weighted{
   background:#e7f6e7;
 }
+
 
 
 
