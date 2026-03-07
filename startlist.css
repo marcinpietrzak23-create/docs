@@ -18,10 +18,10 @@ body.startlist-page td{
 }
 
 /* nagłówek */
-body.startlist-page thead{
-  position:sticky;
-  top:0;
-  z-index:20;
+body.startlist-page thead th{
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
 body.startlist-page thead th{
