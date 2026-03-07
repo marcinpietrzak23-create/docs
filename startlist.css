@@ -1,15 +1,13 @@
-/* ===== STARTLIST CLEAN UI ===== */
+/* ===== STARTLIST ===== */
 
 body.startlist-page table{
-  width:98%;
+  width:96%;
   margin:20px auto;
   border-collapse:collapse;
-  background:#ffffff;
+  background:white;
   border-radius:8px;
   overflow:hidden;
-  box-shadow:0 6px 18px rgba(0,0,0,0.15);
 }
-
 
 body.startlist-page th,
 body.startlist-page td{
@@ -20,48 +18,45 @@ body.startlist-page td{
 body.startlist-page thead th{
   background:#102a43;
   color:#ffffff;
-  font-weight:600;
+  position:sticky;
+  top:0;
+  z-index:5;
 }
 
 body.startlist-page tbody tr:nth-child(even){
-  background:#f9fafb;
+  background:#f3f4f6;
 }
 
 body.startlist-page tbody tr.weighted{
   background:#e7f6e7;
 }
 
-/* input wagi */
+/* input */
 body.startlist-page input[type="number"]{
   width:70px;
-  padding:6px;
+  padding:5px;
   border:1px solid #cbd5e1;
   border-radius:4px;
   text-align:center;
-  font-weight:600;
 }
 
-/* przycisk zapisz */
+/* button */
 body.startlist-page .save-weight{
   margin-left:6px;
-  padding:6px 10px;
+  padding:5px 10px;
   border:1px solid #cbd5e1;
   background:#f1f5f9;
   border-radius:4px;
   cursor:pointer;
 }
 
-body.startlist-page .save-weight:hover{
-  background:#e2e8f0;
-}
-
-/* tabs kategorii */
+/* tabs */
 body.startlist-page .tabs{
   display:flex;
   flex-wrap:wrap;
   justify-content:center;
   gap:8px;
-  margin-bottom:12px;
+  margin-bottom:10px;
 }
 
 body.startlist-page .tabs button{
@@ -69,17 +64,15 @@ body.startlist-page .tabs button{
   border:1px solid #cbd5e1;
   background:#f8fafc;
   border-radius:20px;
-  cursor:pointer;
 }
 
-/* górny panel */
+/* panel */
 body.startlist-page .startlist-actions{
   display:flex;
   flex-wrap:wrap;
   justify-content:center;
-  align-items:center;
   gap:12px;
-  margin-bottom:20px;
+  margin-bottom:15px;
 }
 
 /* druk */
@@ -87,29 +80,4 @@ body.startlist-page .startlist-actions{
   body.startlist-page .save-weight{
     display:none !important;
   }
-}
-.table-scroll{
-  max-height:70vh;
-  overflow-y:auto;
-}
-body.startlist-page thead th{
-  position:sticky;
-  top:0;
-  z-index:20;
-  background:#102a43;
-}
-.table-wrap{
-  max-height:70vh;
-  overflow-y:auto;
-}
-
-body.startlist-page thead th{
-  position:sticky;
-  top:0;
-  z-index:30;
-  background:#102a43;
-}
-
-.category-title{
-  margin-bottom:10px;
 }
