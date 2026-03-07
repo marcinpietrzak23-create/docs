@@ -98,3 +98,18 @@ body.startlist-page thead th{
   z-index:20;
   background:#102a43;
 }
+.table-wrap{
+  max-height:70vh;
+  overflow-y:auto;
+}
+
+body.startlist-page thead th{
+  position:sticky;
+  top:0;
+  z-index:30;
+  background:#102a43;
+}
+
+.category-title{
+  margin-bottom:10px;
+}
