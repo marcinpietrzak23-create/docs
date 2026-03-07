@@ -96,3 +96,6 @@ body.startlist-page .startlist-actions{
     display:none !important;
   }
 }
+body.startlist-page .panel{
+  display:block;
+}
