@@ -229,9 +229,10 @@ function renderTable(category){
   const container=document.getElementById("content");
 
   let html=`
-  <h2>${category}</h2>
+<h2 class="category-title">${category}</h2>
 
-  <table>
+<div class="table-wrap">
+<table>
 
   <thead>
   <tr>
@@ -284,7 +285,7 @@ function renderTable(category){
 
   });
 
-  html+="</tbody></table>";
+  html+="</tbody></table></div>";
 
   container.innerHTML=html;
 
