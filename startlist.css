@@ -1,32 +1,42 @@
-/* ===== STARTLIST ===== */
+/* ===== STARTLIST FINAL ===== */
 
 body.startlist-page table{
-  width:96%;
+  width:97%;
   margin:20px auto;
   border-collapse:collapse;
-  background:white;
+  background:#ffffff;
+  box-shadow:0 4px 14px rgba(0,0,0,0.15);
   border-radius:8px;
   overflow:hidden;
 }
 
+/* komórki */
 body.startlist-page th,
 body.startlist-page td{
-  padding:6px 10px;
+  padding:7px 10px;
   border-bottom:1px solid #e5e7eb;
+  text-align:left;
+}
+
+/* nagłówek */
+body.startlist-page thead{
+  position:sticky;
+  top:0;
+  z-index:20;
 }
 
 body.startlist-page thead th{
   background:#102a43;
   color:#ffffff;
-  position:sticky;
-  top:0;
-  z-index:5;
+  font-weight:600;
 }
 
+/* zebra rows */
 body.startlist-page tbody tr:nth-child(even){
   background:#f3f4f6;
 }
 
+/* zawodnik z wagą */
 body.startlist-page tbody tr.weighted{
   background:#e7f6e7;
 }
@@ -50,13 +60,17 @@ body.startlist-page .save-weight{
   cursor:pointer;
 }
 
+body.startlist-page .save-weight:hover{
+  background:#e2e8f0;
+}
+
 /* tabs */
 body.startlist-page .tabs{
   display:flex;
   flex-wrap:wrap;
   justify-content:center;
   gap:8px;
-  margin-bottom:10px;
+  margin-bottom:12px;
 }
 
 body.startlist-page .tabs button{
@@ -64,6 +78,7 @@ body.startlist-page .tabs button{
   border:1px solid #cbd5e1;
   background:#f8fafc;
   border-radius:20px;
+  cursor:pointer;
 }
 
 /* panel */
@@ -72,7 +87,7 @@ body.startlist-page .startlist-actions{
   flex-wrap:wrap;
   justify-content:center;
   gap:12px;
-  margin-bottom:15px;
+  margin-bottom:20px;
 }
 
 /* druk */
