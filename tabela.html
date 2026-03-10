@@ -274,11 +274,10 @@ function buildBoje(rows){
       list.sort((a,b)=>b.wynik-a.wynik);
     } else {
       list.forEach(a=>{
-        const vals=a.proby.map(p=>p.val);
-        a.max=Math.max(...vals);
-        a.pct=a.waga?a.max/a.waga:0;
-      });
-      list.sort((a,b)=>b.pct-a.pct);
+  const vals=a.proby.map(p=>p.val);
+  a.max=Math.max(...vals);
+});
+list.sort((a,b)=>b.max-a.max);
     }
 
     box.insertAdjacentHTML("beforeend",`<h2>🏋️ ${comp}</h2>`);
@@ -291,7 +290,7 @@ function buildBoje(rows){
     } else if(/SN/i.test(comp)){
       html+=`<th>Odważnik</th><th>Powt.</th><th>Wynik</th>`;
     } else {
-      html+=`<th>P1</th><th>P2</th><th>P3</th><th>MAX</th><th>%MC</th>`;
+      html+=`<th>P1</th><th>P2</th><th>P3</th><th>MAX</th><th>Wynik</th>`;
     }
 
     html+=`</tr></thead><tbody>`;
@@ -314,7 +313,7 @@ function buildBoje(rows){
           <td>${p[1]||"-"}</td>
           <td>${p[2]||"-"}</td>
           <td>${a.max}</td>
-          <td>${(a.pct*100).toFixed(2)}%</td>`;
+          <td>${a.wynik || "-"}</td>
       }
       html+=`</tr>`;
     });
@@ -343,4 +342,5 @@ loadAll();
 
 </body>
 </html>
+
 
