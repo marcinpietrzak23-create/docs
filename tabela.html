@@ -175,13 +175,18 @@ function renderAll(baseRes, extraRes, bojeRows){
 
   buildGeneralka([...baseRows,...extraRows]);
 
+  const wynikMap = {};
+[...baseRows,...extraRows].forEach(r=>{
+  wynikMap[norm(r.ZAWODNIK)+"|"+norm(r.KONKURENCJA)] = r.F;
+});
+  
   const filteredBoje=(bojeRows||[])
     .filter(r =>
       norm(r.kategoria)===norm(CATEGORY_KEY) ||
       norm(r.kategoria_dodatkowa)===norm(CATEGORY_KEY)
     );
 
-  buildBoje(filteredBoje);
+  buildBoje(filteredBoje, wynikMap);
 }
 
 /* ================= GENERALKA ================= */
@@ -235,7 +240,7 @@ function buildGeneralka(rows){
 
 /* ================= BOJE ================= */
 /* --- BEZ ZMIAN --- */
-function buildBoje(rows){
+function buildBoje(rows, wynikMap){
   const box=document.getElementById("boje");
   box.innerHTML="";
   if(!rows.length){
@@ -313,7 +318,7 @@ list.sort((a,b)=>b.max-a.max);
     <td>${p[1]||"-"}</td>
     <td>${p[2]||"-"}</td>
     <td>${a.max}</td>
-    <td>${a.wynik || "-"}</td>`;
+    <td>${wynikMap[norm(a.zawodnik)+"|"+norm(comp)] ?? a.wynik}</td>`;
 }
       html+=`</tr>`;
     });
@@ -342,6 +347,7 @@ loadAll();
 
 </body>
 </html>
+
 
 
 
