@@ -307,13 +307,13 @@ list.sort((a,b)=>b.max-a.max);
       } else if(/SN/i.test(comp)){
         html+=`<td>${a.odciezar}</td><td>${a.powtorzenia}</td><td>${a.wynik}</td>`;
       } else {
-        const p=a.proby.sort((x,y)=>x.nr-y.nr).map(x=>x.val);
-        html+=`
-  <td>${p[0]||"-"}</td>
-  <td>${p[1]||"-"}</td>
-  <td>${p[2]||"-"}</td>
-  <td>${a.max}</td>
-  <td>${a.wynik || "-"}</td>
+  const p=a.proby.sort((x,y)=>x.nr-y.nr).map(x=>x.val);
+  html+=`
+    <td>${p[0]||"-"}</td>
+    <td>${p[1]||"-"}</td>
+    <td>${p[2]||"-"}</td>
+    <td>${a.max}</td>
+    <td>${a.wynik || "-"}</td>`;
 }
       html+=`</tr>`;
     });
@@ -342,6 +342,7 @@ loadAll();
 
 </body>
 </html>
+
 
 
 
