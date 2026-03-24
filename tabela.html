@@ -130,7 +130,7 @@ Object.keys(s)
   .forEach(o=>{
     COMP_ORDER.push(o.key);
 
-    compMap[norm(o.key)] = {
+    compMap[o.key] = {
       short: s[`competition_${o.idx}_short`] || o.key,
       full: s[`competition_${o.idx}_full`] || o.key
     };
