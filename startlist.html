@@ -85,9 +85,9 @@ let grouped={};
    SESJA
 ======================= */
 
-const token = sessionStorage.getItem("session_token");
+const TOKEN = sessionStorage.getItem("session_token");
 
-if(TOKEN){
+if (TOKEN) {
 
   document.getElementById("loginBox").style.display="none";
   document.getElementById("startlistApp").style.display="block";
@@ -139,9 +139,9 @@ async function init(){
 
   const TOKEN = sessionStorage.getItem("session_token");
 
-  const res = await fetch(
-    API_BASE + "?api=startlist&token=" + token
-  );
+const res = await fetch(
+  API_BASE + "?api=startlist&token=" + TOKEN
+);
 
   const data = await res.json();
 
