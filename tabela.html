@@ -118,13 +118,26 @@ async function loadAll(){
     CATEGORY_LABEL = "Wyniki: " + s[CATEGORY_KEY];
   }
   document.getElementById("categoryTitle").textContent = CATEGORY_LABEL;
+const compMap = {};
 
-  Object.keys(s)
-    .filter(k=>k.startsWith("competition_"))
-    .map(k=>({ idx:parseInt(k.replace("competition_",""),10), key:s[k] }))
-    .filter(o=>o.key)
-    .sort((a,b)=>a.idx-b.idx)
-    .forEach(o=>COMP_ORDER.push(o.key));
+Object.keys(s)
+  .filter(k=>/^competition_\d+$/.test(k))
+  .map(k=>({
+    idx: parseInt(k.replace("competition_",""),10),
+    key: s[k]
+  }))
+  .sort((a,b)=>a.idx-b.idx)
+  .forEach(o=>{
+    COMP_ORDER.push(o.key);
+
+    compMap[o.key] = {
+      short: s[`competition_${o.idx}_short`] || o.key,
+      full: s[`competition_${o.idx}_full`] || o.key
+    };
+  });
+
+window.COMP_MAP = compMap;
+ 
 
   const btn=document.getElementById("liveLink");
   if(s.live_url){
@@ -225,7 +238,7 @@ function buildGeneralka(rows){
 
   document.querySelector("#generalka thead tr").innerHTML=`
     <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th><th>SUMA</th>
-    ${COMP_ORDER.map(c=>`<th>${c.replace(/\s+/g, "<br>")}</th>`).join("")}
+    ${COMP_ORDER.map(c=>`<th>${window.COMP_MAP[c]?.short || c}</th>`).join("")}
   `;
 
   const tbody=document.querySelector("#generalka tbody");
@@ -301,7 +314,9 @@ function buildBoje(rows, punktyMap){
 
     list.sort((a,b)=>a.punkty-b.punkty);
 
-    box.insertAdjacentHTML("beforeend",`<h2>🏋️ ${comp}</h2>`);
+    const fullName = window.COMP_MAP[comp]?.full || comp;
+
+box.insertAdjacentHTML("beforeend",`<h2>🏋️ ${fullName}</h2>`);
 
     let html=`<table><thead><tr>
       <th>M-ce</th>
