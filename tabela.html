@@ -191,6 +191,12 @@ function renderAll(baseRes, extraRes, bojeRows){
     .filter(r=>norm(r.KATEGORIA_DODATKOWA)===norm(CATEGORY_KEY));
 
   buildGeneralka([...baseRows,...extraRows]);
+  console.log("COMP_ORDER:", COMP_ORDER);
+console.log("COMP_MAP:", window.COMP_MAP);
+COMP_ORDER.forEach(c=>{
+  console.log("KEY:", c, "MAP:", window.COMP_MAP[c]);
+});
+
   
 const punktyMap = {};
 
