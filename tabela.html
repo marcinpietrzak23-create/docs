@@ -130,7 +130,7 @@ Object.keys(s)
   .forEach(o=>{
     COMP_ORDER.push(o.key);
 
-    compMap[o.key] = {
+    compMap[norm(o.key)] = {
       short: s[`competition_${o.idx}_short`] || o.key,
       full: s[`competition_${o.idx}_full`] || o.key
     };
@@ -238,7 +238,7 @@ function buildGeneralka(rows){
 
   document.querySelector("#generalka thead tr").innerHTML=`
     <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th><th>SUMA</th>
-    ${COMP_ORDER.map(c=>`<th>${window.COMP_MAP[c]?.short || c}</th>`).join("")}
+    ${COMP_ORDER.map(c=>`<th>${window.COMP_MAP[norm(c)]?.short || c}</th>`).join("")}
   `;
 
   const tbody=document.querySelector("#generalka tbody");
@@ -314,7 +314,7 @@ function buildBoje(rows, punktyMap){
 
     list.sort((a,b)=>a.punkty-b.punkty);
 
-    const fullName = window.COMP_MAP[comp]?.full || comp;
+    const fullName = window.COMP_MAP[norm(comp)]?.full || comp;
 
 box.insertAdjacentHTML("beforeend",`<h2>🏋️ ${fullName}</h2>`);
 
