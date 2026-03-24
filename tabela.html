@@ -176,8 +176,14 @@ function renderAll(baseRes, extraRes, bojeRows){
   buildGeneralka([...baseRows,...extraRows]);
   
 const punktyMap = {};
-[...baseRows,...extraRows].forEach(r=>{
-  punktyMap[norm(r.ZAWODNIK)+"|"+norm(r.KONKURENCJA)] = r["%MC"];
+
+extraRows.forEach(r=>{
+  const key = norm(r.ZAWODNIK)+"|"+norm(r.KONKURENCJA);
+
+  punktyMap[key] = {
+    pkt: r.PKT,
+    wynik: r["%MC"]
+  };
 });
   
   const filteredBoje=(bojeRows||[])
