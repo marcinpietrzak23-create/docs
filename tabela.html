@@ -238,7 +238,10 @@ function buildGeneralka(rows){
 
   document.querySelector("#generalka thead tr").innerHTML=`
     <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th><th>SUMA</th>
-    ${COMP_ORDER.map(c=>`<th>${window.COMP_MAP[norm(c)]?.short || c}</th>`).join("")}
+    ${COMP_ORDER.map(c=>{
+  const short = window.COMP_MAP[norm(c)]?.short || c;
+  return `<th>${short.replace(/\s+/g, "<br>")}</th>`;
+}).join("")}
   `;
 
   const tbody=document.querySelector("#generalka tbody");
