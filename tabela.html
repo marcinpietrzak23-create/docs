@@ -225,7 +225,7 @@ function buildGeneralka(rows){
 
   document.querySelector("#generalka thead tr").innerHTML=`
     <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th><th>SUMA</th>
-    ${COMP_ORDER.map(c=>`<th>${c}</th>`).join("")}
+    ${COMP_ORDER.map(c=>`<th>${c.replace(/\s+/g, "<br>")}</th>`).join("")}
   `;
 
   const tbody=document.querySelector("#generalka tbody");
@@ -335,7 +335,7 @@ function buildBoje(rows, punktyMap){
           <td>${a.odciezar}</td>
           <td>${a.powtorzenia}</td>
           <td>${a.wynik}</td>
-          <td>${a.wynikFinal ?? "-"}</td>
+          <td>${a.wynikFinal != null ? Number(a.wynikFinal).toFixed(2) : "-"}</td>
           <td>${a.punkty}</td>`;
 
       }
@@ -343,7 +343,7 @@ function buildBoje(rows, punktyMap){
 
         html+=`
           <td>${a.wynik}</td>
-          <td>${a.wynikFinal ?? "-"}</td>
+          <td>${a.wynikFinal != null ? Number(a.wynikFinal).toFixed(2) : "-"}</td>
           <td>${a.punkty}</td>`;
 
       }
@@ -357,7 +357,7 @@ const max=p.length ? Math.max(...p) : "-";
           <td>${p[1]||"-"}</td>
           <td>${p[2]||"-"}</td>
           <td>${max}</td>
-          <td>${a.wynikFinal ?? "-"}</td>
+          <td>${a.wynikFinal != null ? Number(a.wynikFinal).toFixed(2) : "-"}</td>
           <td>${a.punkty}</td>`;
       }
 
