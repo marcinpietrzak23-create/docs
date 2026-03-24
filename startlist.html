@@ -85,7 +85,7 @@ let grouped={};
    SESJA
 ======================= */
 
-const TOKEN=localStorage.getItem("session_token");
+const token = sessionStorage.getItem("session_token");
 
 if(TOKEN){
 
@@ -118,7 +118,7 @@ async function loginJudge(){
 
   if(data.ok){
 
-    localStorage.setItem("session_token",data.token);
+    sessionStorage.setItem("session_token", data.token);
 
     location.reload();
 
@@ -137,7 +137,7 @@ async function loginJudge(){
 
 async function init(){
 
-  const token = localStorage.getItem("session_token");
+  const TOKEN = sessionStorage.getItem("session_token");
 
   const res = await fetch(
     API_BASE + "?api=startlist&token=" + token
@@ -296,7 +296,7 @@ function renderTable(category){
 async function saveWeight(zawodnik,i){
 
   const waga = document.getElementById("w_"+i).value;
-  const token = localStorage.getItem("session_token");
+  const token = sessionStorage.getItem("session_token");
 
   const btn = event.target;
   const row = btn.closest("tr");
