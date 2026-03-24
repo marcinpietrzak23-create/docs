@@ -56,7 +56,7 @@
 <div class="page table-page">
   <div class="table-panel">
 
-    <a href="/" class="back-link">← Powrót</a>
+    <a href="#" class="back-link" id="backBtn">← Powrót</a>
     <h1 id="categoryTitle"></h1>
 
     <input id="filterInput" placeholder="Filtruj po zawodniku lub klubie…" />
@@ -417,6 +417,35 @@ if("serviceWorker"in navigator){
 
 /* ================= START ================= */
 loadAll();
+
+  document.getElementById("backBtn").addEventListener("click", function(e) {
+  e.preventDefault();
+
+  let path = window.location.pathname;
+
+  path = path.substring(0, path.lastIndexOf("/"));
+
+  function goUp(p) {
+    if (p === "" || p === "/") {
+      window.location.href = "/index.html";
+      return;
+    }
+
+    fetch(p + "/index.html", { method: "HEAD" })
+      .then(res => {
+        if (res.ok) {
+          window.location.href = p + "/index.html";
+        } else {
+          goUp(p.substring(0, p.lastIndexOf("/")));
+        }
+      })
+      .catch(() => {
+        window.location.href = "/index.html";
+      });
+  }
+
+  goUp(path);
+});
 </script>
 
 </body>
