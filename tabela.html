@@ -220,6 +220,7 @@ const punktyMap = {};
 
 /* ================= GENERALKA ================= */
 function buildGeneralka(rows){
+  const compsInCategory = [...new Set(rows.map(r => r.KONKURENCJA))];
   if(!rows.length) return;
 
   if(!SHOW_GENERALKA){
@@ -248,7 +249,7 @@ function buildGeneralka(rows){
 
   document.querySelector("#generalka thead tr").innerHTML=`
     <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th><th>SUMA</th>
-    ${COMP_ORDER.map(c=>{
+    ${compsInCategory.map(c=>{
   const short = window.COMP_MAP[c]?.short || c;
   return `<th>${short.replace(/\s+/g, "<br>")}</th>`;
 }).join("")}
@@ -264,7 +265,7 @@ function buildGeneralka(rows){
         <td>${r.klub}</td>
         <td>${r.waga}</td>
         <td>${r.sum}</td>
-        ${COMP_ORDER.map(c=>`<td>${r.pts[c] ?? "-"}</td>`).join("")}
+        ${compsInCategory.map(c=>`<td>${r.pts[c] ?? "-"}</td>`).join("")}
       </tr>
     `);
   });
