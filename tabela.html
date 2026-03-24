@@ -291,9 +291,11 @@ function buildBoje(rows, punktyMap){
     /* ===== DODAJEMY PUNKTY ===== */
 
     list.forEach(a=>{
-      const key = norm(a.zawodnik)+"|"+norm(comp);
-      a.punkty = Number(punktyMap[key]?.pkt ?? 0);
-    });
+  const key = norm(a.zawodnik)+"|"+norm(comp);
+
+  a.punkty = Number(punktyMap[key]?.pkt ?? 0);
+  a.wynikFinal = punktyMap[key]?.wynik ?? null;
+});
 
     /* ===== SORTOWANIE ===== */
 
@@ -314,7 +316,7 @@ function buildBoje(rows, punktyMap){
       html+=`<th>Wynik</th><th>Punkty</th>`;
     } 
     else{
-      html+=`<th>P1</th><th>P2</th><th>P3</th><th>MAX</th><th>Punkty</th>`;
+      html+=`<th>P1</th><th>P2</th><th>P3</th><th>MAX</th><th>Wynik</th><th>Punkty</th>`;
     }
 
     html+=`</tr></thead><tbody>`;
@@ -333,14 +335,16 @@ function buildBoje(rows, punktyMap){
           <td>${a.odciezar}</td>
           <td>${a.powtorzenia}</td>
           <td>${a.wynik}</td>
-          <td>${a.punkty.toFixed(2)}</td>`;
+          <td>${a.wynikFinal ?? "-"}</td>
+          <td>${a.punkty}</td>`;
 
       }
       else if(/TIEBREAK/i.test(comp)){
 
         html+=`
           <td>${a.wynik}</td>
-          <td>${a.punkty.toFixed(2)}</td>`;
+          <td>${a.wynikFinal ?? "-"}</td>
+          <td>${a.punkty}</td>`;
 
       }
       else{
@@ -353,7 +357,8 @@ const max=p.length ? Math.max(...p) : "-";
           <td>${p[1]||"-"}</td>
           <td>${p[2]||"-"}</td>
           <td>${max}</td>
-          <td>${a.punkty.toFixed(2)}</td>`;
+          <td>${a.wynikFinal ?? "-"}</td>
+          <td>${a.punkty}</td>`;
       }
 
       html+=`</tr>`;
