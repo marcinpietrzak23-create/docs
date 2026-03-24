@@ -659,7 +659,18 @@ table thead th {
   background:#e7f6e7;
 }
 
+.back-link {
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: none;
+  opacity: 0.9;
+  transition: 0.2s;
+}
 
+.back-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
 
 
 
