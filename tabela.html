@@ -177,7 +177,7 @@ function renderAll(baseRes, extraRes, bojeRows){
   
 const punktyMap = {};
 
-extraRows.forEach(r=>{
+[...baseRows, ...extraRows].forEach(r=>{
   const key = norm(r.ZAWODNIK)+"|"+norm(r.KONKURENCJA);
 
   punktyMap[key] = {
@@ -292,12 +292,12 @@ function buildBoje(rows, punktyMap){
 
     list.forEach(a=>{
       const key = norm(a.zawodnik)+"|"+norm(comp);
-      a.punkty = Number(punktyMap[key] ?? 0);
+      a.punkty = Number(punktyMap[key]?.pkt ?? 0);
     });
 
     /* ===== SORTOWANIE ===== */
 
-    list.sort((a,b)=>b.punkty-a.punkty);
+    list.sort((a,b)=>a.punkty-b.punkty);
 
     box.insertAdjacentHTML("beforeend",`<h2>🏋️ ${comp}</h2>`);
 
