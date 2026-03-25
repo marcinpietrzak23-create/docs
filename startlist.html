@@ -52,6 +52,7 @@ Hardstyle Kettlebell European Championship
 
 <button onclick="window.print()">Drukuj</button>
 <button onclick="exportPDF()">PDF</button>
+<button onclick="exportExcel()">Excel</button>
 <label style="margin-left:20px; color:#ffffff; font-weight:bold;">
   Stanowiska:
   <input 
@@ -63,7 +64,17 @@ Hardstyle Kettlebell European Championship
     style="width:60px;padding:4px;margin-left:5px"
   >
 </label>
-
+<label style="margin-left:20px; color:#ffffff; font-weight:bold;">
+  Konkurencja:
+  <select id="competitionSelect" style="margin-left:5px; padding:4px;">
+    <option value="SNUB3'">SNATCH</option>
+    <option value="TGU1RM">TGU</option>
+    <option value="1KBPR1RM">1KB PRESS</option>
+    <option value="2KBPR1RM">2KB PRESS</option>
+    <option value="2KBSQ1RM">SQUAT</option>
+    <option value="TIEBREAK">TIEBREAK</option>
+  </select>
+</label>
 <button 
   onclick="clearCategorySelection()" 
   style="margin-left:10px; color:#ffffff; background:#1f4d66; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;"
@@ -229,7 +240,7 @@ function renderTabs(){
     wrapper.onclick = () => renderTable(cat);
 
     wrapper.appendChild(checkbox);
-    wrapper.append(" " + cat);
+    wrapper.append(" " + cat.replace(/^K:/, ""));
 
     tabs.appendChild(wrapper);
 
@@ -280,7 +291,7 @@ checked.forEach(c => {
 
   const stations = parseInt(document.getElementById("stationsInput").value) || 1;
 
-  const comp = "SNUB3'";
+  const comp = document.getElementById("competitionSelect").value;
   const type = COMP_MAP[comp]?.type;
 
   let result;
@@ -329,7 +340,11 @@ function renderStations(data){
   border-bottom:1px solid rgba(255,255,255,0.2);
   color:#ffffff;
 ">
-        ${a.zawodnik}
+      ${a.zawodnik}
+<br>
+<span style="font-size:12px; opacity:0.7;">
+  ${a.kategoria.replace(/^K:/,"")}
+</span>
       </li>`;
     });
 
@@ -357,7 +372,9 @@ function renderTable(category){
   const container=document.getElementById("content");
 
   let html=`
-<h2 class="category-title">${category}</h2>
+<h2 class="category-title">
+  ${category.replace(/^K:/, "")}
+</h2>
 
 <div class="table-wrap">
 <table>
@@ -657,6 +674,40 @@ function splitGroup(athletes, stations) {
   document.querySelectorAll(".catCheck").forEach(cb=>{
     cb.checked = false;
   });
+
+}
+  function exportExcel(){
+
+  const rows = [];
+
+  document.querySelectorAll("#content ul").forEach((ul, i) => {
+
+    const station = "Stanowisko " + (i+1);
+
+    ul.querySelectorAll("li").forEach(li => {
+
+      rows.push([
+        station,
+        li.innerText.replace(/\n/g," ")
+      ]);
+
+    });
+
+  });
+
+  let csv = "Stanowisko,Zawodnik\n";
+
+  rows.forEach(r=>{
+    csv += r.join(",") + "\n";
+  });
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "stanowiska.csv";
+  a.click();
 
 }
 </script>
