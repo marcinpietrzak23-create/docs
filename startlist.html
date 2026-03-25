@@ -70,7 +70,6 @@ Hardstyle Kettlebell European Championship
 >
   Wyczyść
 </button>
-</label>
 <label class="filter-box">
 <input type="checkbox" id="onlyUnweighted" onchange="filterUnweighted()">
 <span>Tylko niezważeni</span>
@@ -207,37 +206,42 @@ function groupByCategory(rows){
 
 function renderTabs(){
 
-  const tabs=document.getElementById("tabs");
+  const tabs = document.getElementById("tabs");
+  tabs.innerHTML = "";
 
-  tabs.innerHTML="";
-
-  Object.keys(grouped).forEach(cat=>{
-
-    const btn=document.createElement("button");
+  Object.keys(grouped).forEach(cat => {
 
     const wrapper = document.createElement("label");
-wrapper.style.marginRight = "10px";
+    wrapper.style.marginRight = "15px";
+    wrapper.style.color = "#ffffff";
+    wrapper.style.display = "inline-flex";
+    wrapper.style.alignItems = "center";
+    wrapper.style.gap = "6px";
+    wrapper.style.cursor = "pointer";
 
-const checkbox = document.createElement("input");
-checkbox.type = "checkbox";
-checkbox.value = cat;
-checkbox.className = "catCheck";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.value = cat;
+    checkbox.className = "catCheck";
+    checkbox.style.transform = "scale(1.2)";
 
-wrapper.appendChild(checkbox);
-wrapper.append(" " + cat);
+    // kliknięcie w nazwę kategorii nadal pokazuje tabelę
+    wrapper.onclick = () => renderTable(cat);
 
-tabs.appendChild(wrapper);
+    wrapper.appendChild(checkbox);
+    wrapper.append(" " + cat);
 
-    btn.onclick=()=>renderTable(cat);
-
-    tabs.appendChild(btn);
+    tabs.appendChild(wrapper);
 
   });
-   
-const btn = document.createElement("button");
-btn.textContent = "Stanowiska";
-btn.onclick = showStations;
-tabs.appendChild(btn);
+
+  // przycisk stanowiska
+  const btn = document.createElement("button");
+  btn.textContent = "Stanowiska";
+  btn.onclick = showStations;
+  btn.style.marginLeft = "10px";
+
+  tabs.appendChild(btn);
 }
 
 
