@@ -329,7 +329,7 @@ function renderStations(data){
   min-width:220px;
   color:#ffffff;
 ">
-  <h3>
+ <h3 style="margin-bottom:10px;color:#ffffff;">
   Stanowisko ${i+1}
   <button onclick="printStation(${i})" style="margin-left:10px;">
     🖨
@@ -715,12 +715,43 @@ function splitGroup(athletes, stations) {
   a.click();
 
 }
-  function printStation(index){
+ function printStation(index){
 
-  const stations = document.querySelectorAll("#content > div > div");
-  const stationDiv = stations[index];
+  const stations = CURRENT_STATIONS;
+  const data = stations[index];
 
-  const content = stationDiv.innerHTML;
+  const comp = document.getElementById("competitionSelect")?.value || "";
+
+  const checked = document.querySelectorAll(".catCheck:checked");
+  let categories = [];
+  checked.forEach(c => categories.push(c.value.replace(/^K:/,"")));
+
+  const categoryText = categories.join(", ");
+
+  let html = `
+    <h2>Kategoria: ${categoryText}</h2>
+    <h3>Stanowisko: ${index+1}</h3>
+    <h4>Bój: ${comp}</h4>
+
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Zawodnik</th>
+        <th>Kategoria</th>
+      </tr>
+  `;
+
+  data.forEach((a,i)=>{
+    html += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${a.zawodnik}</td>
+        <td>${(a.kategoria||"").replace(/^K:/,"")}</td>
+      </tr>
+    `;
+  });
+
+  html += "</table>";
 
   const win = window.open("", "_blank");
 
@@ -734,26 +765,25 @@ function splitGroup(athletes, stations) {
           padding: 20px;
         }
 
-        h3 {
-          margin-bottom: 10px;
+        h2,h3,h4 {
+          margin: 5px 0;
         }
 
         table {
           width: 100%;
           border-collapse: collapse;
+          margin-top: 15px;
         }
 
-        td, th {
-          border: 1px solid #000;
+        th, td {
+          border: 1px solid black;
           padding: 6px;
           text-align: left;
         }
       </style>
     </head>
     <body>
-
-      ${generateStationTable(index)}
-
+      ${html}
     </body>
     </html>
   `);
