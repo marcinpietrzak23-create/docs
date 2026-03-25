@@ -195,11 +195,14 @@ const res = await fetch(
 
  const data = await res.json();
 
-// 🔥 DODAJ TO
+
 const settingsRes = await fetch(API_BASE + "?settings=1");
 const settingsData = await settingsRes.json();
 
-JUDGES = settingsData.judges || [];
+
+const s = settingsData.settings || settingsData;
+
+JUDGES = s.judges || [];
 
 grouped = groupByCategory(data);
 
