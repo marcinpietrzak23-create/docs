@@ -109,6 +109,7 @@ const API_BASE =
 
 let grouped={};
    let currentCategory = null;
+  let CURRENT_STATIONS = [];
 const COMP_MAP = {
   "SNUB3'": { type: "individual" },
   "TGU1RM": { type: "group" },
@@ -305,7 +306,8 @@ checked.forEach(c => {
     return;
   }
 
-  renderStations(result);
+  CURRENT_STATIONS = result;
+renderStations(result);
 }
 function renderStations(data){
 
@@ -327,9 +329,12 @@ function renderStations(data){
   min-width:220px;
   color:#ffffff;
 ">
-  <h3 style="margin-bottom:10px;color:#ffffff;">
-    Stanowisko ${i+1}
-  </h3>
+  <h3>
+  Stanowisko ${i+1}
+  <button onclick="printStation(${i})" style="margin-left:10px;">
+    🖨
+  </button>
+</h3>
 
   <ul style="list-style:none;padding:0;margin:0">
 `;
@@ -709,6 +714,87 @@ function splitGroup(athletes, stations) {
   a.download = "stanowiska.csv";
   a.click();
 
+}
+  function printStation(index){
+
+  const stations = document.querySelectorAll("#content > div > div");
+  const stationDiv = stations[index];
+
+  const content = stationDiv.innerHTML;
+
+  const win = window.open("", "_blank");
+
+  win.document.write(`
+    <html>
+    <head>
+      <title>Stanowisko</title>
+      <style>
+        body {
+          font-family: Arial;
+          padding: 20px;
+        }
+
+        h3 {
+          margin-bottom: 10px;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        td, th {
+          border: 1px solid #000;
+          padding: 6px;
+          text-align: left;
+        }
+      </style>
+    </head>
+    <body>
+
+      ${generateStationTable(index)}
+
+    </body>
+    </html>
+  `);
+
+  win.document.close();
+  win.print();
+}
+
+  function generateStationTable(index){
+
+  const stations = getCurrentStationsData();
+
+  const data = stations[index];
+
+  let html = `
+    <h2>Stanowisko ${index+1}</h2>
+
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Zawodnik</th>
+        <th>Kategoria</th>
+      </tr>
+  `;
+
+  data.forEach((a,i)=>{
+    html += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${a.zawodnik}</td>
+        <td>${(a.kategoria||"").replace(/^K:/,"")}</td>
+      </tr>
+    `;
+  });
+
+  html += "</table>";
+
+  return html;
+}
+  function getCurrentStationsData(){
+  return CURRENT_STATIONS;
 }
 </script>
 
