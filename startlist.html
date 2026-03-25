@@ -154,17 +154,14 @@ if (TOKEN) {
 
 async function loginJudge(){
 
-  const login=document.getElementById("login").value;
-  const password=document.getElementById("password").value;
+  const login = document.getElementById("login").value;
+  const password = document.getElementById("password").value;
 
   const res = await fetch(
     API_BASE + `?api=login&login=${login}&password=${password}`
   );
 
-  const resData = await res.json();
-
-const data = resData.data;
-JUDGES = resData.judges || [];
+  const data = await res.json();
 
   if(data.ok){
 
@@ -180,7 +177,6 @@ JUDGES = resData.judges || [];
 
 }
 
-
 /* =======================
    STARTLIST
 ======================= */
@@ -193,9 +189,15 @@ const res = await fetch(
   API_BASE + "?api=startlist&token=" + TOKEN
 );
 
-  const data = await res.json();
+ const data = await res.json();
 
-  grouped = groupByCategory(data);
+// 🔥 DODAJ TO
+const settingsRes = await fetch(API_BASE + "?settings=1");
+const settingsData = await settingsRes.json();
+
+JUDGES = settingsData.judges || [];
+
+grouped = groupByCategory(data);
 
   renderTabs();
 
@@ -842,8 +844,7 @@ function splitGroup(athletes, stations) {
   return CURRENT_STATIONS;
 }
 
-  console.log("ZAWODNICY:", data.length);
-console.log("SEDZIOWIE:", JUDGES);
+  
 </script>
 
 </body>
