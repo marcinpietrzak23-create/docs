@@ -53,6 +53,7 @@ Hardstyle Kettlebell European Championship
 <button onclick="window.print()">Drukuj</button>
 <button onclick="exportPDF()">PDF</button>
 <button onclick="exportExcel()">Excel</button>
+
 <label style="margin-left:20px; color:#ffffff; font-weight:bold;">
   Stanowiska:
   <input 
@@ -63,6 +64,7 @@ Hardstyle Kettlebell European Championship
     onchange="showStations()"
     style="width:60px;padding:4px;margin-left:5px"
   >
+</label>
 
 <label style="margin-left:20px; color:#ffffff; font-weight:bold;">
   Konkurencja:
@@ -75,15 +77,22 @@ Hardstyle Kettlebell European Championship
     <option value="TIEBREAK">TIEBREAK</option>
   </select>
 </label>
+
 <button 
   onclick="clearCategorySelection()" 
   style="margin-left:10px; color:#ffffff; background:#1f4d66; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;"
 >
   Wyczyść
 </button>
-<label class="filter-box">
-<input type="checkbox" id="onlyUnweighted" onchange="filterUnweighted()">
-<span>Tylko niezważeni</span>
+
+<label style="margin-left:20px; color:#ffffff; display:inline-flex; align-items:center; gap:6px;">
+  <input 
+    type="checkbox" 
+    id="onlyUnweighted" 
+    onchange="filterUnweighted()"
+    style="transform:scale(1.2);"
+  >
+  <span>Tylko niezważeni</span>
 </label>
 
 <input 
