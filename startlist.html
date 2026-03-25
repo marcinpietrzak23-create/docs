@@ -804,68 +804,81 @@ function splitGroup(athletes, stations) {
   // ======================
   else{
 
-    data.forEach((a,i)=>{
+  html += `
+    <h2>Kategoria: ${categoryText}</h2>
+    <h3>Stanowisko: ${index+1}</h3>
+    <h4>Bój: ${comp}</h4>
+    <h4>Sędzia: ${judge}</h4>
 
-      html += `
-        <div style="page-break-after:always; margin-bottom:30px;">
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Imię</th>
+        <th>Nazwisko</th>
+        <th>Kategoria</th>
+  `;
 
-          <h2>${a.zawodnik}</h2>
-          <p><b>Kategoria:</b> ${(a.kategoria||"").replace(/^K:/,"")}</p>
-          <p><b>Bój:</b> ${comp}</p>
-          <p><b>Sędzia:</b> ${judge}</p>
-
-          <table style="width:100%; border-collapse:collapse; margin-top:15px;">
-
-      `;
-
-      // 🔥 różne tabelki zależnie od konkurencji
-      if(comp === "SNUB3'"){
-        html += `
-          <tr>
-            <th>Ciężar</th>
-            <th>Powtórzenia</th>
-            <th>Suma</th>
-            <th>✓/✗</th>
-          </tr>
-          <tr><td></td><td></td><td></td><td></td></tr>
-        `;
-      }
-
-      else if(comp === "TIEBREAK"){
-        html += `
-          <tr>
-            <th>Punkty</th>
-            <th>✓/✗</th>
-          </tr>
-          <tr><td></td><td></td></tr>
-        `;
-      }
-
-      else{
-        html += `
-          <tr>
-            <th>Próba 1</th>
-            <th>✓/✗</th>
-            <th>Próba 2</th>
-            <th>✓/✗</th>
-            <th>Próba 3</th>
-            <th>✓/✗</th>
-          </tr>
-          <tr>
-            <td></td><td></td>
-            <td></td><td></td>
-            <td></td><td></td>
-          </tr>
-        `;
-      }
-
-      html += `
-          </table>
-        </div>
-      `;
-    });
-
+  if(comp === "SNUB3'"){
+    html += `
+        <th>Ciężar</th>
+        <th>Powtórzenia</th>
+        <th>Zaliczone ✓/✗</th>
+        <th>Potw. z zaw. ✓/✗</th>
+      </tr>
+    `;
   }
+  else if(comp === "TIEBREAK"){
+    html += `
+        <th>Punkty</th>
+        <th>Zaliczone ✓/✗</th>
+      </tr>
+    `;
+  }
+  else{
+    html += `
+        <th>Próba 1</th>
+        <th>✓</th>
+        <th>Próba 2</th>
+        <th>✓</th>
+        <th>Próba 3</th>
+        <th>✓</th>
+      </tr>
+    `;
+  }
+
+  data.forEach((a,i)=>{
+
+    const parts = (a.zawodnik || "").split(" ");
+    const imie = parts[0] || "";
+    const nazwisko = parts.slice(1).join(" ");
+
+    html += `
+      <tr>
+        <td>${i+1}</td>
+        <td>${imie}</td>
+        <td>${nazwisko}</td>
+        <td>${(a.kategoria||"").replace(/^K:/,"")}</td>
+    `;
+
+    if(comp === "SNUB3'"){
+      html += `<td style="height:35px;"></td><td></td><td></td><td></td>`;
+    }
+    else if(comp === "TIEBREAK"){
+      html += `<td style="height:35px;"></td><td></td>`;
+    }
+    else{
+      html += `
+        <td style="height:35px;"></td><td></td>
+        <td></td><td></td>
+        <td></td><td></td>
+      `;
+    }
+
+    html += "</tr>";
+  });
+
+  html += "</table>";
+}
 
   const win = window.open("", "_blank");
 
