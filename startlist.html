@@ -55,17 +55,21 @@ Hardstyle Kettlebell European Championship
 <label style="margin-left:20px; color:#ffffff; font-weight:bold;">
   Stanowiska:
   <input 
-  id="stationsInput" 
-  type="number" 
-  value="8" 
-  min="1"
-  onchange="showStations()"
-  style="width:60px;padding:4px;margin-left:5px"
->
-  <button 
+    id="stationsInput" 
+    type="number" 
+    value="8" 
+    min="1"
+    onchange="showStations()"
+    style="width:60px;padding:4px;margin-left:5px"
+  >
+</label>
+
+<button 
   onclick="clearCategorySelection()" 
   style="margin-left:10px; color:#ffffff; background:#1f4d66; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;"
 >
+  Wyczyść
+</button>
 </label>
 <label class="filter-box">
 <input type="checkbox" id="onlyUnweighted" onchange="filterUnweighted()">
