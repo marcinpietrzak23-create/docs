@@ -226,6 +226,11 @@ function showFirst(){
 function showStations(){
 
   const category = currentCategory;
+
+if (!category) {
+  alert("Najpierw wybierz kategorię");
+  return;
+}
   const athletes = grouped[category];
 
   const comp = "SNUB3'"; // 🔥 NA RAZIE NA SZTYWNO
