@@ -64,6 +64,15 @@ Hardstyle Kettlebell European Championship
     style="width:60px;padding:4px;margin-left:5px"
   >
 </label>
+  <label style="margin-left:20px; color:#ffffff; font-weight:bold;">
+  Sędzia:
+  <input 
+    id="judgeInput" 
+    type="text" 
+    placeholder="Imię i nazwisko"
+    style="padding:4px;margin-left:5px;width:200px"
+  >
+</label>
 <label style="margin-left:20px; color:#ffffff; font-weight:bold;">
   Konkurencja:
   <select id="competitionSelect" style="margin-left:5px; padding:4px;">
@@ -721,7 +730,8 @@ function splitGroup(athletes, stations) {
   const data = stations[index];
 
   const comp = document.getElementById("competitionSelect")?.value || "";
-
+  const judge = document.getElementById("judgeInput")?.value || "";
+   
   const checked = document.querySelectorAll(".catCheck:checked");
   let categories = [];
   checked.forEach(c => categories.push(c.value.replace(/^K:/,"")));
@@ -732,6 +742,7 @@ function splitGroup(athletes, stations) {
     <h2>Kategoria: ${categoryText}</h2>
     <h3>Stanowisko: ${index+1}</h3>
     <h4>Bój: ${comp}</h4>
+    <h4>Sędzia: ${judge}</h4>
 
     <table>
       <tr>
