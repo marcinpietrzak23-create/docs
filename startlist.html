@@ -63,16 +63,7 @@ Hardstyle Kettlebell European Championship
     onchange="showStations()"
     style="width:60px;padding:4px;margin-left:5px"
   >
-</label>
-  <label style="margin-left:20px; color:#ffffff; font-weight:bold;">
-  Sędzia:
-  <input 
-    id="judgeInput" 
-    type="text" 
-    placeholder="Imię i nazwisko"
-    style="padding:4px;margin-left:5px;width:200px"
-  >
-</label>
+
 <label style="margin-left:20px; color:#ffffff; font-weight:bold;">
   Konkurencja:
   <select id="competitionSelect" style="margin-left:5px; padding:4px;">
@@ -346,10 +337,21 @@ function renderStations(data){
 ">
  <h3 style="margin-bottom:10px;color:#ffffff;">
   Stanowisko ${i+1}
-  <button onclick="printStation(${i})" style="margin-left:10px;">
-    🖨
-  </button>
 </h3>
+
+<select 
+  class="judgeSelect"
+  data-index="${i}"
+  onchange="updateJudgeSelections()"
+  style="margin-bottom:10px;width:100%;padding:6px;border-radius:6px;"
+>
+  <option value="">-- wybierz sędziego --</option>
+  ${JUDGES.map(j => `<option value="${j}">${j}</option>`).join("")}
+</select>
+
+<button onclick="printStation(${i})" style="margin-bottom:10px;">
+  🖨 Drukuj
+</button>
 
   <ul style="list-style:none;padding:0;margin:0">
 `;
@@ -736,7 +738,8 @@ function splitGroup(athletes, stations) {
   const data = stations[index];
 
   const comp = document.getElementById("competitionSelect")?.value || "";
-  const judge = document.getElementById("judgeInput")?.value || "";
+  const selects = document.querySelectorAll(".judgeSelect");
+const judge = selects[index]?.value || "";
    
   const checked = document.querySelectorAll(".catCheck:checked");
   let categories = [];
@@ -843,7 +846,40 @@ function splitGroup(athletes, stations) {
   function getCurrentStationsData(){
   return CURRENT_STATIONS;
 }
+function updateJudgeSelections(){
 
+  const selects = document.querySelectorAll(".judgeSelect");
+
+  const selected = [];
+
+  selects.forEach(s => {
+    if (s.value) selected.push(s.value);
+  });
+
+  selects.forEach(select => {
+
+    const current = select.value;
+
+    select.innerHTML = '<option value="">-- wybierz sędziego --</option>';
+
+    JUDGES.forEach(j => {
+
+      if (!selected.includes(j) || j === current) {
+
+        const opt = document.createElement("option");
+        opt.value = j;
+        opt.textContent = j;
+
+        if (j === current) opt.selected = true;
+
+        select.appendChild(opt);
+      }
+
+    });
+
+  });
+
+}
   
 </script>
 
