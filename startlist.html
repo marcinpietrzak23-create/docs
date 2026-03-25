@@ -235,36 +235,6 @@ function showFirst(){
 }
 
   function showStations(){
-
-  if (!currentCategory) {
-    alert("Najpierw wybierz kategorię");
-    return;
-  }
-
-  const category = currentCategory;
-  const athletes = grouped[category];
-
-  const stations = parseInt(document.getElementById("stationsInput").value) || 1;
-
-  const comp = "SNUB3'"; // na razie na sztywno
-  const type = COMP_MAP[comp]?.type;
-
-  let result;
-
-  if (type === "group") {
-    result = splitGroup(athletes, stations);
-  } else if (type === "individual") {
-    result = splitIndividualToStations(athletes, stations);
-  } else {
-    alert("Manual competition");
-    return;
-  }
-
-  renderStations(result);
-}
-
-  renderStations(result);
-}
 function renderStations(data){
 
   let html = `
