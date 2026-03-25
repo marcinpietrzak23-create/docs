@@ -52,7 +52,7 @@ Hardstyle Kettlebell European Championship
 
 <button onclick="window.print()">Drukuj</button>
 <button onclick="exportPDF()">PDF</button>
-<label style="margin-left:20px;">
+<label style="margin-left:20px; color:#ffffff; font-weight:bold;">
   Stanowiska:
   <input 
   id="stationsInput" 
@@ -575,34 +575,35 @@ function splitGroup(athletes, stations) {
 
   const n = athletes.length;
 
-  if (stations <= 0) return [];
-
-  // małe przypadki → zwykły podział
   if (n <= 16) {
     return splitGroup(athletes, stations);
   }
 
-  // ile pełnych rund (Twoja zasada)
+  // liczba pełnych rund
   let fullRounds = Math.ceil(n / stations) - 2;
   if (fullRounds < 1) fullRounds = 1;
 
-  const basePerStation = fullRounds;
+  // ile osób w pełnych rundach
+  const fullCount = fullRounds * stations;
 
-  // ile osób zostaje na 2 ostatnie rundy
-  const used = basePerStation * stations;
-  let remaining = n - used;
+  // ile zostaje na 2 ostatnie rundy
+  const remaining = n - fullCount;
 
-  if (remaining < 0) remaining = 0;
+  // ile osób na każde stanowisko (bazowo)
+  const perStation = Array(stations).fill(fullRounds);
 
-  // rozkład ile osób na każde stanowisko
-  const perStation = Array(stations).fill(basePerStation);
+  // teraz ROZBIJAMY NA 2 RUNDY (to jest klucz)
+  const round1 = Math.ceil(remaining / 2);
+  const round2 = remaining - round1;
 
-  // rozdzielamy resztę (round-robin)
-  let i = 0;
-  while (remaining > 0) {
+  // dodajemy pierwszą rundę
+  for (let i = 0; i < round1; i++) {
     perStation[i]++;
-    remaining--;
-    i = (i + 1) % stations;
+  }
+
+  // dodajemy drugą rundę
+  for (let i = 0; i < round2; i++) {
+    perStation[i]++;
   }
 
   // przypisanie zawodników
