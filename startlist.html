@@ -55,12 +55,13 @@ Hardstyle Kettlebell European Championship
 <label style="margin-left:20px;">
   Stanowiska:
   <input 
-    id="stationsInput" 
-    type="number" 
-    value="8" 
-    min="1" 
-    style="width:60px;padding:4px;margin-left:5px"
-  >
+  id="stationsInput" 
+  type="number" 
+  value="8" 
+  min="1"
+  onchange="showStations()"
+  style="width:60px;padding:4px;margin-left:5px"
+>
 </label>
 <label class="filter-box">
 <input type="checkbox" id="onlyUnweighted" onchange="filterUnweighted()">
@@ -232,18 +233,20 @@ function showFirst(){
   if(first) renderTable(first);
 
 }
-function showStations(){
+
+  function showStations(){
+
+  if (!currentCategory) {
+    alert("Najpierw wybierz kategorię");
+    return;
+  }
 
   const category = currentCategory;
-
-if (!category) {
-  alert("Najpierw wybierz kategorię");
-  return;
-}
   const athletes = grouped[category];
 
-  const comp = "SNUB3'"; // 🔥 NA RAZIE NA SZTYWNO
-const stations = parseInt(document.getElementById("stationsInput").value) || 1;
+  const stations = parseInt(document.getElementById("stationsInput").value) || 1;
+
+  const comp = "SNUB3'"; // na razie na sztywno
   const type = COMP_MAP[comp]?.type;
 
   let result;
@@ -251,7 +254,7 @@ const stations = parseInt(document.getElementById("stationsInput").value) || 1;
   if (type === "group") {
     result = splitGroup(athletes, stations);
   } else if (type === "individual") {
-    result = splitIndividual(athletes, stations);
+    result = splitIndividualToStations(athletes, stations);
   } else {
     alert("Manual competition");
     return;
@@ -259,9 +262,16 @@ const stations = parseInt(document.getElementById("stationsInput").value) || 1;
 
   renderStations(result);
 }
+
+  renderStations(result);
+}
 function renderStations(data){
 
-  let html = "<h2>Podział na stanowiska</h2>";
+  let html = `
+<h2 style="color:#ffffff; text-align:center; margin-bottom:20px;">
+  Podział na stanowiska
+</h2>
+`;
 
   html += '<div style="display:flex;flex-wrap:wrap;gap:20px">';
 
@@ -563,7 +573,56 @@ function splitGroup(athletes, stations) {
 
   return result;
 }
-   
+   function splitIndividualToStations(athletes, stations) {
+
+  const n = athletes.length;
+
+  if (stations <= 0) return [];
+
+  // małe przypadki → zwykły podział
+  if (n <= 16) {
+    return splitGroup(athletes, stations);
+  }
+
+  // ile pełnych rund (Twoja zasada)
+  let fullRounds = Math.ceil(n / stations) - 2;
+  if (fullRounds < 1) fullRounds = 1;
+
+  const basePerStation = fullRounds;
+
+  // ile osób zostaje na 2 ostatnie rundy
+  const used = basePerStation * stations;
+  let remaining = n - used;
+
+  if (remaining < 0) remaining = 0;
+
+  // rozkład ile osób na każde stanowisko
+  const perStation = Array(stations).fill(basePerStation);
+
+  // rozdzielamy resztę (round-robin)
+  let i = 0;
+  while (remaining > 0) {
+    perStation[i]++;
+    remaining--;
+    i = (i + 1) % stations;
+  }
+
+  // przypisanie zawodników
+  const result = Array.from({ length: stations }, () => []);
+
+  let index = 0;
+
+  for (let s = 0; s < stations; s++) {
+    for (let k = 0; k < perStation[s]; k++) {
+      if (athletes[index]) {
+        result[s].push(athletes[index]);
+        index++;
+      }
+    }
+  }
+
+  return result;
+}
 </script>
 
 </body>
