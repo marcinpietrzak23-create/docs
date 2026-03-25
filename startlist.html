@@ -52,7 +52,16 @@ Hardstyle Kettlebell European Championship
 
 <button onclick="window.print()">Drukuj</button>
 <button onclick="exportPDF()">PDF</button>
-
+<label style="margin-left:20px;">
+  Stanowiska:
+  <input 
+    id="stationsInput" 
+    type="number" 
+    value="8" 
+    min="1" 
+    style="width:60px;padding:4px;margin-left:5px"
+  >
+</label>
 <label class="filter-box">
 <input type="checkbox" id="onlyUnweighted" onchange="filterUnweighted()">
 <span>Tylko niezważeni</span>
@@ -234,8 +243,7 @@ if (!category) {
   const athletes = grouped[category];
 
   const comp = "SNUB3'"; // 🔥 NA RAZIE NA SZTYWNO
-  const stations = 8;
-
+const stations = parseInt(document.getElementById("stationsInput").value) || 1;
   const type = COMP_MAP[comp]?.type;
 
   let result;
