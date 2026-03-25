@@ -161,8 +161,10 @@ async function loginJudge(){
     API_BASE + `?api=login&login=${login}&password=${password}`
   );
 
-  const data = await res.json();
-  JUDGES = data.judges || [];
+  const resData = await res.json();
+
+const data = resData.data;
+JUDGES = resData.judges || [];
 
   if(data.ok){
 
@@ -840,7 +842,8 @@ function splitGroup(athletes, stations) {
   return CURRENT_STATIONS;
 }
 
-  console.log("SEDZIOWIE:", JUDGES);
+  console.log("ZAWODNICY:", data.length);
+console.log("SEDZIOWIE:", JUDGES);
 </script>
 
 </body>
