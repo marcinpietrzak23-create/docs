@@ -118,6 +118,7 @@ const API_BASE =
 
 let grouped={};
    let currentCategory = null;
+  let JUDGES = [];
   let CURRENT_STATIONS = [];
 const COMP_MAP = {
   "SNUB3'": { type: "individual" },
@@ -161,6 +162,7 @@ async function loginJudge(){
   );
 
   const data = await res.json();
+  JUDGES = data.judges || [];
 
   if(data.ok){
 
@@ -837,6 +839,8 @@ function splitGroup(athletes, stations) {
   function getCurrentStationsData(){
   return CURRENT_STATIONS;
 }
+
+  console.log("SEDZIOWIE:", JUDGES);
 </script>
 
 </body>
