@@ -260,15 +260,19 @@ function renderStations(data){
   data.forEach((group, i) => {
 
     html += `
-    <div style="
-      background:#0f2a3a;
-      padding:15px;
-      border-radius:10px;
-      min-width:220px;
-    ">
-      <h3>Stanowisko ${i+1}</h3>
-      <ul style="list-style:none;padding:0;margin:0">
-    `;
+<div style="
+  background:#0f2a3a;
+  padding:15px;
+  border-radius:10px;
+  min-width:220px;
+  color:#ffffff;
+">
+  <h3 style="margin-bottom:10px;color:#ffffff;">
+    Stanowisko ${i+1}
+  </h3>
+
+  <ul style="list-style:none;padding:0;margin:0">
+`;
 
     group.forEach(a => {
       html += `<li style="padding:4px 0;border-bottom:1px solid #333">
