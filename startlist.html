@@ -80,7 +80,7 @@ const API_BASE =
 "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
 
 let grouped={};
-   
+   let currentCategory = null;
 const COMP_MAP = {
   "SNUB3'": { type: "individual" },
   "TGU1RM": { type: "group" },
@@ -225,7 +225,7 @@ function showFirst(){
 }
 function showStations(){
 
-  const category = Object.keys(grouped)[0];
+  const category = currentCategory;
   const athletes = grouped[category];
 
   const comp = "SNUB3'"; // 🔥 NA RAZIE NA SZTYWNO
@@ -250,16 +250,31 @@ function renderStations(data){
 
   let html = "<h2>Podział na stanowiska</h2>";
 
+  html += '<div style="display:flex;flex-wrap:wrap;gap:20px">';
+
   data.forEach((group, i) => {
 
-    html += `<h3>Stanowisko ${i+1}</h3><ul>`;
+    html += `
+    <div style="
+      background:#0f2a3a;
+      padding:15px;
+      border-radius:10px;
+      min-width:220px;
+    ">
+      <h3>Stanowisko ${i+1}</h3>
+      <ul style="list-style:none;padding:0;margin:0">
+    `;
 
     group.forEach(a => {
-      html += `<li>${a.zawodnik}</li>`;
+      html += `<li style="padding:4px 0;border-bottom:1px solid #333">
+        ${a.zawodnik}
+      </li>`;
     });
 
-    html += "</ul>";
+    html += "</ul></div>";
   });
+
+  html += "</div>";
 
   document.getElementById("content").innerHTML = html;
 }
@@ -267,6 +282,8 @@ function renderStations(data){
    TABLE
 ======================= */
 function renderTable(category){
+
+  currentCategory = category;
 
   const rows=[...grouped[category]];
 
