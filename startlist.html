@@ -62,6 +62,10 @@ Hardstyle Kettlebell European Championship
   onchange="showStations()"
   style="width:60px;padding:4px;margin-left:5px"
 >
+  <button 
+  onclick="clearCategorySelection()" 
+  style="margin-left:10px; color:#ffffff; background:#1f4d66; border:none; padding:6px 12px; border-radius:6px; cursor:pointer;"
+>
 </label>
 <label class="filter-box">
 <input type="checkbox" id="onlyUnweighted" onchange="filterUnweighted()">
@@ -207,7 +211,18 @@ function renderTabs(){
 
     const btn=document.createElement("button");
 
-    btn.textContent=cat;
+    const wrapper = document.createElement("label");
+wrapper.style.marginRight = "10px";
+
+const checkbox = document.createElement("input");
+checkbox.type = "checkbox";
+checkbox.value = cat;
+checkbox.className = "catCheck";
+
+wrapper.appendChild(checkbox);
+wrapper.append(" " + cat);
+
+tabs.appendChild(wrapper);
 
     btn.onclick=()=>renderTable(cat);
 
@@ -241,8 +256,19 @@ function showFirst(){
     return;
   }
 
-  const category = currentCategory;
-  const athletes = grouped[category];
+  const checked = document.querySelectorAll(".catCheck:checked");
+
+if (checked.length === 0) {
+  alert("Wybierz przynajmniej jedną kategorię");
+  return;
+}
+
+let athletes = [];
+
+checked.forEach(c => {
+  const cat = c.value;
+  athletes = athletes.concat(grouped[cat] || []);
+});
 
   const stations = parseInt(document.getElementById("stationsInput").value) || 1;
 
@@ -571,42 +597,38 @@ function splitGroup(athletes, stations) {
 
   return result;
 }
-   function splitIndividualToStations(athletes, stations) {
+  function splitIndividualToStations(athletes, stations) {
 
   const n = athletes.length;
 
-  if (n <= 16) {
+  if (stations <= 0) return [];
+
+  const rounds = Math.ceil(n / stations);
+
+  // 🔥 NOWY WARUNEK (KLUCZOWY)
+  if (rounds <= 2) {
     return splitGroup(athletes, stations);
   }
 
-  // liczba pełnych rund
-  let fullRounds = Math.ceil(n / stations) - 2;
-  if (fullRounds < 1) fullRounds = 1;
+  // standardowy przypadek (>2 rundy)
+  let fullRounds = rounds - 2;
 
-  // ile osób w pełnych rundach
   const fullCount = fullRounds * stations;
-
-  // ile zostaje na 2 ostatnie rundy
   const remaining = n - fullCount;
 
-  // ile osób na każde stanowisko (bazowo)
   const perStation = Array(stations).fill(fullRounds);
 
-  // teraz ROZBIJAMY NA 2 RUNDY (to jest klucz)
   const round1 = Math.ceil(remaining / 2);
   const round2 = remaining - round1;
 
-  // dodajemy pierwszą rundę
   for (let i = 0; i < round1; i++) {
     perStation[i]++;
   }
 
-  // dodajemy drugą rundę
   for (let i = 0; i < round2; i++) {
     perStation[i]++;
   }
 
-  // przypisanie zawodników
   const result = Array.from({ length: stations }, () => []);
 
   let index = 0;
@@ -621,6 +643,13 @@ function splitGroup(athletes, stations) {
   }
 
   return result;
+}
+  function clearCategorySelection(){
+
+  document.querySelectorAll(".catCheck").forEach(cb=>{
+    cb.checked = false;
+  });
+
 }
 </script>
 
