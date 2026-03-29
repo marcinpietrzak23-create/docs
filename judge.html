@@ -10,7 +10,10 @@
 
 <label>Kategoria:</label>
 <select id="category"></select>
+<br><br>
 
+<label>Konkurencja:</label>
+<select id="competition"></select>
 <br><br>
 
 <input type="text" id="search" placeholder="Szukaj zawodnika...">
@@ -51,12 +54,14 @@ async function init() {
   });
 
   // 2. pierwsze ładowanie
-  loadAthletes(select.value);
+  updateCompetitions(select.value);
+loadAthletes(select.value);
 
   // 3. zmiana kategorii
   select.addEventListener("change", () => {
-    loadAthletes(select.value);
-  });
+  updateCompetitions(select.value);
+  loadAthletes(select.value);
+});
 
   // 4. search
   document.getElementById("search").addEventListener("input", renderTable);
@@ -96,7 +101,21 @@ function renderTable() {
 }
 
 init();
+function updateCompetitions(kategoria) {
 
+  const comps = competitionsMap[kategoria] || [];
+
+  const select = document.getElementById("competition");
+
+  select.innerHTML = "";
+
+  comps.forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    opt.textContent = c;
+    select.appendChild(opt);
+  });
+}
 </script>
 
 </body>
