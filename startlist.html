@@ -195,13 +195,13 @@ const res = await fetch(
 
  const data = await res.json();
   
-// 🔥 POBIERAMY RESULTS_RAW
+// 🔥 POBIERAMY BOJE (POPRAWNY ENDPOINT)
 const res2 = await fetch(
-  API_BASE + "?api=results_raw&token=" + TOKEN
+  API_BASE + "?api=boje&token=" + TOKEN
 );
 
 const resultsRaw = await res2.json();
-console.log("RAW FULL:", resultsRaw);
+console.log("BOJE:", resultsRaw);
 // zapis globalny
 window.RESULTS_RAW = resultsRaw;
 
