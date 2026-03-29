@@ -49,7 +49,9 @@ Hardstyle Kettlebell European Championship
 <div class="tabs" id="tabs"></div>
 
 <div class="startlist-actions">
-
+<button onclick="goToJudgePanel()" style="background:#d32f2f;color:white;">
+  Panel sędziego
+</button>
 <button onclick="window.print()">Drukuj</button>
 <button onclick="exportPDF()">PDF</button>
 <button onclick="exportExcel()">Excel</button>
@@ -1211,6 +1213,18 @@ if(!Array.isArray(results)){
 });
 
   document.getElementById("content").innerHTML = html;
+}
+  function goToJudgePanel(){
+
+  const token = sessionStorage.getItem("session_token");
+
+  if(!token){
+    alert("Brak sesji");
+    return;
+  }
+
+  window.location.href = "judge.html?token=" + token;
+
 }
 </script>
 
