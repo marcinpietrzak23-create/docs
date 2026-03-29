@@ -22,12 +22,8 @@
 
 <table border="1" cellpadding="5">
   <thead>
-    <tr>
-      <th>Zawodnik</th>
-      <th>Klub</th>
-      <th>Waga</th>
-    </tr>
-  </thead>
+  <tr id="tableHead"></tr>
+</thead>
   <tbody id="tableBody"></tbody>
 </table>
 
@@ -46,6 +42,9 @@ async function init() {
 
   const select = document.getElementById("category");
 
+  // wyczyść (na wszelki wypadek)
+  select.innerHTML = "";
+
   Object.keys(competitionsMap).forEach(k => {
     const opt = document.createElement("option");
     opt.value = k;
@@ -55,16 +54,36 @@ async function init() {
 
   // 2. pierwsze ładowanie
   updateCompetitions(select.value);
-loadAthletes(select.value);
+
+  const firstComp = document.getElementById("competition").value;
+  renderHeader(firstComp);
+
+  await loadAthletes(select.value);
 
   // 3. zmiana kategorii
-  select.addEventListener("change", () => {
-  updateCompetitions(select.value);
-  loadAthletes(select.value);
-});
+  select.addEventListener("change", async () => {
 
-  // 4. search
+    updateCompetitions(select.value);
+
+    const firstComp = document.getElementById("competition").value;
+    renderHeader(firstComp);
+
+    await loadAthletes(select.value);
+
+  });
+
+  // 4. zmiana konkurencji
+  document.getElementById("competition").addEventListener("change", () => {
+
+    const konk = document.getElementById("competition").value;
+    renderHeader(konk);
+    renderTable();
+
+  });
+
+  // 5. search
   document.getElementById("search").addEventListener("input", renderTable);
+
 }
 
 async function loadAthletes(kategoria) {
@@ -81,6 +100,7 @@ function renderTable() {
 
   const search = document.getElementById("search").value.toLowerCase();
   const body = document.getElementById("tableBody");
+  const konk = document.getElementById("competition").value;
 
   body.innerHTML = "";
 
@@ -90,14 +110,53 @@ function renderTable() {
 
       const tr = document.createElement("tr");
 
-      tr.innerHTML = `
-        <td>${a.zawodnik}</td>
-        <td>${a.klub}</td>
-        <td>${a.waga}</td>
-      `;
+      if (isTiebreak(konk)) {
+
+        tr.innerHTML = `
+          <td>${a.zawodnik}</td>
+          <td><input type="number"></td>
+        `;
+
+      } else if (isSnatch(konk)) {
+
+        tr.innerHTML = `
+          <td>${a.zawodnik}</td>
+          <td><input type="number" class="kg"></td>
+          <td><input type="number" class="reps"></td>
+          <td class="sum"></td>
+        `;
+
+      } else {
+
+        tr.innerHTML = `
+          <td>${a.zawodnik}</td>
+          <td><input type="number"></td>
+          <td><input type="number"></td>
+          <td><input type="number"></td>
+        `;
+      }
 
       body.appendChild(tr);
     });
+
+  // 🔥 auto SUMA dla snatch
+  if (isSnatch(konk)) {
+    document.querySelectorAll("#tableBody tr").forEach(row => {
+      const kg = row.querySelector(".kg");
+      const reps = row.querySelector(".reps");
+      const sum = row.querySelector(".sum");
+
+      if (kg && reps && sum) {
+        function update() {
+          const val = (kg.value && reps.value) ? kg.value * reps.value : "";
+          sum.textContent = val;
+        }
+
+        kg.addEventListener("input", update);
+        reps.addEventListener("input", update);
+      }
+    });
+  }
 }
 
 init();
@@ -116,6 +175,45 @@ function updateCompetitions(kategoria) {
     select.appendChild(opt);
   });
 }
+  function isSnatch(k) {
+  return k.toUpperCase().includes("SN");
+}
+
+function isTiebreak(k) {
+  return k.toUpperCase().includes("TIEBREAK");
+}
+  function renderHeader(konk) {
+
+  const head = document.getElementById("tableHead");
+
+  if (isTiebreak(konk)) {
+    head.innerHTML = `
+      <th>Zawodnik</th>
+      <th>Punkty</th>
+    `;
+  }
+  else if (isSnatch(konk)) {
+    head.innerHTML = `
+      <th>Zawodnik</th>
+      <th>Odciążar</th>
+      <th>Powtórzenia</th>
+      <th>Suma</th>
+    `;
+  }
+  else {
+    head.innerHTML = `
+      <th>Zawodnik</th>
+      <th>P1</th>
+      <th>P2</th>
+      <th>P3</th>
+    `;
+  }
+}
+  document.getElementById("competition").addEventListener("change", () => {
+  const konk = document.getElementById("competition").value;
+  renderHeader(konk);
+  renderTable(); // 🔥 TO JEST KLUCZ
+});
 </script>
 
 </body>
