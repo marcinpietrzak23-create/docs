@@ -206,7 +206,7 @@ const resultsRaw = await res2.json();
 window.RESULTS_RAW = resultsRaw;
 
 // liczymy BEST
-window.BEST = computeBestFromRaw(resultsRaw);
+window.BEST = computeBestFromRaw(resultsRaw.data || resultsRaw);
 
 const settingsRes = await fetch(API_BASE + "?settings=1");
 const settingsData = await settingsRes.json();
