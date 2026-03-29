@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Panel sędziego</title>
+</head>
+<body>
+
+<h2>Panel sędziego</h2>
+
+<label>Kategoria:</label>
+<select id="category"></select>
+
+<br><br>
+
+<input type="text" id="search" placeholder="Szukaj zawodnika...">
+
+<br><br>
+
+<table border="1" cellpadding="5">
+  <thead>
+    <tr>
+      <th>Zawodnik</th>
+      <th>Klub</th>
+      <th>Waga</th>
+    </tr>
+  </thead>
+  <tbody id="tableBody"></tbody>
+</table>
+
+<script>
+
+const API = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
+
+let competitionsMap = {};
+let athletes = [];
+
+async function init() {
+
+  // 1. pobierz kategorie
+  const res = await fetch(API + "?api=competitions");
+  competitionsMap = await res.json();
+
+  const select = document.getElementById("category");
+
+  Object.keys(competitionsMap).forEach(k => {
+    const opt = document.createElement("option");
+    opt.value = k;
+    opt.textContent = k;
+    select.appendChild(opt);
+  });
+
+  // 2. pierwsze ładowanie
+  loadAthletes(select.value);
+
+  // 3. zmiana kategorii
+  select.addEventListener("change", () => {
+    loadAthletes(select.value);
+  });
+
+  // 4. search
+  document.getElementById("search").addEventListener("input", renderTable);
+}
+
+async function loadAthletes(kategoria) {
+
+  const url = API + "?api=athletes&kategoria=" + encodeURIComponent(kategoria);
+
+  const res = await fetch(url);
+  athletes = await res.json();
+
+  renderTable();
+}
+
+function renderTable() {
+
+  const search = document.getElementById("search").value.toLowerCase();
+  const body = document.getElementById("tableBody");
+
+  body.innerHTML = "";
+
+  athletes
+    .filter(a => a.zawodnik.toLowerCase().includes(search))
+    .forEach(a => {
+
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>${a.zawodnik}</td>
+        <td>${a.klub}</td>
+        <td>${a.waga}</td>
+      `;
+
+      body.appendChild(tr);
+    });
+}
+
+init();
+
+</script>
+
+</body>
+</html>
