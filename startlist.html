@@ -194,7 +194,19 @@ const res = await fetch(
 );
 
  const data = await res.json();
+  
+// 🔥 POBIERAMY RESULTS_RAW
+const res2 = await fetch(
+  API_BASE + "?api=results_raw&token=" + TOKEN
+);
 
+const resultsRaw = await res2.json();
+
+// zapis globalny
+window.RESULTS_RAW = resultsRaw;
+
+// liczymy BEST
+window.BEST = computeBestFromRaw(resultsRaw);
 
 const settingsRes = await fetch(API_BASE + "?settings=1");
 const settingsData = await settingsRes.json();
@@ -276,6 +288,13 @@ function renderTabs(){
   btn.style.marginLeft = "10px";
 
   tabs.appendChild(btn);
+  // 🔥 BEST BUTTON
+const bestBtn = document.createElement("button");
+bestBtn.textContent = "🏆 BEST";
+bestBtn.onclick = renderBest;
+bestBtn.style.marginLeft = "10px";
+
+tabs.appendChild(bestBtn);
 }
 
 
@@ -986,7 +1005,187 @@ function updateJudgeSelections(){
   });
 
 }
-  
+  function computeBestFromRaw(results){
+
+  const out = {
+    TGU: { M: [], K: [] },
+    SNATCH: {
+      Junior: { M: [], K: [] },
+      Amator: { M: [], K: [] },
+      Pro: { M: [], K: [] }
+    }
+  };
+
+  function getGender(kat){
+    if(!kat) return null;
+    if(kat.includes("K:K") || kat.includes("Dz")) return "K";
+    if(kat.includes("K:M") || kat.includes("Ch")) return "M";
+    return null;
+  }
+
+  function getLevel(kat){
+    if(!kat) return null;
+    if(kat.includes("Junior")) return "Junior";
+    if(kat.includes("Amator")) return "Amator";
+    if(kat.includes("PRO")) return "Pro";
+    return null;
+  }
+
+  function getWeight(w){
+    const val = Number(w);
+    return val > 0 ? val : 999;
+  }
+
+  const tguMap = {};
+  const snatchMap = {};
+
+  results.forEach(r => {
+
+    const kat = r.kategoria || r.kategoria_dodatkowa;
+    if(!kat) return;
+
+    const gender = getGender(kat);
+    if(!gender) return;
+
+    const wynik = Number(r.wynik) || 0;
+    if(wynik <= 0) return;
+
+    const weight = getWeight(r.waga);
+
+    const keyBase = r.zawodnik + "|" + gender;
+
+    // ===== TGU =====
+    if(r.konkurencja === "TGU1RM"){
+
+      const key = keyBase;
+
+      if(!tguMap[key] || wynik > tguMap[key].wynik){
+        tguMap[key] = {
+          zawodnik: r.zawodnik,
+          wynik,
+          waga: weight,
+          klub: r.klub,
+          gender
+        };
+      }
+    }
+
+    // ===== SNATCH =====
+    if(r.konkurencja === "SNUB3'"){
+
+      const level = getLevel(kat);
+      if(!level) return;
+
+      const key = keyBase + "|" + level;
+
+      if(!snatchMap[key] || wynik > snatchMap[key].wynik){
+        snatchMap[key] = {
+          zawodnik: r.zawodnik,
+          wynik,
+          waga: weight,
+          klub: r.klub,
+          gender,
+          level
+        };
+      }
+    }
+
+  });
+
+  // ===== SORT TGU =====
+  Object.values(tguMap).forEach(r=>{
+    out.TGU[r.gender].push(r);
+  });
+
+  ["M","K"].forEach(g=>{
+    out.TGU[g].sort((a,b)=>{
+      if(b.wynik !== a.wynik) return b.wynik - a.wynik;
+      return a.waga - b.waga;
+    });
+    out.TGU[g] = out.TGU[g].slice(0,3);
+  });
+
+  // ===== SORT SNATCH =====
+  Object.values(snatchMap).forEach(r=>{
+    out.SNATCH[r.level][r.gender].push(r);
+  });
+
+  ["Junior","Amator","Pro"].forEach(level=>{
+    ["M","K"].forEach(g=>{
+      out.SNATCH[level][g].sort((a,b)=>{
+        if(b.wynik !== a.wynik) return b.wynik - a.wynik;
+        return a.waga - b.waga;
+      });
+      out.SNATCH[level][g] = out.SNATCH[level][g].slice(0,3);
+    });
+  });
+
+  return out;
+}
+
+  function renderBest(){
+
+  const best = window.BEST;
+
+  if(!best){
+    alert("Brak danych BEST");
+    return;
+  }
+
+  let html = `<h2 style="color:#fff;text-align:center;">🏆 BEST OF COMPETITION</h2>`;
+
+  // ===== TGU =====
+  html += `<h3 style="color:#fff;">TGU</h3>`;
+
+  ["K","M"].forEach(g=>{
+
+  html += `<h4 style="color:#fff;">${g==="K"?"Kobiety":"Mężczyźni"}</h4>`;
+
+  const list = best.TGU[g] || [];
+
+  if(list.length === 0){
+    html += `<div style="color:#aaa;">Brak wyników</div>`;
+  }
+
+  list.forEach((r,i)=>{
+    html += `<div style="color:#fff;">${i+1}. ${r.zawodnik} (${r.wynik} kg)</div>`;
+  });
+
+});
+
+  // ===== SNATCH =====
+  html += `<h3 style="color:#fff;">SNATCH</h3>`;
+
+  ["Junior","Amator","Pro"].forEach(level=>{
+
+  html += `<h4 style="color:#fff;">${level}</h4>`;
+
+  ["K","M"].forEach(g=>{
+
+    html += `<div style="color:#ccc;margin-left:10px;">
+      <b>${g==="K"?"Kobiety":"Mężczyźni"}</b>
+    </div>`;
+
+    const list = (best.SNATCH[level] && best.SNATCH[level][g]) || [];
+
+    if(list.length === 0){
+      html += `<div style="color:#aaa;margin-left:20px;">Brak wyników</div>`;
+    }
+
+    list.forEach((r,i)=>{
+      html += `
+        <div style="color:#fff;margin-left:20px;">
+          ${i+1}. ${r.zawodnik} (${r.wynik})
+        </div>
+      `;
+    });
+
+  });
+
+});
+
+  document.getElementById("content").innerHTML = html;
+}
 </script>
 
 </body>
