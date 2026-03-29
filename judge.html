@@ -281,11 +281,29 @@ function isTiebreak(k) {
 
   const data = await res.json();
 
-  if (data.ok) {
-    alert("Zapisano!");
-  } else {
-    alert("Błąd zapisu");
+  if (data.overwrite) {
+
+  if (!confirm("Nadpisujesz istniejące wyniki. Kontynuować?")) {
+    return;
   }
+
+  await fetch(API + "?api=saveResults&force=1", {
+    method: "POST",
+    body: JSON.stringify({
+      kategoria,
+      konkurencja,
+      rows
+    })
+  });
+
+  alert("Nadpisano!");
+}
+else if (data.ok) {
+  alert("Zapisano!");
+}
+else {
+  alert("Błąd zapisu");
+}
 }
 </script>
 
