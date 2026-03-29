@@ -201,7 +201,6 @@ const res2 = await fetch(
 );
 
 const resultsRaw = await res2.json();
-console.log("BOJE:", resultsRaw);
 // zapis globalny
 window.RESULTS_RAW = resultsRaw;
 
@@ -1068,7 +1067,6 @@ if(!Array.isArray(results)){
   const snatchMap = {};
 
   results.forEach(r => {
-console.log("ROW:", r); // 🔥 DEBUG
     const kat = r.kategoria || r.kategoria_dodatkowa;
     if(!kat) return;
 
