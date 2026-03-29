@@ -26,7 +26,8 @@
 </thead>
   <tbody id="tableBody"></tbody>
 </table>
-
+<br><br>
+<button onclick="saveResults()">ZAPISZ</button>
 <script>
 
 const API = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
@@ -214,6 +215,78 @@ function isTiebreak(k) {
   renderHeader(konk);
   renderTable(); // 🔥 TO JEST KLUCZ
 });
+
+  function collectResults() {
+
+  const konk = document.getElementById("competition").value;
+  const rows = [];
+
+  document.querySelectorAll("#tableBody tr").forEach(tr => {
+
+    const zawodnik = tr.children[0].textContent;
+
+    const inputs = tr.querySelectorAll("input");
+
+    if (isTiebreak(konk)) {
+
+      const p1 = inputs[0].value;
+      if (p1 !== "") {
+        rows.push({ zawodnik, p1 });
+      }
+
+    } else if (isSnatch(konk)) {
+
+      const kg = inputs[0].value;
+      const reps = inputs[1].value;
+
+      if (kg !== "" && reps !== "") {
+        rows.push({ zawodnik, p1: kg, p2: reps });
+      }
+
+    } else {
+
+      const p1 = inputs[0].value;
+      const p2 = inputs[1].value;
+      const p3 = inputs[2].value;
+
+      if (p1 || p2 || p3) {
+        rows.push({ zawodnik, p1, p2, p3 });
+      }
+    }
+
+  });
+
+  return rows;
+}
+  async function saveResults() {
+
+  const kategoria = document.getElementById("category").value;
+  const konkurencja = document.getElementById("competition").value;
+
+  const rows = collectResults();
+
+  if (rows.length === 0) {
+    alert("Brak danych do zapisania");
+    return;
+  }
+
+  const res = await fetch(API + "?api=saveResults", {
+    method: "POST",
+    body: JSON.stringify({
+      kategoria,
+      konkurencja,
+      rows
+    })
+  });
+
+  const data = await res.json();
+
+  if (data.ok) {
+    alert("Zapisano!");
+  } else {
+    alert("Błąd zapisu");
+  }
+}
 </script>
 
 </body>
