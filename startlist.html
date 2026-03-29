@@ -206,7 +206,25 @@ const resultsRaw = await res2.json();
 window.RESULTS_RAW = resultsRaw;
 
 // liczymy BEST
-window.BEST = computeBestFromRaw(resultsRaw.data || resultsRaw);
+let raw = [];
+
+if (Array.isArray(resultsRaw)) {
+  raw = resultsRaw;
+}
+else if (Array.isArray(resultsRaw.data)) {
+  raw = resultsRaw.data;
+}
+else if (Array.isArray(resultsRaw.results)) {
+  raw = resultsRaw.results;
+}
+else if (Array.isArray(resultsRaw.items)) {
+  raw = resultsRaw.items;
+}
+else {
+  console.error("❌ NIEZNANA STRUKTURA results_raw:", resultsRaw);
+}
+
+window.BEST = computeBestFromRaw(raw);
 
 const settingsRes = await fetch(API_BASE + "?settings=1");
 const settingsData = await settingsRes.json();
@@ -221,7 +239,7 @@ grouped = groupByCategory(data);
   renderTabs();
 
   showFirst();
-console.log("RAW:", resultsRaw);
+
 }
 
 
@@ -1006,7 +1024,17 @@ function updateJudgeSelections(){
 
 }
   function computeBestFromRaw(results){
-
+if(!Array.isArray(results)){
+    console.error("❌ results NIE jest tablicą:", results);
+    return {
+      TGU:{M:[],K:[]},
+      SNATCH:{
+        Junior:{M:[],K:[]},
+        Amator:{M:[],K:[]},
+        Pro:{M:[],K:[]}
+      }
+    };
+  }
   const out = {
     TGU: { M: [], K: [] },
     SNATCH: {
