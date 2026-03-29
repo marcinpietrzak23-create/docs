@@ -31,14 +31,20 @@
 <script>
 
 const API = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
+const url = new URL(window.location.href);
+const TOKEN = url.searchParams.get("token");
 
+if (!TOKEN) {
+  alert("Brak dostępu");
+  window.location.href = "startlist.html";
+}
 let competitionsMap = {};
 let athletes = [];
 
 async function init() {
 
   // 1. pobierz kategorie
-  const res = await fetch(API + "?api=competitions");
+  const res = await fetch(API + "?api=competitions&token=" + TOKEN);
   competitionsMap = await res.json();
 
   const select = document.getElementById("category");
@@ -89,7 +95,7 @@ async function init() {
 
 async function loadAthletes(kategoria) {
 
-  const url = API + "?api=athletes&kategoria=" + encodeURIComponent(kategoria);
+  const url = API + "?api=athletes&token=" + TOKEN + "&kategoria=" + encodeURIComponent(kategoria);
 
   const res = await fetch(url);
   athletes = await res.json();
@@ -270,7 +276,7 @@ function isTiebreak(k) {
     return;
   }
 
-  const res = await fetch(API + "?api=saveResults", {
+  const res = await fetch(API + "?api=saveResults&token=" + TOKEN, {
     method: "POST",
     body: JSON.stringify({
       kategoria,
@@ -287,7 +293,7 @@ function isTiebreak(k) {
     return;
   }
 
-  await fetch(API + "?api=saveResults&force=1", {
+  await fetch(API + "?api=saveResults&token=" + TOKEN + "&force=1", {
     method: "POST",
     body: JSON.stringify({
       kategoria,
