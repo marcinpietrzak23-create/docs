@@ -1068,7 +1068,7 @@ if(!Array.isArray(results)){
   const snatchMap = {};
 
   results.forEach(r => {
-
+console.log("ROW:", r); // 🔥 DEBUG
     const kat = r.kategoria || r.kategoria_dodatkowa;
     if(!kat) return;
 
