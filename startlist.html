@@ -242,7 +242,11 @@ grouped = groupByCategory(data);
   showFirst();
 
 }
+function getMainCategory(cat){
+  if(!cat) return cat;
 
+  return cat.split(",")[0].trim();
+}
 
 /* =======================
    GROUP
@@ -254,9 +258,11 @@ function groupByCategory(rows){
 
   rows.forEach(r=>{
 
-    if(!g[r.kategoria]) g[r.kategoria]=[];
+    const mainCat = getMainCategory(r.kategoria);
 
-    g[r.kategoria].push(r);
+if(!g[mainCat]) g[mainCat]=[];
+
+g[mainCat].push(r);
 
   });
 
