@@ -20,7 +20,9 @@
 <input id="password" type="password" placeholder="Hasło" onkeydown="handleEnter(event)">
 
 <button onclick="loginJudge()">Zaloguj</button>
-
+<div id="loginSpinner" style="display:none; margin-top:10px;">
+  ⏳ Logowanie...
+</div>
 </div>
 
 
@@ -163,21 +165,43 @@ async function loginJudge(){
   const login = document.getElementById("login").value;
   const password = document.getElementById("password").value;
 
-  const res = await fetch(
-    API_BASE + `?api=login&login=${login}&password=${password}`
-  );
+  const btn = document.querySelector("#loginBox button");
+  const spinner = document.getElementById("loginSpinner");
 
-  const data = await res.json();
+  // 🔥 START LOADING
+  btn.disabled = true;
+  btn.innerText = "Logowanie...";
+  spinner.style.display = "block";
 
-  if(data.ok){
+  try{
 
-    sessionStorage.setItem("session_token", data.token);
+    const res = await fetch(
+      API_BASE + `?api=login&login=${login}&password=${password}`
+    );
 
-    location.reload();
+    const data = await res.json();
 
-  }else{
+    if(data.ok){
 
-    alert("Błędny login");
+      sessionStorage.setItem("session_token", data.token);
+      location.reload();
+
+    }else{
+
+      alert("Błędny login");
+
+    }
+
+  }catch(err){
+
+    alert("Błąd połączenia");
+
+  }finally{
+
+    // 🔥 STOP LOADING
+    btn.disabled = false;
+    btn.innerText = "Zaloguj";
+    spinner.style.display = "none";
 
   }
 
