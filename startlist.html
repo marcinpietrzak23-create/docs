@@ -300,7 +300,7 @@ function renderTabs(){
     wrapper.onclick = () => renderTable(cat);
 
     wrapper.appendChild(checkbox);
-    wrapper.append(" " + cat.replace(/^K:/, ""));
+    wrapper.append(" " + cat.replace(/^k:/i, ""));
 
     tabs.appendChild(wrapper);
 
@@ -425,7 +425,7 @@ function renderStations(data){
       ${a.zawodnik}
 <br>
 <span style="font-size:12px; opacity:0.7;">
-  ${a.kategoria.replace(/^K:/,"")}
+  ${getMainCategory(a.kategoria).replace(/^k:/i,"")}
 </span>
       </li>`;
     });
@@ -455,7 +455,7 @@ function renderTable(category){
 
   let html=`
 <h2 class="category-title">
-  ${category.replace(/^K:/, "")}
+  ${category.replace(/^k:/i, "")}
 </h2>
 
 <div class="table-wrap">
