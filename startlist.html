@@ -16,8 +16,8 @@
 
 <h2>Logowanie sędziego</h2>
 
-<input id="login" placeholder="Login">
-<input id="password" type="password" placeholder="Hasło">
+<input id="login" placeholder="Login" onkeydown="handleEnter(event)">
+<input id="password" type="password" placeholder="Hasło" onkeydown="handleEnter(event)">
 
 <button onclick="loginJudge()">Zaloguj</button>
 
@@ -1231,6 +1231,11 @@ if(!Array.isArray(results)){
 
   window.location.href = "judge.html?token=" + token;
 
+}
+  function handleEnter(e){
+  if(e.key === "Enter"){
+    loginJudge();
+  }
 }
 </script>
 
