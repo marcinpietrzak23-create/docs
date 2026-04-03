@@ -150,20 +150,22 @@ function render(arr){
   const tbody = document.getElementById("tbody");
   tbody.innerHTML = "";
 
-  arr.forEach(r=>{
+  arr.forEach((r,i)=>{
 
     tbody.innerHTML += `
       <tr>
+        <td>${i+1}</td>
         <td>${r.zawodnik}</td>
         <td>${r.klub||""}</td>
-        <td>${r.kategoria||""}</td>
+        <td>${(r.kategoria || "").replace(/^K:/,"")}</td>
         <td>${r.waga}</td>
       </tr>
     `;
 
   });
-document.getElementById("count").innerText =
-  `👥 Zawodnicy: ${arr.length}`;
+
+  document.getElementById("count").innerText =
+    `👥 Zawodnicy: ${arr.length}`;
 }
 
 function applyFilters(){
