@@ -177,17 +177,20 @@ function applyFilters(){
 
   const filtered = DATA.filter(r => {
 
-    return (
-      (r.zawodnik || "").toLowerCase().includes(q) &&
-      (club === "" || r.klub === club) &&
-      (cat === "" || r.kategoria === cat)
-    );
+    const textMatch =
+      (r.zawodnik || "").toLowerCase().includes(q) ||
+      (r.klub || "").toLowerCase().includes(q) ||
+      (r.kategoria || "").toLowerCase().includes(q);
+
+    const clubMatch = (club === "" || r.klub === club);
+    const catMatch = (cat === "" || r.kategoria === cat);
+
+    return textMatch && clubMatch && catMatch;
 
   });
 
   render(filtered);
 }
-
 load();
 setInterval(load, 5000);
 
