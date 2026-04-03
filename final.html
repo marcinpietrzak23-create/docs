@@ -106,22 +106,26 @@ async function load(){
 
     raw.forEach(r => {
 
-      const name = r.zawodnik;
-      if(!name) return;
+  const name = r.zawodnik;
+  if(!name) return;
 
-      const w = String(r.waga || "").trim();
-      if(!w) return;
+  const w = String(r.waga || "").trim();
+  if(!w) return;
 
-     if(!map[name] || !map[name].klub){
-        map[name] = {
-          zawodnik: name,
-          klub: r.klub || "",
-          kategoria: r.kategoria || "",
-          waga: r.waga
-        };
-      }
+  // 🔥 KLUCZ: ignoruj rekordy bez klubu
+  const klub = String(r.klub || "").trim();
+  if(!klub) return;
 
-    });
+  if(!map[name]){
+    map[name] = {
+      zawodnik: name,
+      klub: klub,
+      kategoria: r.kategoria || "",
+      waga: r.waga
+    };
+  }
+
+});
 
     DATA = Object.values(map);
 DATA.sort((a,b) =>
