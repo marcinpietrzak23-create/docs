@@ -198,10 +198,21 @@ function applyFilters(){
 load();
 setInterval(load, 5000);
 
-  function fillFilters(){
+function fillFilters(){
 
-  const clubs = [...new Set(DATA.map(a => a.klub))];
-  const categories = [...new Set(DATA.map(a => a.kategoria))];
+  const clubs = [...new Set(
+    DATA
+      .map(a => (a.klub || "").trim())
+      .filter(c => c !== "")
+  )].sort();
+
+  const categories = [...new Set(
+    DATA
+      .map(a => (a.kategoria || "").trim())
+      .filter(c => c !== "")
+  )].sort();
+
+  console.log("CLUBS:", clubs); // 🔥 DEBUG
 
   const clubSel = document.getElementById("clubFilter");
   const catSel = document.getElementById("categoryFilter");
@@ -210,11 +221,11 @@ setInterval(load, 5000);
   catSel.innerHTML = '<option value="">Wszystkie kategorie</option>';
 
   clubs.forEach(c=>{
-    if(c) clubSel.innerHTML += `<option value="${c}">${c}</option>`;
+    clubSel.innerHTML += `<option value="${c}">${c}</option>`;
   });
 
   categories.forEach(c=>{
-    if(c) catSel.innerHTML += `<option value="${c}">${c}</option>`;
+    catSel.innerHTML += `<option value="${c}">${c}</option>`;
   });
 
 }
