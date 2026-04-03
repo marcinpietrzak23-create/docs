@@ -54,10 +54,70 @@ tr:hover{
   font-size:18px;
   color:#38bdf8;
 }
+    /* ===== RED STYLE UPGRADE ===== */
+
+.topbar{
+  background: linear-gradient(90deg,#b91c1c,#7f1d1d);
+  padding:15px 20px;
+  font-weight:bold;
+  font-size:20px;
+  border-radius:10px;
+  margin-bottom:20px;
+}
+
+h2::after{
+  content:"";
+  display:block;
+  width:120px;
+  height:3px;
+  background:#ef4444;
+  margin:10px auto 0;
+  border-radius:2px;
+}
+
+input, select{
+  padding:8px;
+  margin:10px 5px 10px 0;
+  border-radius:6px;
+  border:1px solid #334155;
+  background:#0f172a;
+  color:#fff;
+}
+
+input:focus, select:focus{
+  outline:none;
+  border:1px solid #ef4444;
+  box-shadow:0 0 5px #ef4444;
+}
+
+th {
+  background: linear-gradient(90deg,#1e293b,#0f172a);
+  color:#fff;
+  padding:10px;
+  border-bottom:2px solid #ef4444;
+}
+
+tr:hover{
+  background:#fee2e2;
+}
+
+#count{
+  text-align:center;
+  margin-bottom:10px;
+  font-size:18px;
+  color:#ef4444;
+  font-weight:bold;
+}
+
+table{
+  border:1px solid rgba(239,68,68,0.3);
+}
   </style>
 </head>
 <body>
-
+<div class="topbar">
+  Hardstyle Kettlebell European Championship
+</div>
 <h2>📋 Zważeni zawodnicy</h2>
 <p style="text-align:center;opacity:0.7;margin-top:-10px;">
   Lista zawodników po ważeniu
