@@ -30,15 +30,51 @@ let DATA = [];
 
 async function load(){
 
-  const token = sessionStorage.getItem("session_token");
+  try{
 
-  const res = await fetch(API_BASE + "?api=startlist&token=" + token);
-  const data = await res.json();
+    const res = await fetch(API_BASE + "?api=boje");
+    const response = await res.json();
 
-  // 🔥 KLUCZ — tylko z wagą
-  DATA = data.filter(r => r.waga);
+    let raw = [];
 
-  render(DATA);
+    if (Array.isArray(response)) raw = response;
+    else if (Array.isArray(response.data)) raw = response.data;
+    else {
+      console.error("❌ Nieznana struktura:", response);
+      return;
+    }
+
+    const map = {};
+
+    raw.forEach(r => {
+
+      const name = r.zawodnik;
+      if(!name) return;
+
+      const w = String(r.waga || "").trim();
+      if(!w) return;
+
+      if(!map[name]){
+        map[name] = {
+          zawodnik: name,
+          klub: r.klub || "",
+          kategoria: r.kategoria || "",
+          waga: r.waga
+        };
+      }
+
+    });
+
+    DATA = Object.values(map);
+DATA.sort((a,b) =>
+  a.zawodnik.localeCompare(b.zawodnik,"pl")
+);
+    render(DATA);
+
+  }catch(e){
+    console.error("❌ Błąd API:", e);
+    alert("Błąd ładowania danych");
+  }
 }
 
 function render(arr){
