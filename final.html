@@ -112,7 +112,7 @@ async function load(){
       const w = String(r.waga || "").trim();
       if(!w) return;
 
-      if(!map[name]){
+     if(!map[name] || !map[name].klub){
         map[name] = {
           zawodnik: name,
           klub: r.klub || "",
