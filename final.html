@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Zważeni zawodnicy</title>
+</head>
+<body>
+
+<h2>📋 Zważeni zawodnicy</h2>
+
+<input id="search" placeholder="Szukaj..." onkeyup="filter()">
+
+<table border="1">
+<thead>
+<tr>
+<th>Zawodnik</th>
+<th>Klub</th>
+<th>Kategoria</th>
+<th>Waga</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+
+<script>
+
+const API_BASE = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
+
+let DATA = [];
+
+async function load(){
+
+  const token = sessionStorage.getItem("session_token");
+
+  const res = await fetch(API_BASE + "?api=startlist&token=" + token);
+  const data = await res.json();
+
+  // 🔥 KLUCZ — tylko z wagą
+  DATA = data.filter(r => r.waga);
+
+  render(DATA);
+}
+
+function render(arr){
+
+  const tbody = document.getElementById("tbody");
+  tbody.innerHTML = "";
+
+  arr.forEach(r=>{
+
+    tbody.innerHTML += `
+      <tr>
+        <td>${r.zawodnik}</td>
+        <td>${r.klub||""}</td>
+        <td>${r.kategoria||""}</td>
+        <td>${r.waga}</td>
+      </tr>
+    `;
+
+  });
+
+}
+
+function filter(){
+
+  const q = document.getElementById("search").value.toLowerCase();
+
+  const f = DATA.filter(r =>
+    (r.zawodnik||"").toLowerCase().includes(q)
+  );
+
+  render(f);
+}
+
+load();
+
+</script>
+
+</body>
+</html>
