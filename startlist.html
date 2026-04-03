@@ -515,9 +515,11 @@ function renderTable(category){
     <td>
 
       <input
-        id="w_${i}"
-        type="number"
-        value="${r.waga||""}"
+        <input
+  id="w_${i}"
+  type="number"
+  value="${r.waga||""}"
+  data-current="${r.waga||""}"
         style="width:80px;padding:4px;font-weight:bold;text-align:center"
       >
 
@@ -548,7 +550,20 @@ function renderTable(category){
 
 async function saveWeight(zawodnik,i){
 
-  const waga = document.getElementById("w_"+i).value;
+  const input = document.getElementById("w_"+i);
+
+  const waga = input.value;
+  const currentWeight = input.getAttribute("data-current") || "";
+
+  // 🔴 NOWE — ostrzeżenie przy nadpisywaniu
+  if(currentWeight !== ""){
+    const confirmed = confirm(
+      `UWAGA!\nZawodnik ma już wagę: ${currentWeight} kg.\nNadpisujesz na: ${waga} kg\n\nCzy na pewno?`
+    );
+
+    if(!confirmed) return;
+  }
+
   const token = sessionStorage.getItem("session_token");
 
   const btn = event.target;
@@ -571,13 +586,16 @@ async function saveWeight(zawodnik,i){
 
   if(data.ok){
 
-    btn.innerText="✔ Zapisano";
-    btn.style.background="#4CAF50";
-    btn.style.color="white";
+  btn.innerText="✔ Zapisano";
+  btn.style.background="#4CAF50";
+  btn.style.color="white";
 
-    row.classList.add("weighted");
+  row.classList.add("weighted");
 
-  }else{
+  // 🔥 NOWE
+  input.setAttribute("data-current", waga);
+
+}else{
 
     btn.innerText="Błąd";
     btn.style.background="#f44336";
