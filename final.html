@@ -3,13 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <title>Zważeni zawodnicy</title>
+  <style>
+body {
+  font-family: Arial;
+  background:#0f172a;
+  color:#fff;
+  padding:20px;
+}
+
+h2 {
+  text-align:center;
+}
+<div id="count"></div>
+input {
+  padding:8px;
+  margin:10px 0;
+  width:250px;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  background:#ffffff;
+  color:#000;
+  border-radius:8px;
+  overflow:hidden;
+}
+
+th {
+  background:#102a43;
+  color:#fff;
+  padding:10px;
+}
+
+td {
+  padding:8px;
+  border-bottom:1px solid #ddd;
+}
+
+tr:nth-child(even){
+  background:#f3f4f6;
+}
+
+tr:hover{
+  background:#e2e8f0;
+}
+#count{
+  text-align:center;
+  margin-bottom:10px;
+  font-size:18px;
+  color:#38bdf8;
+}
+  </style>
 </head>
 <body>
 
 <h2>📋 Zważeni zawodnicy</h2>
 
-<input id="search" placeholder="Szukaj..." onkeyup="filter()">
+<input id="search" placeholder="Szukaj..." onkeyup="applyFilters()">
+<select id="clubFilter" onchange="applyFilters()">
+  <option value="">Wszystkie kluby</option>
+</select>
 
+<select id="categoryFilter" onchange="applyFilters()">
+  <option value="">Wszystkie kategorie</option>
+</select>
 <table border="1">
 <thead>
 <tr>
@@ -69,7 +127,20 @@ async function load(){
 DATA.sort((a,b) =>
   a.zawodnik.localeCompare(b.zawodnik,"pl")
 );
-    render(DATA);
+    const firstLoad = DATA.length === 0;
+
+DATA = Object.values(map);
+
+DATA.sort((a,b) =>
+  a.zawodnik.localeCompare(b.zawodnik,"pl")
+);
+
+// 🔥 filtry tylko przy pierwszym ładowaniu
+if(firstLoad){
+  fillFilters();
+}
+
+applyFilters();
 
   }catch(e){
     console.error("❌ Błąd API:", e);
@@ -94,22 +165,52 @@ function render(arr){
     `;
 
   });
-
+document.getElementById("count").innerText =
+  `👥 Zawodnicy: ${arr.length}`;
 }
 
-function filter(){
+function applyFilters(){
 
   const q = document.getElementById("search").value.toLowerCase();
+  const club = document.getElementById("clubFilter").value;
+  const cat = document.getElementById("categoryFilter").value;
 
-  const f = DATA.filter(r =>
-    (r.zawodnik||"").toLowerCase().includes(q)
-  );
+  const filtered = DATA.filter(r => {
 
-  render(f);
+    return (
+      (r.zawodnik || "").toLowerCase().includes(q) &&
+      (club === "" || r.klub === club) &&
+      (cat === "" || r.kategoria === cat)
+    );
+
+  });
+
+  render(filtered);
 }
 
 load();
+setInterval(load, 5000);
 
+  function fillFilters(){
+
+  const clubs = [...new Set(DATA.map(a => a.klub))];
+  const categories = [...new Set(DATA.map(a => a.kategoria))];
+
+  const clubSel = document.getElementById("clubFilter");
+  const catSel = document.getElementById("categoryFilter");
+
+  clubSel.innerHTML = '<option value="">Wszystkie kluby</option>';
+  catSel.innerHTML = '<option value="">Wszystkie kategorie</option>';
+
+  clubs.forEach(c=>{
+    if(c) clubSel.innerHTML += `<option value="${c}">${c}</option>`;
+  });
+
+  categories.forEach(c=>{
+    if(c) catSel.innerHTML += `<option value="${c}">${c}</option>`;
+  });
+
+}
 </script>
 
 </body>
