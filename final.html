@@ -106,45 +106,38 @@ async function load(){
 
     raw.forEach(r => {
 
-  const name = r.zawodnik;
-  if(!name) return;
+      const name = r.zawodnik;
+      if(!name) return;
 
-  const w = String(r.waga || "").trim();
-  if(!w) return;
+      const w = String(r.waga || "").trim();
+      if(!w) return;
 
-  // 🔥 KLUCZ: ignoruj rekordy bez klubu
-  const klub = String(r.klub || "").trim();
-  if(!klub) return;
+      const klub = String(r.klub || "").trim();
+      if(!klub) return;
 
-  if(!map[name]){
-    map[name] = {
-      zawodnik: name,
-      klub: klub,
-      kategoria: r.kategoria || "",
-      waga: r.waga
-    };
-  }
+      if(!map[name]){
+        map[name] = {
+          zawodnik: name,
+          klub: klub,
+          kategoria: r.kategoria || "",
+          waga: r.waga
+        };
+      }
 
-});
+    });
 
+    // 🔥 FINALNE DANE
     DATA = Object.values(map);
-DATA.sort((a,b) =>
-  a.zawodnik.localeCompare(b.zawodnik,"pl")
-);
-    const firstLoad = DATA.length === 0;
 
-DATA = Object.values(map);
+    DATA.sort((a,b) =>
+      a.zawodnik.localeCompare(b.zawodnik,"pl")
+    );
 
-DATA.sort((a,b) =>
-  a.zawodnik.localeCompare(b.zawodnik,"pl")
-);
+    // 🔥 ZAWSZE odśwież filtry
+    fillFilters();
 
-// 🔥 filtry tylko przy pierwszym ładowaniu
-if(firstLoad){
-  fillFilters();
-}
-
-applyFilters();
+    // 🔥 zastosuj aktualne filtry
+    applyFilters();
 
   }catch(e){
     console.error("❌ Błąd API:", e);
