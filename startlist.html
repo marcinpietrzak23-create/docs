@@ -374,6 +374,11 @@ if (checked.length === 0) {
 }
 const selectedCats = Array.from(checked).map(c => c.value);
 
+    let athletes = [];
+
+selectedCats.forEach(cat => {
+  athletes = athletes.concat(grouped[cat] || []);
+});
     
   const stations = parseInt(document.getElementById("stationsInput").value) || 1;
 
