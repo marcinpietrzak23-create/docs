@@ -132,6 +132,10 @@ const COMP_MAP = {
   "2KBSQ1RM": { type: "group" },
   "TIEBREAK": { type: "manual" }
 };
+  const COMP_LABELS = {
+  individual: ["SNATCH"],
+  group: ["TGU1RM", "1KBPR1RM", "2KBPR1RM", "2KBSQ1RM"]
+};
 /* =======================
    SESJA
 ======================= */
@@ -890,10 +894,12 @@ const stationIndex = stationOrder[i % stationOrder.length];
 
   const compRaw = document.getElementById("competitionSelect")?.value || "";
 
-const comp =
-  compRaw === "group" ? "Konkurencje grupowe" :
-  compRaw === "individual" ? "Konkurencje indywidualne" :
-  compRaw;
+const COMP_LABELS = {
+  individual: ["SNATCH"],
+  group: ["TGU1RM", "1KBPR1RM", "2KBPR1RM", "2KBSQ1RM"]
+};
+
+const comp = (COMP_LABELS[compRaw] || []).join(" | ");
   const mode = document.getElementById("printMode")?.value || "list";
 
   const selects = document.querySelectorAll(".judgeSelect");
