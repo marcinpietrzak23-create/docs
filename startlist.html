@@ -738,36 +738,37 @@ function mixCategories(selectedCats){
   const slots = structure.map(s => s.length);
   const result = slots.map(() => []);
 
-  // kolejki kategorii
+  // 🔥 1. przygotuj kolejki kategorii
   const pools = selectedCats.map(cat => shuffle([...(grouped[cat] || [])]));
 
+  // 🔥 2. zbuduj JEDNĄ KOLEJKĘ naprzemienną
+  const queue = [];
+
+  let i = 0;
+  while (pools.some(p => p.length > 0)) {
+    pools.forEach(p => {
+      if (p[i]) queue.push(p[i]);
+    });
+    i++;
+  }
+
+  // 🔥 3. rozdawaj po stanowiskach
   let stationIndex = 0;
 
-  while (pools.some(p => p.length > 0)) {
+  queue.forEach(a => {
 
-    for (let p = 0; p < pools.length; p++) {
+    let attempts = 0;
 
-      if (pools[p].length === 0) continue;
-
-      // znajdź wolne stanowisko
-      let attempts = 0;
-
-      while (result[stationIndex].length >= slots[stationIndex]) {
-        stationIndex = (stationIndex + 1) % result.length;
-        attempts++;
-
-        if (attempts > result.length) break;
-      }
-
-      if (attempts > result.length) break;
-
-      // wrzuć 1 zawodnika z tej kategorii
-      result[stationIndex].push(pools[p].shift());
-
-      // następne stanowisko
+    while (result[stationIndex].length >= slots[stationIndex]) {
       stationIndex = (stationIndex + 1) % result.length;
+      attempts++;
+
+      if (attempts > result.length) return;
     }
-  }
+
+    result[stationIndex].push(a);
+    stationIndex = (stationIndex + 1) % result.length;
+  });
 
   return result;
 }
