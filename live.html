@@ -1,32 +1,94 @@
-<h1>Lista startowa</h1>
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista startowa</title>
+
+<style>
+body{
+  background:#0b1e2d;
+  font-family:Arial;
+  margin:0;
+  padding:20px;
+}
+
+h1{
+  color:white;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1 style="text-align:center;">Lista startowa</h1>
 <div id="live"></div>
 
 <script>
-const API_BASE = "TWÓJ_API";
+
+const API_BASE = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
 
 async function load(){
 
   const res = await fetch(API_BASE + "?api=getStartlist");
   const data = await res.json();
 
-  let html = "";
+  let html = '<div style="display:flex;flex-wrap:wrap;gap:20px;">';
 
-  let currentStation = null;
+  const grouped = {};
 
   data.forEach(r => {
-
-    if (r.station !== currentStation) {
-      html += `<h2>Stanowisko ${r.station} (Sędzia: ${r.judge})</h2><ul>`;
-      currentStation = r.station;
-    }
-
-    html += `<li>${r.name} (${r.category})</li>`;
+    if(!grouped[r.station]) grouped[r.station] = [];
+    grouped[r.station].push(r);
   });
 
-  html += "</ul>";
+  Object.keys(grouped).forEach(st => {
+
+    const list = grouped[st];
+    const judge = list[0].judge;
+
+    html += `
+      <div style="
+        background:#12384d;
+        color:white;
+        padding:15px;
+        border-radius:10px;
+        min-width:250px;
+      ">
+        <h3>Stanowisko ${st}</h3>
+        <div style="margin-bottom:10px;">
+          👨‍⚖️ ${judge}
+        </div>
+        <ul style="list-style:none;padding:0;">
+    `;
+
+    list.forEach(a => {
+      html += `
+        <li style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.2);">
+          ${a.name}
+          <br>
+          <span style="font-size:12px;opacity:0.7;">
+            ${a.category.replace(/^k:/i,"")}
+          </span>
+        </li>
+      `;
+    });
+
+    html += "</ul></div>";
+  });
+
+  html += "</div>";
 
   document.getElementById("live").innerHTML = html;
 }
 
+// auto refresh
+setInterval(load, 10000);
+
 load();
+
 </script>
+
+</body>
+</html>
