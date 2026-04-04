@@ -372,14 +372,10 @@ if (checked.length === 0) {
   alert("Wybierz przynajmniej jedną kategorię");
   return;
 }
+const selectedCats = Array.from(checked).map(c => c.value);
 
-let athletes = [];
-
-checked.forEach(c => {
-  const cat = c.value;
-  athletes = athletes.concat(grouped[cat] || []);
-});
-
+let athletes = mixCategories(selectedCats);
+    
   const stations = parseInt(document.getElementById("stationsInput").value) || 1;
 
   const comp = document.getElementById("competitionSelect").value;
@@ -707,6 +703,25 @@ function splitGroup(athletes, stations) {
     result[i].push(a);
     i = (i + 1) % stations;
   });
+
+  return result;
+}
+  function shuffle(arr){
+  return arr.sort(() => Math.random() - 0.5);
+}
+
+function mixCategories(selectedCats){
+  const arrays = selectedCats.map(cat => shuffle([...(grouped[cat] || [])]));
+
+  const result = [];
+  let i = 0;
+
+  while (arrays.some(arr => arr.length > i)) {
+    arrays.forEach(arr => {
+      if (arr[i]) result.push(arr[i]);
+    });
+    i++;
+  }
 
   return result;
 }
