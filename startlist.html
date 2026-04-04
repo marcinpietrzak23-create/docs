@@ -747,7 +747,8 @@ function mixCategories(selectedCats){
 
     while (pool.length > 0) {
 
-      const stationIndex = i % result.length;
+      const stationOrder = [...result.keys()].sort((a,b) => slots[b] - slots[a]);
+const stationIndex = stationOrder[i % stationOrder.length];
 
       if (result[stationIndex].length < slots[stationIndex]) {
         result[stationIndex].push(pool.shift());
