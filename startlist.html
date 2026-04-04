@@ -1360,13 +1360,11 @@ if(!Array.isArray(results)){
     };
   });
 
-  await fetch(API_BASE + "?api=saveStartlist", {
-    method: "POST",
-    body: JSON.stringify({
-      token,
-      data: payload
-    })
-  });
+  const encoded = encodeURIComponent(JSON.stringify(payload));
+
+await fetch(
+  API_BASE + `?api=saveStartlist&token=${token}&data=${encoded}`
+);
 
   alert("Zapisano startlistę ✅");
 }
