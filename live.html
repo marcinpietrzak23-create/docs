@@ -1,0 +1,32 @@
+<h1>Lista startowa</h1>
+<div id="live"></div>
+
+<script>
+const API_BASE = "TWÓJ_API";
+
+async function load(){
+
+  const res = await fetch(API_BASE + "?api=getStartlist");
+  const data = await res.json();
+
+  let html = "";
+
+  let currentStation = null;
+
+  data.forEach(r => {
+
+    if (r.station !== currentStation) {
+      html += `<h2>Stanowisko ${r.station} (Sędzia: ${r.judge})</h2><ul>`;
+      currentStation = r.station;
+    }
+
+    html += `<li>${r.name} (${r.category})</li>`;
+  });
+
+  html += "</ul>";
+
+  document.getElementById("live").innerHTML = html;
+}
+
+load();
+</script>
