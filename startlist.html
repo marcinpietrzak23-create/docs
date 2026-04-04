@@ -738,6 +738,7 @@ function mixCategories(selectedCats){
   const slots = structure.map(s => s.length);
   const result = slots.map(() => []);
 
+  // kolejki kategorii
   const pools = selectedCats.map(cat => shuffle([...(grouped[cat] || [])]));
 
   let stationIndex = 0;
@@ -748,6 +749,7 @@ function mixCategories(selectedCats){
 
       if (pools[p].length === 0) continue;
 
+      // znajdź wolne stanowisko
       let attempts = 0;
 
       while (result[stationIndex].length >= slots[stationIndex]) {
@@ -759,8 +761,10 @@ function mixCategories(selectedCats){
 
       if (attempts > result.length) break;
 
+      // wrzuć 1 zawodnika z tej kategorii
       result[stationIndex].push(pools[p].shift());
 
+      // następne stanowisko
       stationIndex = (stationIndex + 1) % result.length;
     }
   }
