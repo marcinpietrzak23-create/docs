@@ -738,36 +738,27 @@ function mixCategories(selectedCats){
   const slots = structure.map(s => s.length);
   const result = slots.map(() => []);
 
-  // 🔥 1. przygotuj kolejki kategorii
-  const pools = selectedCats.map(cat => shuffle([...(grouped[cat] || [])]));
+  // 🔥 każda kategoria osobno
+  selectedCats.forEach(cat => {
 
-  // 🔥 2. zbuduj JEDNĄ KOLEJKĘ naprzemienną
-  const queue = [];
+    let pool = shuffle([...(grouped[cat] || [])]);
 
-  let i = 0;
-  while (pools.some(p => p.length > 0)) {
-    pools.forEach(p => {
-      if (p[i]) queue.push(p[i]);
-    });
-    i++;
-  }
+    let i = 0;
 
-  // 🔥 3. rozdawaj po stanowiskach
-  let stationIndex = 0;
+    while (pool.length > 0) {
 
-  queue.forEach(a => {
+      const stationIndex = i % result.length;
 
-    let attempts = 0;
+      if (result[stationIndex].length < slots[stationIndex]) {
+        result[stationIndex].push(pool.shift());
+      }
 
-    while (result[stationIndex].length >= slots[stationIndex]) {
-      stationIndex = (stationIndex + 1) % result.length;
-      attempts++;
+      i++;
 
-      if (attempts > result.length) return;
+      // zabezpieczenie
+      if (i > result.length * 10) break;
     }
 
-    result[stationIndex].push(a);
-    stationIndex = (stationIndex + 1) % result.length;
   });
 
   return result;
