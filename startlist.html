@@ -77,13 +77,9 @@ Hardstyle Kettlebell European Championship
 <label style="margin-left:20px; color:#ffffff; font-weight:bold;">
   Konkurencja:
   <select id="competitionSelect" style="margin-left:5px; padding:4px;">
-    <option value="SNUB3'">SNATCH</option>
-    <option value="TGU1RM">TGU</option>
-    <option value="1KBPR1RM">1KB PRESS</option>
-    <option value="2KBPR1RM">2KB PRESS</option>
-    <option value="2KBSQ1RM">SQUAT</option>
-    <option value="TIEBREAK">TIEBREAK</option>
-  </select>
+  <option value="individual">Indywidualne</option>
+  <option value="group">Grupowe</option>
+</select>
 </label>
 
 <button 
@@ -382,8 +378,7 @@ selectedCats.forEach(cat => {
     
   const stations = parseInt(document.getElementById("stationsInput").value) || 1;
 
-  const comp = document.getElementById("competitionSelect").value;
-  const type = COMP_MAP[comp]?.type;
+ const type = document.getElementById("competitionSelect").value;
 
   let result;
 
@@ -893,7 +888,12 @@ const stationIndex = stationOrder[i % stationOrder.length];
   const stations = CURRENT_STATIONS;
   const data = stations[index];
 
-  const comp = document.getElementById("competitionSelect")?.value || "";
+  const compRaw = document.getElementById("competitionSelect")?.value || "";
+
+const comp =
+  compRaw === "group" ? "Konkurencje grupowe" :
+  compRaw === "individual" ? "Konkurencje indywidualne" :
+  compRaw;
   const mode = document.getElementById("printMode")?.value || "list";
 
   const selects = document.querySelectorAll(".judgeSelect");
