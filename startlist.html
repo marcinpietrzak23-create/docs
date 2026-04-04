@@ -374,7 +374,6 @@ if (checked.length === 0) {
 }
 const selectedCats = Array.from(checked).map(c => c.value);
 
-let athletes = mixCategories(selectedCats);
     
   const stations = parseInt(document.getElementById("stationsInput").value) || 1;
 
@@ -394,7 +393,7 @@ if (type === "group") {
   return;
 }
 
-let result = fillStationsSmart(structure, selectedCats);
+result = fillStationsSmart(structure, selectedCats);
 
   CURRENT_STATIONS = result;
 renderStations(result);
