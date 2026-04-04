@@ -383,14 +383,18 @@ let athletes = mixCategories(selectedCats);
 
   let result;
 
-  if (type === "group") {
-    result = splitGroup(athletes, stations);
-  } else if (type === "individual") {
-    result = splitIndividualToStations(athletes, stations);
-  } else {
-    alert("Manual competition");
-    return;
-  }
+let structure;
+
+if (type === "group") {
+  structure = splitGroup(athletes, stations);
+} else if (type === "individual") {
+  structure = splitIndividualToStations(athletes, stations);
+} else {
+  alert("Manual competition");
+  return;
+}
+
+let result = fillStationsSmart(structure, selectedCats);
 
   CURRENT_STATIONS = result;
 renderStations(result);
@@ -721,6 +725,40 @@ function mixCategories(selectedCats){
       if (arr[i]) result.push(arr[i]);
     });
     i++;
+  }
+
+  return result;
+}
+  function fillStationsSmart(structure, selectedCats){
+
+  const slots = structure.map(s => s.length);
+  const result = slots.map(() => []);
+
+  const pools = selectedCats.map(cat => shuffle([...(grouped[cat] || [])]));
+
+  let stationIndex = 0;
+
+  while (pools.some(p => p.length > 0)) {
+
+    for (let p = 0; p < pools.length; p++) {
+
+      if (pools[p].length === 0) continue;
+
+      let attempts = 0;
+
+      while (result[stationIndex].length >= slots[stationIndex]) {
+        stationIndex = (stationIndex + 1) % result.length;
+        attempts++;
+
+        if (attempts > result.length) break;
+      }
+
+      if (attempts > result.length) break;
+
+      result[stationIndex].push(pools[p].shift());
+
+      stationIndex = (stationIndex + 1) % result.length;
+    }
   }
 
   return result;
