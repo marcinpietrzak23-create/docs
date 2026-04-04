@@ -55,6 +55,9 @@ Hardstyle Kettlebell European Championship
   Panel sędziego
 </button>
 <button onclick="window.print()">Drukuj</button>
+  <button onclick="saveStartlist()" style="background:#2e7d32;color:white;">
+  💾 Zapisz startlistę
+</button>
 <button onclick="exportPDF()">PDF</button>
 <button onclick="exportExcel()">Excel</button>
 <select id="printMode" style="margin-left:10px;padding:4px;">
@@ -1338,6 +1341,34 @@ if(!Array.isArray(results)){
   if(e.key === "Enter"){
     loginJudge();
   }
+}
+  async function saveStartlist(){
+
+  const token = sessionStorage.getItem("session_token");
+
+  const payload = CURRENT_STATIONS.map((station, i) => {
+
+    const judge = document.querySelectorAll(".judgeSelect")[i]?.value || "";
+
+    return {
+      station: i + 1,
+      judge: judge,
+      athletes: station.map(a => ({
+        name: a.zawodnik,
+        category: a.kategoria
+      }))
+    };
+  });
+
+  await fetch(API_BASE + "?api=saveStartlist", {
+    method: "POST",
+    body: JSON.stringify({
+      token,
+      data: payload
+    })
+  });
+
+  alert("Zapisano startlistę ✅");
 }
 </script>
 
