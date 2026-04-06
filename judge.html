@@ -3,6 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <title>Panel sędziego</title>
+  <style>
+  .loading {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #ccc;
+    border-top: 2px solid black;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    margin-left: 6px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
 </head>
 <body>
 
@@ -20,7 +41,7 @@
 
 <br><br>
 
-<button onclick="saveResults()">ZAPISZ</button>
+<button id="saveBtn" onclick="saveResults()">ZAPISZ</button>
 <table border="1" cellpadding="5">
   <thead>
   <tr id="tableHead"></tr>
@@ -282,7 +303,11 @@ function isTiebreak(k) {
 
   return rows;
 }
-  async function saveResults() {
+ async function saveResults() {
+
+  const btn = document.getElementById("saveBtn");
+  btn.classList.add("loading");
+  btn.innerHTML = "Zapisywanie <span class='spinner'></span>";
 
   const kategoria = document.getElementById("category").value;
   const konkurencja = document.getElementById("competition").value;
@@ -291,10 +316,11 @@ function isTiebreak(k) {
 
   if (rows.length === 0) {
     alert("Brak danych do zapisania");
+    btn.classList.remove("loading");
+    btn.innerHTML = "ZAPISZ";
     return;
   }
 
-  // 🔥 MAŁY payload tylko do sprawdzenia
   const payload = encodeURIComponent(JSON.stringify({
     kategoria,
     konkurencja,
@@ -306,9 +332,6 @@ function isTiebreak(k) {
     }))
   }));
 
-  // =========================
-  // 1. CHECK OVERWRITE (GET)
-  // =========================
   const checkRes = await fetch(
     API + `?api=checkOverwrite&token=${TOKEN}&data=${payload}`
   );
@@ -317,13 +340,12 @@ function isTiebreak(k) {
 
   if (check.overwrite) {
     if (!confirm("Nadpisujesz istniejące wyniki. Kontynuować?")) {
+      btn.classList.remove("loading");
+      btn.innerHTML = "ZAPISZ";
       return;
     }
   }
 
-  // =========================
-  // 2. ZAPIS (POST)
-  // =========================
   await fetch(API + "?api=saveResults&token=" + TOKEN, {
     method: "POST",
     mode: "no-cors",
@@ -335,6 +357,9 @@ function isTiebreak(k) {
   });
 
   alert("Zapisano!");
+
+  btn.classList.remove("loading");
+  btn.innerHTML = "ZAPISZ";
 }
   
 </script>
