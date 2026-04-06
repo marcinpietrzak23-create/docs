@@ -557,16 +557,13 @@ function renderTable(category){
 async function saveWeight(zawodnik,i){
 
   const input = document.getElementById("w_"+i);
-
   const waga = input.value;
   const currentWeight = input.getAttribute("data-current") || "";
 
-  // 🔴 NOWE — ostrzeżenie przy nadpisywaniu
   if(currentWeight !== ""){
     const confirmed = confirm(
       `UWAGA!\nZawodnik ma już wagę: ${currentWeight} kg.\nNadpisujesz na: ${waga} kg\n\nCzy na pewno?`
     );
-
     if(!confirmed) return;
   }
 
@@ -576,38 +573,55 @@ async function saveWeight(zawodnik,i){
   const row = btn.closest("tr");
 
   btn.disabled = true;
-  btn.innerText = "Zapisywanie...";
+  btn.innerText = "⏳...";
 
   const res = await fetch(
-
     API_BASE+
     `?api=saveWeight`+
     `&token=${token}`+
     `&zawodnik=${encodeURIComponent(zawodnik)}`+
     `&waga=${waga}`
-
   );
 
   const data = await res.json();
 
   if(data.ok){
 
-  btn.innerText="✔ Zapisano";
-  btn.style.background="#4CAF50";
-  btn.style.color="white";
+    btn.innerText="✔";
+    btn.style.background="#4CAF50";
+    btn.style.color="white";
 
-  row.classList.add("weighted");
+    row.classList.add("weighted");
 
-  // 🔥 NOWE
-  input.setAttribute("data-current", waga);
+    input.value = waga;
+    input.setAttribute("data-current", waga);
 
-}else{
+    setTimeout(async () => {
+
+      const res = await fetch(API_BASE + "?api=startlist&token=" + token);
+      const data = await res.json();
+
+      const updated = data.find(a => a.zawodnik === zawodnik);
+
+      if(updated){
+        input.value = updated.waga || "";
+        input.setAttribute("data-current", updated.waga || "");
+      }
+
+    }, 500);
+
+    setTimeout(()=>{
+      btn.innerText = "Zapisz";
+      btn.disabled = false;
+    }, 1500);
+
+  }else{
 
     btn.innerText="Błąd";
     btn.style.background="#f44336";
+    btn.disabled = false;
 
   }
-
 }
 
 
