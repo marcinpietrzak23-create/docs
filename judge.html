@@ -294,40 +294,55 @@ function isTiebreak(k) {
     return;
   }
 
-  const res = await fetch(API + "?api=saveResults&token=" + TOKEN, {
-    method: "POST",
-    body: JSON.stringify({
-      kategoria,
-      konkurencja,
-      rows
-    })
-  });
+  // 🔥 payload jako JSON w GET
+  const payload = encodeURIComponent(JSON.stringify({
+    kategoria,
+    konkurencja,
+    rows
+  }));
 
+  const url = API + `?api=saveResults&token=${TOKEN}&data=${payload}`;
+
+  const res = await fetch(url);
   const data = await res.json();
 
+  // 🔥 OBSŁUGA overwrite (działa normalnie)
   if (data.overwrite) {
 
-  if (!confirm("Nadpisujesz istniejące wyniki. Kontynuować?")) {
-    return;
-  }
+    if (!confirm("Nadpisujesz istniejące wyniki. Kontynuować?")) {
+      return;
+    }
 
-  await fetch(API + "?api=saveResults&token=" + TOKEN + "&force=1", {
-    method: "POST",
-    body: JSON.stringify({
-      kategoria,
-      konkurencja,
-      rows
-    })
+    const forceUrl = API + `?api=saveResults&token=${TOKEN}&force=1&data=${payload}`;
+
+    const res2 = await fetch(forceUrl);
+    const data2 = await res2.json();
+
+    if (data2.ok) {
+      alert("Nadpisano!");
+    } else {
+      alert("Błąd zapisu");
+    }
+
+  } 
+  else if (data.ok) {
+    alert("Zapisano!");
+  } 
+  else {
+    alert("Błąd zapisu");
+  }
+}
+  function saveResultsFromGet_(p){
+
+  const body = JSON.parse(p.data || "{}");
+
+  return saveResults_({
+    parameter: p,
+    postData: {
+      contents: JSON.stringify(body)
+    }
   });
 
-  alert("Nadpisano!");
-}
-else if (data.ok) {
-  alert("Zapisano!");
-}
-else {
-  alert("Błąd zapisu");
-}
 }
 </script>
 
