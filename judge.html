@@ -40,7 +40,34 @@ if (!TOKEN) {
 }
 let competitionsMap = {};
 let athletes = [];
+  
+let currentRequestId = 0; // 🔥 dodaj raz na górze pliku
 
+async function loadAthletes(kategoria) {
+
+  const requestId = ++currentRequestId;
+
+  // 🔥 LOADER TU
+  document.getElementById("tableBody").innerHTML = `
+    <tr>
+      <td colspan="4" style="text-align:center; padding:20px;">
+        ⏳ Ładowanie zawodników...
+      </td>
+    </tr>
+  `;
+
+  const url = API + "?api=athletes&token=" + TOKEN + "&kategoria=" + encodeURIComponent(kategoria);
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  // 🔥 zabezpieczenie przed szybkim klikaniem
+  if (requestId !== currentRequestId) return;
+
+  athletes = data;
+
+  renderTable();
+}
 async function init() {
 
   // 1. pobierz kategorie
@@ -93,15 +120,6 @@ async function init() {
 
 }
 
-async function loadAthletes(kategoria) {
-
-  const url = API + "?api=athletes&token=" + TOKEN + "&kategoria=" + encodeURIComponent(kategoria);
-
-  const res = await fetch(url);
-  athletes = await res.json();
-
-  renderTable();
-}
 
 function renderTable() {
 
