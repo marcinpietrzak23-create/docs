@@ -294,43 +294,47 @@ function isTiebreak(k) {
     return;
   }
 
-  // 🔥 payload jako JSON w GET
+  // 🔥 MAŁY payload tylko do sprawdzenia
   const payload = encodeURIComponent(JSON.stringify({
     kategoria,
     konkurencja,
-    rows
+    rows: rows.map(r => ({
+      zawodnik: r.zawodnik,
+      p1: r.p1,
+      p2: r.p2,
+      p3: r.p3
+    }))
   }));
 
-  const url = API + `?api=saveResults&token=${TOKEN}&data=${payload}`;
+  // =========================
+  // 1. CHECK OVERWRITE (GET)
+  // =========================
+  const checkRes = await fetch(
+    API + `?api=checkOverwrite&token=${TOKEN}&data=${payload}`
+  );
 
-  const res = await fetch(url);
-  const data = await res.json();
+  const check = await checkRes.json();
 
-  // 🔥 OBSŁUGA overwrite (działa normalnie)
-  if (data.overwrite) {
-
+  if (check.overwrite) {
     if (!confirm("Nadpisujesz istniejące wyniki. Kontynuować?")) {
       return;
     }
-
-    const forceUrl = API + `?api=saveResults&token=${TOKEN}&force=1&data=${payload}`;
-
-    const res2 = await fetch(forceUrl);
-    const data2 = await res2.json();
-
-    if (data2.ok) {
-      alert("Nadpisano!");
-    } else {
-      alert("Błąd zapisu");
-    }
-
-  } 
-  else if (data.ok) {
-    alert("Zapisano!");
-  } 
-  else {
-    alert("Błąd zapisu");
   }
+
+  // =========================
+  // 2. ZAPIS (POST)
+  // =========================
+  await fetch(API + "?api=saveResults&token=" + TOKEN, {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify({
+      kategoria,
+      konkurencja,
+      rows
+    })
+  });
+
+  alert("Zapisano!");
 }
   
 </script>
