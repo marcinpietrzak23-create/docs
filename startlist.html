@@ -557,17 +557,36 @@ function renderTable(category){
 ======================= */
 
 async function saveWeight(zawodnik,i){
-
+// 🔥 sprawdź czy są wyniki dla zawodnika
+const hasResults = (window.RESULTS_RAW || []).some(r =>
+  r.zawodnik === zawodnik &&
+  Number(r.wynik) > 0
+);
   const input = document.getElementById("w_"+i);
   const waga = input.value;
   const currentWeight = input.getAttribute("data-current") || "";
 
-  if(currentWeight !== ""){
-    const confirmed = confirm(
-      `UWAGA!\nZawodnik ma już wagę: ${currentWeight} kg.\nNadpisujesz na: ${waga} kg\n\nCzy na pewno?`
-    );
-    if(!confirmed) return;
-  }
+  // 🔴 BLOKADA: ma wagę + są wyniki
+if(currentWeight !== "" && hasResults){
+  alert("❌ Zawodnik ma już wyniki — zmiana wagi tylko w arkuszu");
+  return;
+}
+
+// 🟡 OSTRZEŻENIE: brak wagi, ale są wyniki
+if(currentWeight === "" && hasResults){
+  const confirmed = confirm(
+    "⚠️ Są już wyniki dla tego zawodnika.\nCzy na pewno chcesz dodać wagę?"
+  );
+  if(!confirmed) return;
+}
+
+// 🟢 normalne nadpisanie (brak wyników)
+if(currentWeight !== "" && !hasResults){
+  const confirmed = confirm(
+    `UWAGA!\nZawodnik ma już wagę: ${currentWeight} kg.\nNadpisujesz na: ${waga} kg\n\nCzy na pewno?`
+  );
+  if(!confirmed) return;
+}
 
   const token = sessionStorage.getItem("session_token");
 
