@@ -302,8 +302,9 @@ function fillFilters(){
   });
 
   categories.forEach(c=>{
-    catSel.innerHTML += `<option value="${c}">${c}</option>`;
-  });
+  const clean = c.replace(/^K:/, "");
+  catSel.innerHTML += `<option value="${c}">${clean}</option>`;
+});
 
 }
   function goHome(){
