@@ -214,7 +214,9 @@ async function load(){
     );
 
     // 🔥 ZAWSZE odśwież filtry
-    fillFilters();
+    if (document.getElementById("clubFilter").options.length <= 1) {
+  fillFilters();
+}
 
     // 🔥 zastosuj aktualne filtry
     applyFilters();
