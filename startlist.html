@@ -382,7 +382,9 @@ const selectedCats = Array.from(checked).map(c => c.value);
 selectedCats.forEach(cat => {
   athletes = athletes.concat(grouped[cat] || []);
 });
-    
+    athletes = athletes.sort((a,b)=>
+  (a.zawodnik || "").localeCompare(b.zawodnik || "","pl")
+);
   const stations = parseInt(document.getElementById("stationsInput").value) || 1;
 
  const type = document.getElementById("competitionSelect").value;
@@ -730,12 +732,14 @@ function splitGroup(athletes, stations) {
 
   return result;
 }
-  function shuffle(arr){
-  return arr.sort(() => Math.random() - 0.5);
+  function sortAthletes(arr){
+  return arr.sort((a,b)=>
+    (a.zawodnik || "").localeCompare(b.zawodnik || "","pl")
+  );
 }
 
 function mixCategories(selectedCats){
-  const arrays = selectedCats.map(cat => shuffle([...(grouped[cat] || [])]));
+  const arrays = selectedCats.map(cat => sortAthletes([...(grouped[cat] || [])]));
 
   const result = [];
   let i = 0;
@@ -757,7 +761,7 @@ function mixCategories(selectedCats){
   // 🔥 każda kategoria osobno
   selectedCats.forEach(cat => {
 
-    let pool = shuffle([...(grouped[cat] || [])]);
+    let pool = sortAthletes([...(grouped[cat] || [])]);
 
     let i = 0;
 
