@@ -17,9 +17,11 @@ body {
 ========================= */
 
 .table-page tbody tr:nth-child(even){
-  background:#f6f6f6;
+  background: rgba(255,255,255,0.04);
 }
-
+.table-page tbody tr:nth-child(odd){
+  background: transparent;
+}
 tbody tr:hover{
   background:#e2f1ff;
 }
