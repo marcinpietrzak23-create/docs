@@ -202,7 +202,7 @@ function renderAll(baseRes, extraRes, bojeRows){
 
 console.log("FINAL EXTRA ROWS:", extraRows.length);
 
-  buildGeneralka([...baseRows,...extraRows]);
+  buildGeneralka([...baseRows,...extraRows], bojeRows);
   console.log("COMP_ORDER:", COMP_ORDER);
 console.log("COMP_MAP:", window.COMP_MAP);
 COMP_ORDER.forEach(c=>{
@@ -252,7 +252,14 @@ console.log("CATEGORY_KEY:", CATEGORY_KEY);
 }
 
 /* ================= GENERALKA ================= */
-function buildGeneralka(rows){
+function buildGeneralka(rows, bojeRows){
+  const klubMap = {};
+
+(bojeRows || []).forEach(r => {
+  if (r.zawodnik && r.klub) {
+    klubMap[norm(r.zawodnik)] = r.klub;
+  }
+});
   const compsInCategory = [...new Set(rows.map(r => r.KONKURENCJA))];
   if(!rows.length) return;
 
@@ -270,7 +277,7 @@ function buildGeneralka(rows){
     if (!byAth[r.ZAWODNIK]) {
       byAth[r.ZAWODNIK] = {
         name: r.ZAWODNIK,
-        klub: r.KLUB || "-",
+       klub: klubMap[norm(r.ZAWODNIK)] || "-",
         waga: r.WAGA || "-",
         sum: 0,
         pts: {}
