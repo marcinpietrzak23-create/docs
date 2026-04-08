@@ -221,11 +221,24 @@ const punktyMap = {};
   };
 });
   
-  const filteredBoje=(bojeRows||[])
-    .filter(r =>
-      norm(r.kategoria)===norm(CATEGORY_KEY) ||
-      norm(r.kategoria_dodatkowa)===norm(CATEGORY_KEY)
-    );
+  const filteredBoje = (bojeRows || [])
+  .filter(r => {
+
+    const kat = norm(r.kategoria);
+    const katDod = norm(r.kategoria_dodatkowa);
+
+    const key = norm(CATEGORY_KEY);
+
+    const match =
+      kat.includes(key) ||
+      katDod.includes(key);
+
+    if (match) {
+      console.log("BOJE MATCH:", r);
+    }
+
+    return match;
+  });
 console.log("CATEGORY_KEY:", CATEGORY_KEY);
 
 (bojeRows || []).slice(0,20).forEach(r => {
