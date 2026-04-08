@@ -188,7 +188,13 @@ function renderAll(baseRes, extraRes, bojeRows){
     );
 
   const extraRows=(extraRes.data||[])
-    .filter(r=>norm(r.KATEGORIA_DODATKOWA)===norm(CATEGORY_KEY));
+  .filter(r => {
+    const cats = String(r.KATEGORIA_DODATKOWA || "")
+      .split(",")
+      .map(s => norm(s));
+
+    return cats.some(c => c.includes(norm(CATEGORY_KEY)));
+  });
 
   buildGeneralka([...baseRows,...extraRows]);
   console.log("COMP_ORDER:", COMP_ORDER);
