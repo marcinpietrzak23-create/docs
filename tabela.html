@@ -226,7 +226,15 @@ const punktyMap = {};
       norm(r.kategoria)===norm(CATEGORY_KEY) ||
       norm(r.kategoria_dodatkowa)===norm(CATEGORY_KEY)
     );
+console.log("CATEGORY_KEY:", CATEGORY_KEY);
 
+(bojeRows || []).slice(0,20).forEach(r => {
+  console.log("ROW:", {
+    kat: r.kategoria,
+    kat_dod: r.kategoria_dodatkowa,
+    konk: r.konkurencja
+  });
+});
   buildBoje(filteredBoje, punktyMap);
 }
 
