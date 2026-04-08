@@ -189,23 +189,15 @@ function renderAll(baseRes, extraRes, bojeRows){
 
   const extraRows=(extraRes.data||[])
   .filter(r => {
-    const raw = String(r.KATEGORIA_DODATKOWA || "");
-
-    const cats = raw
-      .split(",")
-      .map(s => norm(s));
-
     const key = norm(CATEGORY_KEY);
 
-    const match = cats.some(c => c.includes(key));
-
-    console.log("----");
-    console.log("RAW:", raw);
-    console.log("CATS:", cats);
-    console.log("KEY:", key);
-    console.log("MATCH:", match);
-
-    return match;
+    return String(r.KATEGORIA_DODATKOWA || "")
+      .split(",")
+      .map(s => norm(s))
+      .some(c => {
+        console.log("COMPARE:", c, "vs", key);
+        return c === key;
+      });
   });
 
 console.log("FINAL EXTRA ROWS:", extraRows.length);
