@@ -557,40 +557,58 @@ function renderTable(category){
 ======================= */
 
 async function saveWeight(zawodnik,i){
-// 🔥 sprawdź czy są wyniki dla zawodnika
-const hasResults = (window.RESULTS_RAW || []).some(r =>
-  r.zawodnik === zawodnik &&
-  Number(r.wynik) > 0
-);
+
+  const btn = event.target;
+
+  // 🔥 blokada wielokrotnego kliknięcia
+  if(btn.dataset.loading === "1") return;
+  btn.dataset.loading = "1";
+
   const input = document.getElementById("w_"+i);
+  input.disabled = true;
+
   const waga = input.value;
   const currentWeight = input.getAttribute("data-current") || "";
 
-  // 🔴 BLOKADA: ma wagę + są wyniki
-if(currentWeight !== "" && hasResults){
-  alert("❌ Zawodnik ma już wyniki — zmiana wagi tylko w arkuszu");
-  return;
-}
-
-// 🟡 OSTRZEŻENIE: brak wagi, ale są wyniki
-if(currentWeight === "" && hasResults){
-  const confirmed = confirm(
-    "⚠️ Są już wyniki dla tego zawodnika.\nCzy na pewno chcesz dodać wagę?"
+  // 🔥 sprawdź czy są wyniki
+  const hasResults = (window.RESULTS_RAW || []).some(r =>
+    r.zawodnik === zawodnik &&
+    Number(r.wynik) > 0
   );
-  if(!confirmed) return;
-}
 
-// 🟢 normalne nadpisanie (brak wyników)
-if(currentWeight !== "" && !hasResults){
-  const confirmed = confirm(
-    `UWAGA!\nZawodnik ma już wagę: ${currentWeight} kg.\nNadpisujesz na: ${waga} kg\n\nCzy na pewno?`
-  );
-  if(!confirmed) return;
-}
+  // 🔴 BLOKADA
+  if(currentWeight !== "" && hasResults){
+    alert("❌ Zawodnik ma już wyniki — zmiana wagi tylko w arkuszu");
+    btn.dataset.loading = "0";
+    input.disabled = false;
+    return;
+  }
+
+  // 🟡 OSTRZEŻENIE
+  if(currentWeight === "" && hasResults){
+    const confirmed = confirm(
+      "⚠️ Są już wyniki dla tego zawodnika.\nCzy na pewno chcesz dodać wagę?"
+    );
+    if(!confirmed){
+      btn.dataset.loading = "0";
+      input.disabled = false;
+      return;
+    }
+  }
+
+  // 🟢 NADPISANIE
+  if(currentWeight !== "" && !hasResults){
+    const confirmed = confirm(
+      `UWAGA!\nZawodnik ma już wagę: ${currentWeight} kg.\nNadpisujesz na: ${waga} kg\n\nCzy na pewno?`
+    );
+    if(!confirmed){
+      btn.dataset.loading = "0";
+      input.disabled = false;
+      return;
+    }
+  }
 
   const token = sessionStorage.getItem("session_token");
-
-  const btn = event.target;
   const row = btn.closest("tr");
 
   btn.disabled = true;
@@ -608,7 +626,8 @@ if(currentWeight !== "" && !hasResults){
 
   if(data.ok){
 
-    btn.innerText="✔";
+    // ✅ UI
+    btn.innerText="✔ Zapisano";
     btn.style.background="#4CAF50";
     btn.style.color="white";
 
@@ -617,23 +636,21 @@ if(currentWeight !== "" && !hasResults){
     input.value = waga;
     input.setAttribute("data-current", waga);
 
-    setTimeout(async () => {
+    // 🔥 🔥 🔥 KLUCZOWE — AKTUALIZACJA grouped
+    Object.keys(grouped).forEach(cat => {
+      grouped[cat].forEach(a => {
+        if (a.zawodnik === zawodnik) {
+          a.waga = waga;
+        }
+      });
+    });
 
-      const res = await fetch(API_BASE + "?api=startlist&token=" + token);
-      const data = await res.json();
-
-      const updated = data.find(a => a.zawodnik === zawodnik);
-
-      if(updated){
-        input.value = updated.waga || "";
-        input.setAttribute("data-current", updated.waga || "");
-      }
-
-    }, 500);
-
+    // ⏱ reset UI
     setTimeout(()=>{
       btn.innerText = "Zapisz";
       btn.disabled = false;
+      input.disabled = false;
+      btn.dataset.loading = "0";
     }, 1500);
 
   }else{
@@ -641,6 +658,8 @@ if(currentWeight !== "" && !hasResults){
     btn.innerText="Błąd";
     btn.style.background="#f44336";
     btn.disabled = false;
+    input.disabled = false;
+    btn.dataset.loading = "0";
 
   }
 }
