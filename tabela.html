@@ -189,12 +189,26 @@ function renderAll(baseRes, extraRes, bojeRows){
 
   const extraRows=(extraRes.data||[])
   .filter(r => {
-    const cats = String(r.KATEGORIA_DODATKOWA || "")
+    const raw = String(r.KATEGORIA_DODATKOWA || "");
+
+    const cats = raw
       .split(",")
       .map(s => norm(s));
 
-    return cats.some(c => c.includes(norm(CATEGORY_KEY)));
+    const key = norm(CATEGORY_KEY);
+
+    const match = cats.some(c => c.includes(key));
+
+    console.log("----");
+    console.log("RAW:", raw);
+    console.log("CATS:", cats);
+    console.log("KEY:", key);
+    console.log("MATCH:", match);
+
+    return match;
   });
+
+console.log("FINAL EXTRA ROWS:", extraRows.length);
 
   buildGeneralka([...baseRows,...extraRows]);
   console.log("COMP_ORDER:", COMP_ORDER);
