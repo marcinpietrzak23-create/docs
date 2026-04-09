@@ -1493,15 +1493,24 @@ if(!Array.isArray(results)){
 
     const athletes = {};
 
-    byCategory[cat].forEach(r=>{
-      if(!athletes[r.ZAWODNIK]){
-        athletes[r.ZAWODNIK] = {
-          name: r.ZAWODNIK,
-          klub: r.KLUB || "-",
-          sum: r.PKT_SUM || 0
-        };
-      }
-    });
+byCategory[cat].forEach(r => {
+
+  if (!athletes[r.ZAWODNIK]) {
+    athletes[r.ZAWODNIK] = {
+      name: r.ZAWODNIK,
+      klub: r.KLUB || "-",
+      pts: {}
+    };
+  }
+
+  athletes[r.ZAWODNIK].pts[r.KONKURENCJA] =
+    Number(r.PKT) || 0;
+});
+
+// 🔥 LICZENIE SUMY (jak w table)
+Object.values(athletes).forEach(a => {
+  a.sum = Object.values(a.pts).reduce((s,v)=>s+v,0);
+});
 
     const list = Object.values(athletes)
       .sort((a,b)=>a.sum-b.sum)
