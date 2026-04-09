@@ -283,10 +283,11 @@ function buildGeneralka(rows, bojeRows){
         pts: {}
       };
     }
-    byAth[r.ZAWODNIK].sum = Math.max(byAth[r.ZAWODNIK].sum, r.PKT_SUM || 0);
-    byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = r.PKT;
+    byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = Number(r.PKT) || 0;
   });
-
+Object.values(byAth).forEach(a=>{
+  a.sum = Object.values(a.pts).reduce((s,v)=>s+v,0);
+});
   document.querySelector("#generalka thead tr").innerHTML=`
     <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th><th>SUMA</th>
     ${compsInCategory.map(c=>{
