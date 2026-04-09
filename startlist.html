@@ -1460,7 +1460,10 @@ if(!Array.isArray(results)){
   const byCategory = {};
 
   rows.forEach(r=>{
-    const cat = r.KATEGORIA_LABEL || r.KATEGORIA || r.KATEGORIA_PODSTAWOWA;
+    const cat =
+  r.KATEGORIA ||
+  r.KATEGORIA_PODSTAWOWA ||
+  r.KATEGORIA_DODATKOWA;
 
     if(!cat) return;
 
@@ -1529,7 +1532,12 @@ if(!Array.isArray(results)){
 
   document.getElementById("content").innerHTML = html;
 }
-  function printCeremony(){
+  async function printCeremony(){
+
+  // 🔥 jeśli nie ma ceremonii → generuj ją
+  if(!document.querySelector(".ceremony-block")){
+    await renderCeremony();
+  }
 
   const content = document.getElementById("content").innerHTML;
 
@@ -1540,20 +1548,20 @@ if(!Array.isArray(results)){
     <head>
       <title>Dekoracje</title>
       <style>
-        body{
-          font-family: Arial;
-          padding: 20px;
-        }
+  body{
+    font-family: Arial;
+    padding: 20px;
+  }
 
-        h2,h3,h4{
-          margin:10px 0;
-        }
+  h2,h3,h4{
+    margin:10px 0;
+  }
 
-        .ceremony-block{
-          page-break-after: always;
-          margin-bottom:40px;
-        }
-      </style>
+  .ceremony-block{
+    page-break-inside: avoid; /* 🔥 NIE rozdziela */
+    margin-bottom:30px;
+  }
+</style>
     </head>
     <body>
       ${content}
