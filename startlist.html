@@ -1440,7 +1440,21 @@ if(!Array.isArray(results)){
     fetch(API_BASE + "?api=boje&token=" + TOKEN).then(r=>r.json())
   ]);
 
-  const rows = [...(view.data||[]), ...(extra.data||[])];
+  const rows = [];
+
+// 🔥 PODSTAWOWE
+(view.data||[]).forEach(r=>{
+  if(r.KATEGORIA_PODSTAWOWA){
+    rows.push(r);
+  }
+});
+
+// 🔥 DODATKOWE (Junior, Masters itd.)
+(extra.data||[]).forEach(r=>{
+  if(r.KATEGORIA_DODATKOWA){
+    rows.push(r);
+  }
+});
 
   // 🔥 grupowanie po nazwie kategorii (TAKIEJ JAK NA STRONIE)
   const byCategory = {};
