@@ -358,11 +358,11 @@ if (check.overwrite) {
 
   if (!confirmOverwrite) {
     // zapisujemy tylko nowe
-    rowsToSave = rows.filter(r => !check.conflicts.includes(r.zawodnik));
+    rowsToSave = rows;
   }
 }
 
-  await fetch(API + "?api=saveResults&token=" + TOKEN, {
+  await fetch(API + "?api=saveResults&token=" + TOKEN + "&force=1", {
     method: "POST",
     body: JSON.stringify({
       kategoria,
