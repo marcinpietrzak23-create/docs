@@ -6,7 +6,7 @@
   <style>
   .loading {
     opacity: 0.7;
-    pointer-events: none;
+    pointer-events: none;mode: "no-cors",
   }
 
   .spinner {
@@ -155,7 +155,8 @@ function renderTable() {
     .forEach(a => {
 
       const tr = document.createElement("tr");
-
+      tr.dataset.waga = a.waga || "";
+      
       if (isTiebreak(konk)) {
 
         tr.innerHTML = `
@@ -267,7 +268,12 @@ function isTiebreak(k) {
   const rows = [];
 
   document.querySelectorAll("#tableBody tr").forEach(tr => {
+  
+    const waga = tr.dataset.waga;
 
+if (!waga) {
+  return; // ⛔ pomijamy zawodnika bez wagi
+}
     const zawodnik = tr.children[0].textContent;
 
     const inputs = tr.querySelectorAll("input");
@@ -313,7 +319,14 @@ function isTiebreak(k) {
   const konkurencja = document.getElementById("competition").value;
 
   const rows = collectResults();
+  const noWeight = athletes.filter(a => !a.waga);
 
+if (noWeight.length > 0) {
+  alert("Niektórzy zawodnicy nie mają wagi — zapis zablokowany!");
+  resetBtn();
+  return;
+}
+   
   if (rows.length === 0) {
     alert("Brak danych do zapisania");
     btn.classList.remove("loading");
@@ -338,21 +351,23 @@ function isTiebreak(k) {
 
   const check = await checkRes.json();
 
-  if (check.overwrite) {
-    if (!confirm("Nadpisujesz istniejące wyniki. Kontynuować?")) {
-      btn.classList.remove("loading");
-      btn.innerHTML = "ZAPISZ";
-      return;
-    }
+  let rowsToSave = rows;
+
+if (check.overwrite) {
+  const confirmOverwrite = confirm("Część wyników już istnieje. Nadpisać je?");
+
+  if (!confirmOverwrite) {
+    // zapisujemy tylko nowe
+    rowsToSave = rows.filter(r => !check.conflicts.includes(r.zawodnik));
   }
+}
 
   await fetch(API + "?api=saveResults&token=" + TOKEN, {
     method: "POST",
-    mode: "no-cors",
     body: JSON.stringify({
       kategoria,
       konkurencja,
-      rows
+      rows: rowsToSave
     })
   });
 
@@ -361,7 +376,11 @@ function isTiebreak(k) {
   btn.classList.remove("loading");
   btn.innerHTML = "ZAPISZ";
 }
-  
+  function resetBtn() {
+  const btn = document.getElementById("saveBtn");
+  btn.classList.remove("loading");
+  btn.innerHTML = "ZAPISZ";
+}
 </script>
 
 </body>
