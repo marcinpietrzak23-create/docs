@@ -116,10 +116,15 @@ body.startlist-page .panel{
   }
 
   .ceremony-block{
-    page-break-after: always;
+    /* 🔥 NIE rozdzielaj kategorii na strony */
+    page-break-inside: avoid;
+
+    /* wygląd do druku */
     background:white;
     color:black;
     border:1px solid #000;
+
+    margin-bottom:20px;
   }
 
 }
