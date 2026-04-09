@@ -98,3 +98,28 @@ body.startlist-page .startlist-actions{
 body.startlist-page .panel{
   display:block;
 }
+/* ===== CEREMONIA ===== */
+.ceremony-block{
+  margin:30px 0;
+  padding:20px;
+  background:#12384d;
+  border-radius:10px;
+  color:#fff;
+}
+
+/* 🔥 DRUK */
+@media print {
+
+  body{
+    background:white;
+    color:black;
+  }
+
+  .ceremony-block{
+    page-break-after: always;
+    background:white;
+    color:black;
+    border:1px solid #000;
+  }
+
+}
