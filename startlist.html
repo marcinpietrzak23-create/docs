@@ -55,6 +55,9 @@ Hardstyle Kettlebell European Championship
   Panel sędziego
 </button>
 <button onclick="window.print()">Drukuj</button>
+  <button onclick="printCeremony()" style="background:#1565c0;color:white;">
+  🎤 Druk dekoracji
+</button>
   <button onclick="saveStartlist()" style="background:#2e7d32;color:white;">
   💾 Zapisz startlistę
 </button>
@@ -342,8 +345,8 @@ function renderTabs(){
   tabs.appendChild(btn);
   // 🔥 BEST BUTTON
 const bestBtn = document.createElement("button");
-bestBtn.textContent = "🏆 BEST";
-bestBtn.onclick = renderBest;
+bestBtn.textContent = "🎤 CEREMONIA";
+bestBtn.onclick = renderCeremony;
 bestBtn.style.marginLeft = "10px";
 
 tabs.appendChild(bestBtn);
@@ -522,7 +525,7 @@ function renderTable(category){
 
     <td>
 
-      <input
+      
         <input
   id="w_${i}"
   type="number"
@@ -1426,6 +1429,125 @@ if(!Array.isArray(results)){
   });
 
   alert("Zapisano startlistę ✅");
+}
+  async function renderCeremony(){
+
+  const TOKEN = sessionStorage.getItem("session_token");
+
+  const [view, extra, boje] = await Promise.all([
+    fetch(API_BASE + "?arkusz=API_VIEW&token=" + TOKEN).then(r=>r.json()),
+    fetch(API_BASE + "?arkusz=API_DODATKOWE&token=" + TOKEN).then(r=>r.json()),
+    fetch(API_BASE + "?api=boje&token=" + TOKEN).then(r=>r.json())
+  ]);
+
+  const rows = [...(view.data||[]), ...(extra.data||[])];
+
+  // 🔥 grupowanie po nazwie kategorii (TAKIEJ JAK NA STRONIE)
+  const byCategory = {};
+
+  rows.forEach(r=>{
+    const cat = r.KATEGORIA_LABEL || r.KATEGORIA || r.KATEGORIA_PODSTAWOWA;
+
+    if(!cat) return;
+
+    if(!byCategory[cat]) byCategory[cat] = [];
+
+    byCategory[cat].push(r);
+  });
+
+  let html = `<h2 style="color:#fff;text-align:center;">🎤 CEREMONIA DEKORACJI</h2>`;
+
+  // ===== GENERALKI =====
+  Object.keys(byCategory).forEach(cat=>{
+
+    const athletes = {};
+
+    byCategory[cat].forEach(r=>{
+      if(!athletes[r.ZAWODNIK]){
+        athletes[r.ZAWODNIK] = {
+          name: r.ZAWODNIK,
+          klub: r.KLUB || "-",
+          sum: r.PKT_SUM || 0
+        };
+      }
+    });
+
+    const list = Object.values(athletes)
+      .sort((a,b)=>a.sum-b.sum)
+      .slice(0,3);
+
+    html += `
+      <div class="ceremony-block">
+        <h3>${cat}</h3>
+    `;
+
+    list.forEach((a,i)=>{
+      html += `<div>${i+1}. ${a.name} (${a.sum})</div>`;
+    });
+
+    html += `</div>`;
+  });
+
+  // ===== BEST =====
+  html += `<div class="ceremony-block">`;
+  html += `<h3>🏆 BEST</h3>`;
+
+  const best = window.BEST;
+
+  ["K","M"].forEach(g=>{
+    html += `<h4>${g==="K"?"Kobiety":"Mężczyźni"} - TGU</h4>`;
+    (best.TGU[g]||[]).forEach((r,i)=>{
+      html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
+    });
+  });
+
+  ["Junior","Amator","Pro"].forEach(level=>{
+    ["K","M"].forEach(g=>{
+      html += `<h4>SNATCH ${level} ${g}</h4>`;
+      (best.SNATCH[level][g]||[]).forEach((r,i)=>{
+        html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
+      });
+    });
+  });
+
+  html += `</div>`;
+
+  document.getElementById("content").innerHTML = html;
+}
+  function printCeremony(){
+
+  const content = document.getElementById("content").innerHTML;
+
+  const win = window.open("", "_blank");
+
+  win.document.write(`
+    <html>
+    <head>
+      <title>Dekoracje</title>
+      <style>
+        body{
+          font-family: Arial;
+          padding: 20px;
+        }
+
+        h2,h3,h4{
+          margin:10px 0;
+        }
+
+        .ceremony-block{
+          page-break-after: always;
+          margin-bottom:40px;
+        }
+      </style>
+    </head>
+    <body>
+      ${content}
+    </body>
+    </html>
+  `);
+
+  win.document.close();
+  win.print();
 }
 </script>
 
