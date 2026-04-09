@@ -155,8 +155,9 @@ function renderTable() {
     .forEach(a => {
 
       const tr = document.createElement("tr");
+      const brakWagi = !a.waga;
       tr.dataset.waga = a.waga || "";
-      
+
       if (isTiebreak(konk)) {
 
         tr.innerHTML = `
@@ -181,6 +182,16 @@ function renderTable() {
           <td><input type="number"></td>
           <td><input type="number"></td>
         `;
+      }
+
+      // 🔥 BLOKADA (dla KAŻDEJ konkurencji)
+      if (brakWagi) {
+        tr.style.opacity = "0.4";
+        tr.title = "Brak wagi - nie można wpisać wyniku";
+
+        tr.querySelectorAll("input").forEach(inp => {
+          inp.disabled = true;
+        });
       }
 
       body.appendChild(tr);
@@ -354,11 +365,16 @@ if (noWeight.length > 0) {
   let rowsToSave = rows;
 
 if (check.overwrite) {
-  const confirmOverwrite = confirm("Część wyników już istnieje. Nadpisać je?");
+
+  const lista = check.conflicts.join("\n");
+
+  const confirmOverwrite = confirm(
+    "Nadpiszesz wyniki dla:\n\n" + lista + "\n\nKontynuować?"
+  );
 
   if (!confirmOverwrite) {
-    // zapisujemy tylko nowe
-    rowsToSave = rows;
+    resetBtn();
+    return;
   }
 }
 
