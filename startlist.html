@@ -1460,17 +1460,31 @@ if(!Array.isArray(results)){
   const byCategory = {};
 
   rows.forEach(r=>{
-    const cat =
-  r.KATEGORIA ||
-  r.KATEGORIA_PODSTAWOWA ||
-  r.KATEGORIA_DODATKOWA;
 
-    if(!cat) return;
+  // 🔥 podstawowa kategoria
+  const baseCat = r.KATEGORIA || r.KATEGORIA_PODSTAWOWA;
 
-    if(!byCategory[cat]) byCategory[cat] = [];
+  if(baseCat){
+    if(!byCategory[baseCat]) byCategory[baseCat] = [];
+    byCategory[baseCat].push(r);
+  }
 
-    byCategory[cat].push(r);
-  });
+  // 🔥 dodatkowe (mogą być 2+!)
+  if(r.KATEGORIA_DODATKOWA){
+
+    const extraCats = String(r.KATEGORIA_DODATKOWA)
+      .split(",")
+      .map(c => c.trim())
+      .filter(c => c);
+
+    extraCats.forEach(cat=>{
+      if(!byCategory[cat]) byCategory[cat] = [];
+      byCategory[cat].push(r);
+    });
+
+  }
+
+});
 
   let html = `<h2 style="color:#fff;text-align:center;">🎤 CEREMONIA DEKORACJI</h2>`;
 
