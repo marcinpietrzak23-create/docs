@@ -416,6 +416,17 @@ function renderStations(data){
 <h2 style="color:#ffffff; text-align:center; margin-bottom:20px;">
   Podział na stanowiska
 </h2>
+
+<div style="margin-bottom:20px; text-align:center;">
+  <label style="color:white;font-weight:bold;">
+    🕒 Godzina startu:
+    <input 
+      id="startTimeInput" 
+      type="time" 
+      style="margin-left:10px;padding:6px;border-radius:6px;"
+    >
+  </label>
+</div>
 `;
 
   html += '<div style="display:flex;flex-wrap:wrap;gap:20px">';
@@ -1405,19 +1416,30 @@ if(!Array.isArray(results)){
 
   const token = sessionStorage.getItem("session_token");
 
-  const payload = CURRENT_STATIONS.map((station, i) => {
+  // 🕒 godzina
+  const startTime = document.getElementById("startTimeInput")?.value || "";
 
-    const judge = document.querySelectorAll(".judgeSelect")[i]?.value || "";
+  // 📦 wybrane kategorie
+  const checked = document.querySelectorAll(".catCheck:checked");
+  const categories = Array.from(checked).map(c => c.value);
 
-    return {
-      station: i + 1,
-      judge: judge,
-      athletes: station.map(a => ({
-        name: a.zawodnik,
-        category: a.kategoria
-      }))
-    };
-  });
+  const payload = {
+    category: categories.join(", "),
+    startTime: startTime,
+    stations: CURRENT_STATIONS.map((station, i) => {
+
+      const judge = document.querySelectorAll(".judgeSelect")[i]?.value || "";
+
+      return {
+        station: i + 1,
+        judge: judge,
+        athletes: station.map(a => ({
+          name: a.zawodnik,
+          category: a.kategoria
+        }))
+      };
+    })
+  };
 
   await fetch(API_BASE + "?api=saveStartlist", {
     method: "POST",
@@ -1428,7 +1450,7 @@ if(!Array.isArray(results)){
     })
   });
 
-  alert("Zapisano startlistę ✅");
+  alert("Zapisano blok startowy ✅");
 }
   async function renderCeremony(){
 
