@@ -168,14 +168,14 @@ function renderTable() {
 
         tr.innerHTML = `
           <td>${a.zawodnik}</td>
-          <td><input type="number" value="${a.p1 || ""}"></td>
+          <td><input type="number" value="${a.p1 ?? ""}"></td>
         `;
 
       } else if (isSnatch(konk)) {
 
         tr.innerHTML = `
           <td>${a.zawodnik}</td>
-         <td><input type="number" class="kg" value="${a.p1 || ""}"></td>
+         <td><input type="number" class="kg" value="${a.p1 ?? ""}"></td>
 <td><input type="number" class="reps" value="${a.p2 || ""}"></td>
 <td class="sum">${(a.p1 && a.p2) ? a.p1 * a.p2 : ""}</td>
         `;
@@ -184,7 +184,7 @@ function renderTable() {
 
         tr.innerHTML = `
           <td>${a.zawodnik}</td>
-          <td><input type="number" value="${a.p1 || ""}"></td>
+          <td><input type="number" value="${a.p1 ?? ""}"></td>
 <td><input type="number" value="${a.p2 || ""}"></td>
 <td><input type="number" value="${a.p3 || ""}"></td>
         `;
@@ -313,7 +313,7 @@ if (!waga) {
       const p2 = inputs[1].value;
       const p3 = inputs[2].value;
 
-      if (p1 || p2 || p3) {
+      if (p1 !== "" || p2 !== "" || p3 !== "") {
         rows.push({ zawodnik, p1, p2, p3 });
       }
     }
