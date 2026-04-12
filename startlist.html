@@ -492,31 +492,28 @@ function renderStations(data){
 `;
 
     group.forEach(a => {
-      html += `<li style="
-  padding:6px 0;
-  border-bottom:1px solid rgba(255,255,255,0.2);
-  color:#ffffff;
-">
-      ${a.zawodnik}
-<br>
-<span style="font-size:12px; opacity:0.7;">
-  ${
-  const extraJunior = (a.kategoria_dodatkowa || "")
-  .split(",")
-  .map(x => x.trim())
-  .find(x => x.toLowerCase().includes("junior"));
 
-${
-  extraJunior
+  const extraJunior = (a.kategoria_dodatkowa || "")
+    .split(",")
+    .map(x => x.trim())
+    .find(x => x.toLowerCase().includes("junior"));
+
+  const categoryText = extraJunior
     ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + extraJunior
-    : getMainCategory(a.kategoria).replace(/^k:/i,"")
-}
-    ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + a.kategoria_dodatkowa
-    : getMainCategory(a.kategoria).replace(/^k:/i,"")
-}
-</span>
-      </li>`;
-    });
+    : getMainCategory(a.kategoria).replace(/^k:/i,"");
+
+  html += `<li style="
+    padding:6px 0;
+    border-bottom:1px solid rgba(255,255,255,0.2);
+    color:#ffffff;
+  ">
+    ${a.zawodnik}
+    <br>
+    <span style="font-size:12px; opacity:0.7;">
+      ${categoryText}
+    </span>
+  </li>`;
+});
 
     html += "</ul></div>";
   });
@@ -1052,20 +1049,7 @@ const comp = (COMP_LABELS[compRaw] || []).join(" | ");
         <tr>
           <td>${i+1}</td>
           <td>${a.zawodnik}</td>
-          <td>${
-  const extraJunior = (a.kategoria_dodatkowa || "")
-  .split(",")
-  .map(x => x.trim())
-  .find(x => x.toLowerCase().includes("junior"));
-
-${
-  extraJunior
-    ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + extraJunior
-    : getMainCategory(a.kategoria).replace(/^k:/i,"")
-}
-    ? (a.kategoria||"").replace(/^K:/,"") + " / " + a.kategoria_dodatkowa
-    : (a.kategoria||"").replace(/^K:/,"")
-}</td>
+          <td>${getMainCategory(a.kategoria).replace(/^k:/i,"")}</td>
         </tr>
       `;
     });
@@ -1092,7 +1076,7 @@ ${
         <th>Kategoria</th>
   `;
 
-  if(comp === "SNUB3'"){
+  if(compRaw === "individual"){
     html += `
         <th>Ciężar</th>
         <th>Powtórzenia</th>
@@ -1101,7 +1085,7 @@ ${
       </tr>
     `;
   }
-  else if(comp === "TIEBREAK"){
+  else if(compRaw === "manual"){
     html += `
         <th>Punkty</th>
         <th>Zaliczone ✓/✗</th>
@@ -1131,26 +1115,22 @@ ${
         <td>${i+1}</td>
         <td>${imie}</td>
         <td>${nazwisko}</td>
-        <td>${
- const extraJunior = (a.kategoria_dodatkowa || "")
-  .split(",")
-  .map(x => x.trim())
-  .find(x => x.toLowerCase().includes("junior"));
+        <td>${(() => {
+  const extraJunior = (a.kategoria_dodatkowa || "")
+    .split(",")
+    .map(x => x.trim())
+    .find(x => x.toLowerCase().includes("junior"));
 
-${
-  extraJunior
+  return extraJunior
     ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + extraJunior
-    : getMainCategory(a.kategoria).replace(/^k:/i,"")
-}
-    ? (a.kategoria||"").replace(/^K:/,"") + " / " + a.kategoria_dodatkowa
-    : (a.kategoria||"").replace(/^K:/,"")
-}</td>
+    : getMainCategory(a.kategoria).replace(/^k:/i,"");
+})()}</td>
     `;
 
-    if(comp === "SNUB3'"){
+    if(compRaw === "individual"){
       html += `<td style="height:35px;"></td><td></td><td></td><td></td>`;
     }
-    else if(comp === "TIEBREAK"){
+    else if(compRaw === "manual"){
       html += `<td style="height:35px;"></td><td></td>`;
     }
     else{
@@ -1223,27 +1203,24 @@ ${
   `;
 
   data.forEach((a,i)=>{
-    html += `
-      <tr>
-        <td>${i+1}</td>
-        <td>${a.zawodnik}</td>
-        <td>${
-  const extraJunior = (a.kategoria_dodatkowa || "")
-  .split(",")
-  .map(x => x.trim())
-  .find(x => x.toLowerCase().includes("junior"));
 
-${
-  extraJunior
+  const extraJunior = (a.kategoria_dodatkowa || "")
+    .split(",")
+    .map(x => x.trim())
+    .find(x => x.toLowerCase().includes("junior"));
+
+  const categoryText = extraJunior
     ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + extraJunior
-    : getMainCategory(a.kategoria).replace(/^k:/i,"")
-}
-    ? (a.kategoria||"").replace(/^K:/,"") + " / " + a.kategoria_dodatkowa
-    : (a.kategoria||"").replace(/^K:/,"")
-}</td>
-      </tr>
-    `;
-  });
+    : getMainCategory(a.kategoria).replace(/^k:/i,"");
+
+  html += `
+    <tr>
+      <td>${i+1}</td>
+      <td>${a.zawodnik}</td>
+      <td>${categoryText}</td>
+    </tr>
+  `;
+});
 
   html += "</table>";
 
