@@ -494,9 +494,9 @@ function renderStations(data){
     group.forEach(a => {
 
   const extraJunior = (a.kategoria_dodatkowa || "")
-    .split(",")
-    .map(x => x.trim())
-    .find(x => x.toLowerCase().includes("junior"));
+  .split(",")
+  .map(x => x.trim().replace(/^k:/i, "")) // 🔥 KLUCZ
+  .find(x => x.toLowerCase().includes("junior"));
 
   const categoryText = extraJunior
     ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + extraJunior
@@ -1117,9 +1117,9 @@ const comp = (COMP_LABELS[compRaw] || []).join(" | ");
         <td>${nazwisko}</td>
         <td>${(() => {
   const extraJunior = (a.kategoria_dodatkowa || "")
-    .split(",")
-    .map(x => x.trim())
-    .find(x => x.toLowerCase().includes("junior"));
+  .split(",")
+  .map(x => x.trim().replace(/^k:/i, "")) // 🔥 KLUCZ
+  .find(x => x.toLowerCase().includes("junior"));
 
   return extraJunior
     ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + extraJunior
@@ -1205,9 +1205,9 @@ const comp = (COMP_LABELS[compRaw] || []).join(" | ");
   data.forEach((a,i)=>{
 
   const extraJunior = (a.kategoria_dodatkowa || "")
-    .split(",")
-    .map(x => x.trim())
-    .find(x => x.toLowerCase().includes("junior"));
+  .split(",")
+  .map(x => x.trim().replace(/^k:/i, "")) // 🔥 KLUCZ
+  .find(x => x.toLowerCase().includes("junior"));
 
   const categoryText = extraJunior
     ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + extraJunior
