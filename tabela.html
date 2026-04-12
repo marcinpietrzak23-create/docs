@@ -288,9 +288,21 @@ function buildGeneralka(rows, bojeRows){
     byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = Number(r.PKT) || 0;
   });
 
-  Object.values(byAth).forEach(a=>{
-    a.sum = Object.values(a.pts).reduce((s,v)=>s+v,0);
+  const athletesCount = Object.keys(byAth).length;
+
+// uzupełniamy brakujące konkurencje
+Object.values(byAth).forEach(a => {
+  compsInCategory.forEach(c => {
+    if (a.pts[c] == null) {
+      a.pts[c] = athletesCount; // ostatnie miejsce
+    }
   });
+});
+
+// dopiero teraz liczymy sumę
+Object.values(byAth).forEach(a=>{
+  a.sum = Object.values(a.pts).reduce((s,v)=>s+v,0);
+});
 
   document.querySelector("#generalka thead tr").innerHTML=`
     <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th><th>SUMA</th>
@@ -322,7 +334,7 @@ function buildGeneralka(rows, bojeRows){
         <td>${r.klub}</td>
         <td>${r.waga}</td>
         <td>${r.sum}</td>
-        ${compsInCategory.map(c=>`<td>${r.pts[c] ?? "-"}</td>`).join("")}
+        ${compsInCategory.map(c=>`<td>${rows.find(x => x.ZAWODNIK===r.name && x.KONKURENCJA===c) ? r.pts[c] : "-"}</td>`).join("")}
       </tr>
     `);
 
