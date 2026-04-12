@@ -321,13 +321,18 @@ function renderTabs(){
     wrapper.style.cursor = "pointer";
 
     const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.value = cat;
-    checkbox.className = "catCheck";
-    checkbox.style.transform = "scale(1.2)";
+checkbox.type = "checkbox";
+checkbox.value = cat;
+checkbox.className = "catCheck";
+checkbox.style.transform = "scale(1.2)";
 
+// 🔥 blokuje klik wrappera
+checkbox.onclick = (e) => e.stopPropagation();
+
+// 🔥 NOWE – od razu odświeża tabelę
+checkbox.onchange = () => renderSelectedCategories();
     // kliknięcie w nazwę kategorii nadal pokazuje tabelę
-    wrapper.onclick = () => renderTable(cat);
+    wrapper.onclick = () => renderSelectedCategories();
 
     wrapper.appendChild(checkbox);
     wrapper.append(" " + cat.replace(/^k:/i, ""));
@@ -1616,6 +1621,79 @@ Object.values(athletes).forEach(a => {
 
   win.document.close();
   win.print();
+}
+
+  function renderSelectedCategories(){
+
+  const checked = document.querySelectorAll(".catCheck:checked");
+
+  if (checked.length === 0) {
+    document.getElementById("content").innerHTML = "";
+    return;
+  }
+
+  const selectedCats = Array.from(checked).map(c => c.value);
+
+  let rows = [];
+
+  selectedCats.forEach(cat => {
+    rows = rows.concat(grouped[cat] || []);
+  });
+
+  rows.sort((a,b)=>
+    (a.zawodnik || "").localeCompare(b.zawodnik || "","pl")
+  );
+
+  const container = document.getElementById("content");
+
+  let html = `
+  <h2 class="category-title">
+    ${selectedCats.map(c => c.replace(/^k:/i,"")).join(", ")}
+  </h2>
+
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>LP</th>
+        <th>Zawodnik</th>
+        <th>Klub</th>
+        <th>Kategoria dodatkowa</th>
+        <th>Waga</th>
+      </tr>
+    </thead>
+    <tbody>
+  `;
+
+  rows.forEach((r,i)=>{
+    html += `
+      <tr class="${r.waga ? 'weighted' : ''}">
+        <td>${i+1}</td>
+        <td>${r.zawodnik||""}</td>
+        <td>${r.klub||""}</td>
+        <td>${r.kategoria_dodatkowa||""}</td>
+        <td>
+          <input
+            id="w_${i}"
+            type="number"
+            value="${r.waga||""}"
+            data-current="${r.waga||""}"
+            style="width:80px;padding:4px;font-weight:bold;text-align:center"
+          >
+          <button
+            class="save-weight"
+            onclick="saveWeight('${r.zawodnik}',${i})"
+          >
+            Zapisz
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += "</tbody></table></div>";
+
+  container.innerHTML = html;
 }
 </script>
 
