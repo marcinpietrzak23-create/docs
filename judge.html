@@ -332,13 +332,7 @@ if (!waga) {
   const konkurencja = document.getElementById("competition").value;
 
   const rows = collectResults();
-  const noWeight = athletes.filter(a => !a.waga);
 
-if (noWeight.length > 0) {
-  alert("Niektórzy zawodnicy nie mają wagi — zapis zablokowany!");
-  resetBtn();
-  return;
-}
    
   if (rows.length === 0) {
     alert("Brak danych do zapisania");
@@ -389,7 +383,13 @@ if (check.overwrite) {
     })
   });
 
+  const brakWagi = athletes.some(a => !a.waga);
+
+if (brakWagi) {
+  alert("Zapisano! Część zawodników bez wagi została pominięta");
+} else {
   alert("Zapisano!");
+}
 
   btn.classList.remove("loading");
   btn.innerHTML = "ZAPISZ";
