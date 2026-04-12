@@ -255,11 +255,12 @@ console.log("CATEGORY_KEY:", CATEGORY_KEY);
 function buildGeneralka(rows, bojeRows){
   const klubMap = {};
 
-(bojeRows || []).forEach(r => {
-  if (r.zawodnik && r.klub) {
-    klubMap[norm(r.zawodnik)] = r.klub;
-  }
-});
+  (bojeRows || []).forEach(r => {
+    if (r.zawodnik && r.klub) {
+      klubMap[norm(r.zawodnik)] = r.klub;
+    }
+  });
+
   const compsInCategory = [...new Set(rows.map(r => r.KONKURENCJA))];
   if(!rows.length) return;
 
@@ -273,11 +274,12 @@ function buildGeneralka(rows, bojeRows){
   document.getElementById("generalkaInfo").style.display="none";
 
   const byAth = {};
+
   rows.forEach(r => {
     if (!byAth[r.ZAWODNIK]) {
       byAth[r.ZAWODNIK] = {
         name: r.ZAWODNIK,
-       klub: klubMap[norm(r.ZAWODNIK)] || "-",
+        klub: klubMap[norm(r.ZAWODNIK)] || "-",
         waga: r.WAGA || "-",
         sum: 0,
         pts: {}
@@ -285,23 +287,37 @@ function buildGeneralka(rows, bojeRows){
     }
     byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = Number(r.PKT) || 0;
   });
-Object.values(byAth).forEach(a=>{
-  a.sum = Object.values(a.pts).reduce((s,v)=>s+v,0);
-});
+
+  Object.values(byAth).forEach(a=>{
+    a.sum = Object.values(a.pts).reduce((s,v)=>s+v,0);
+  });
+
   document.querySelector("#generalka thead tr").innerHTML=`
     <th>M-ce</th><th>Zawodnik</th><th>Klub</th><th>Waga</th><th>SUMA</th>
     ${compsInCategory.map(c=>{
-  const short = window.COMP_MAP[c]?.short || c;
-  return `<th>${short.replace(/\s+/g, "<br>")}</th>`;
-}).join("")}
+      const short = window.COMP_MAP[c]?.short || c;
+      return `<th>${short.replace(/\s+/g, "<br>")}</th>`;
+    }).join("")}
   `;
 
   const tbody=document.querySelector("#generalka tbody");
   tbody.innerHTML="";
-  Object.values(byAth).sort((a,b)=>a.sum-b.sum).forEach((r,i)=>{
+
+  const sorted = Object.values(byAth).sort((a,b)=>a.sum-b.sum);
+
+  let place = 0;
+  let lastSum = null;
+
+  sorted.forEach((r,i)=>{
+
+    if (r.sum !== lastSum) {
+      place = i + 1;
+      lastSum = r.sum;
+    }
+
     tbody.insertAdjacentHTML("beforeend",`
       <tr>
-        <td>${i+1}</td>
+        <td>${place}</td>
         <td>${r.name}</td>
         <td>${r.klub}</td>
         <td>${r.waga}</td>
@@ -309,6 +325,7 @@ Object.values(byAth).forEach(a=>{
         ${compsInCategory.map(c=>`<td>${r.pts[c] ?? "-"}</td>`).join("")}
       </tr>
     `);
+
   });
 }
 
