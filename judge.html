@@ -176,8 +176,8 @@ function renderTable() {
         tr.innerHTML = `
           <td>${a.zawodnik}</td>
          <td><input type="number" class="kg" value="${a.p1 ?? ""}"></td>
-<td><input type="number" class="reps" value="${a.p2 || ""}"></td>
-<td class="sum">${(a.p1 && a.p2) ? a.p1 * a.p2 : ""}</td>
+<td><input type="number" class="reps" value="${a.p2 ?? ""}"></td>
+<td class="sum">${(a.p1 !== "" && a.p2 !== "") ? a.p1 * a.p2 : ""}</td>
         `;
 
       } else {
@@ -185,8 +185,8 @@ function renderTable() {
         tr.innerHTML = `
           <td>${a.zawodnik}</td>
           <td><input type="number" value="${a.p1 ?? ""}"></td>
-<td><input type="number" value="${a.p2 || ""}"></td>
-<td><input type="number" value="${a.p3 || ""}"></td>
+<td><input type="number" value="${a.p2 ?? ""}"></td>
+<td><input type="number" value="${a.p3 ?? ""}"></td>
         `;
       }
 
