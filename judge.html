@@ -77,7 +77,12 @@ async function loadAthletes(kategoria) {
     </tr>
   `;
 
-  const url = API + "?api=athletes&token=" + TOKEN + "&kategoria=" + encodeURIComponent(kategoria);
+  const konkurencja = document.getElementById("competition").value;
+
+const url = API + "?api=athletes"
+  + "&token=" + TOKEN
+  + "&kategoria=" + encodeURIComponent(kategoria)
+  + "&konkurencja=" + encodeURIComponent(konkurencja);
 
   const res = await fetch(url);
   const data = await res.json();
@@ -128,13 +133,14 @@ async function init() {
   });
 
   // 4. zmiana konkurencji
-  document.getElementById("competition").addEventListener("change", () => {
+document.getElementById("competition").addEventListener("change", async () => {
 
-    const konk = document.getElementById("competition").value;
-    renderHeader(konk);
-    renderTable();
+  const konk = document.getElementById("competition").value;
+  renderHeader(konk);
 
-  });
+  await loadAthletes(document.getElementById("category").value);
+
+});
 
   // 5. search
   document.getElementById("search").addEventListener("input", renderTable);
@@ -162,25 +168,25 @@ function renderTable() {
 
         tr.innerHTML = `
           <td>${a.zawodnik}</td>
-          <td><input type="number"></td>
+          <td><input type="number" value="${a.p1 || ""}"></td>
         `;
 
       } else if (isSnatch(konk)) {
 
         tr.innerHTML = `
           <td>${a.zawodnik}</td>
-          <td><input type="number" class="kg"></td>
-          <td><input type="number" class="reps"></td>
-          <td class="sum"></td>
+         <td><input type="number" class="kg" value="${a.p1 || ""}"></td>
+<td><input type="number" class="reps" value="${a.p2 || ""}"></td>
+<td class="sum">${(a.p1 && a.p2) ? a.p1 * a.p2 : ""}</td>
         `;
 
       } else {
 
         tr.innerHTML = `
           <td>${a.zawodnik}</td>
-          <td><input type="number"></td>
-          <td><input type="number"></td>
-          <td><input type="number"></td>
+          <td><input type="number" value="${a.p1 || ""}"></td>
+<td><input type="number" value="${a.p2 || ""}"></td>
+<td><input type="number" value="${a.p3 || ""}"></td>
         `;
       }
 
@@ -267,11 +273,7 @@ function isTiebreak(k) {
     `;
   }
 }
-  document.getElementById("competition").addEventListener("change", () => {
-  const konk = document.getElementById("competition").value;
-  renderHeader(konk);
-  renderTable(); // 🔥 TO JEST KLUCZ
-});
+
 
   function collectResults() {
 
