@@ -392,7 +392,9 @@ Object.values(grouped).forEach(group => {
   group.forEach(r => {
 
     const main = r.kategoria || "";
-    const extra = r.kategoria_dodatkowa || "";
+    const extraList = (r.kategoria_dodatkowa || "")
+  .split(",")
+  .map(x => x.trim().toLowerCase());
 
     const match = selectedCats.some(cat => {
 
@@ -400,7 +402,7 @@ Object.values(grouped).forEach(group => {
 
       return (
         main.includes(cat) ||
-        (isJunior && extra.includes(cat))
+        (isJunior && extraList.some(e => e.includes(cat.toLowerCase())))
       );
 
     });
@@ -499,7 +501,16 @@ function renderStations(data){
 <br>
 <span style="font-size:12px; opacity:0.7;">
   ${
-  a.kategoria_dodatkowa && a.kategoria_dodatkowa.toLowerCase().includes("junior")
+  const extraJunior = (a.kategoria_dodatkowa || "")
+  .split(",")
+  .map(x => x.trim())
+  .find(x => x.toLowerCase().includes("junior"));
+
+${
+  extraJunior
+    ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + extraJunior
+    : getMainCategory(a.kategoria).replace(/^k:/i,"")
+}
     ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + a.kategoria_dodatkowa
     : getMainCategory(a.kategoria).replace(/^k:/i,"")
 }
@@ -1042,7 +1053,16 @@ const comp = (COMP_LABELS[compRaw] || []).join(" | ");
           <td>${i+1}</td>
           <td>${a.zawodnik}</td>
           <td>${
-  a.kategoria_dodatkowa && a.kategoria_dodatkowa.toLowerCase().includes("junior")
+  const extraJunior = (a.kategoria_dodatkowa || "")
+  .split(",")
+  .map(x => x.trim())
+  .find(x => x.toLowerCase().includes("junior"));
+
+${
+  extraJunior
+    ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + extraJunior
+    : getMainCategory(a.kategoria).replace(/^k:/i,"")
+}
     ? (a.kategoria||"").replace(/^K:/,"") + " / " + a.kategoria_dodatkowa
     : (a.kategoria||"").replace(/^K:/,"")
 }</td>
@@ -1112,7 +1132,16 @@ const comp = (COMP_LABELS[compRaw] || []).join(" | ");
         <td>${imie}</td>
         <td>${nazwisko}</td>
         <td>${
-  a.kategoria_dodatkowa && a.kategoria_dodatkowa.toLowerCase().includes("junior")
+ const extraJunior = (a.kategoria_dodatkowa || "")
+  .split(",")
+  .map(x => x.trim())
+  .find(x => x.toLowerCase().includes("junior"));
+
+${
+  extraJunior
+    ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + extraJunior
+    : getMainCategory(a.kategoria).replace(/^k:/i,"")
+}
     ? (a.kategoria||"").replace(/^K:/,"") + " / " + a.kategoria_dodatkowa
     : (a.kategoria||"").replace(/^K:/,"")
 }</td>
@@ -1199,7 +1228,16 @@ const comp = (COMP_LABELS[compRaw] || []).join(" | ");
         <td>${i+1}</td>
         <td>${a.zawodnik}</td>
         <td>${
-  a.kategoria_dodatkowa && a.kategoria_dodatkowa.toLowerCase().includes("junior")
+  const extraJunior = (a.kategoria_dodatkowa || "")
+  .split(",")
+  .map(x => x.trim())
+  .find(x => x.toLowerCase().includes("junior"));
+
+${
+  extraJunior
+    ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + extraJunior
+    : getMainCategory(a.kategoria).replace(/^k:/i,"")
+}
     ? (a.kategoria||"").replace(/^K:/,"") + " / " + a.kategoria_dodatkowa
     : (a.kategoria||"").replace(/^K:/,"")
 }</td>
@@ -1679,7 +1717,9 @@ Object.values(grouped).forEach(group => {
   group.forEach(r => {
 
     const main = r.kategoria || "";
-    const extra = r.kategoria_dodatkowa || "";
+    const extraList = (r.kategoria_dodatkowa || "")
+  .split(",")
+  .map(x => x.trim().toLowerCase());
 
     const match = selectedCats.some(cat => {
 
@@ -1687,7 +1727,7 @@ Object.values(grouped).forEach(group => {
 
       return (
         main.includes(cat) ||
-        (isJunior && extra.includes(cat))
+        (isJunior && extraList.some(e => e.includes(cat.toLowerCase())))
       );
 
     });
