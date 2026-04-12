@@ -385,10 +385,32 @@ if (checked.length === 0) {
 }
 const selectedCats = Array.from(checked).map(c => c.value);
 
-    let athletes = [];
+   let athletes = [];
+const seen = new Set();
 
-selectedCats.forEach(cat => {
-  athletes = athletes.concat(grouped[cat] || []);
+Object.values(grouped).forEach(group => {
+  group.forEach(r => {
+
+    const main = r.kategoria || "";
+    const extra = r.kategoria_dodatkowa || "";
+
+    const match = selectedCats.some(cat => {
+
+      const isJunior = cat.toLowerCase().includes("junior");
+
+      return (
+        main.includes(cat) ||
+        (isJunior && extra.includes(cat))
+      );
+
+    });
+
+    if(match && !seen.has(r.zawodnik)){
+      athletes.push(r);
+      seen.add(r.zawodnik);
+    }
+
+  });
 });
     athletes = athletes.sort((a,b)=>
   (a.zawodnik || "").localeCompare(b.zawodnik || "","pl")
@@ -476,7 +498,11 @@ function renderStations(data){
       ${a.zawodnik}
 <br>
 <span style="font-size:12px; opacity:0.7;">
-  ${getMainCategory(a.kategoria).replace(/^k:/i,"")}
+  ${
+  a.kategoria_dodatkowa && a.kategoria_dodatkowa.toLowerCase().includes("junior")
+    ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + a.kategoria_dodatkowa
+    : getMainCategory(a.kategoria).replace(/^k:/i,"")
+}
 </span>
       </li>`;
     });
@@ -1015,7 +1041,11 @@ const comp = (COMP_LABELS[compRaw] || []).join(" | ");
         <tr>
           <td>${i+1}</td>
           <td>${a.zawodnik}</td>
-          <td>${(a.kategoria||"").replace(/^K:/,"")}</td>
+          <td>${
+  a.kategoria_dodatkowa && a.kategoria_dodatkowa.toLowerCase().includes("junior")
+    ? (a.kategoria||"").replace(/^K:/,"") + " / " + a.kategoria_dodatkowa
+    : (a.kategoria||"").replace(/^K:/,"")
+}</td>
         </tr>
       `;
     });
@@ -1081,7 +1111,11 @@ const comp = (COMP_LABELS[compRaw] || []).join(" | ");
         <td>${i+1}</td>
         <td>${imie}</td>
         <td>${nazwisko}</td>
-        <td>${(a.kategoria||"").replace(/^K:/,"")}</td>
+        <td>${
+  a.kategoria_dodatkowa && a.kategoria_dodatkowa.toLowerCase().includes("junior")
+    ? (a.kategoria||"").replace(/^K:/,"") + " / " + a.kategoria_dodatkowa
+    : (a.kategoria||"").replace(/^K:/,"")
+}</td>
     `;
 
     if(comp === "SNUB3'"){
@@ -1164,7 +1198,11 @@ const comp = (COMP_LABELS[compRaw] || []).join(" | ");
       <tr>
         <td>${i+1}</td>
         <td>${a.zawodnik}</td>
-        <td>${(a.kategoria||"").replace(/^K:/,"")}</td>
+        <td>${
+  a.kategoria_dodatkowa && a.kategoria_dodatkowa.toLowerCase().includes("junior")
+    ? (a.kategoria||"").replace(/^K:/,"") + " / " + a.kategoria_dodatkowa
+    : (a.kategoria||"").replace(/^K:/,"")
+}</td>
       </tr>
     `;
   });
@@ -1634,11 +1672,33 @@ Object.values(athletes).forEach(a => {
 
   const selectedCats = Array.from(checked).map(c => c.value);
 
-  let rows = [];
+ let rows = [];
+const seen = new Set();
 
-  selectedCats.forEach(cat => {
-    rows = rows.concat(grouped[cat] || []);
+Object.values(grouped).forEach(group => {
+  group.forEach(r => {
+
+    const main = r.kategoria || "";
+    const extra = r.kategoria_dodatkowa || "";
+
+    const match = selectedCats.some(cat => {
+
+      const isJunior = cat.toLowerCase().includes("junior");
+
+      return (
+        main.includes(cat) ||
+        (isJunior && extra.includes(cat))
+      );
+
+    });
+
+    if(match && !seen.has(r.zawodnik)){
+      rows.push(r);
+      seen.add(r.zawodnik);
+    }
+
   });
+});
 
   rows.sort((a,b)=>
     (a.zawodnik || "").localeCompare(b.zawodnik || "","pl")
