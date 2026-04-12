@@ -168,63 +168,64 @@ let DATA = [];
 
 async function load(){
 
-  try{
+  const res = await fetch(API_BASE + "?api=getStartlist");
+  const data = await res.json();
 
-    const res = await fetch(API_BASE + "?api=boje");
-    const response = await res.json();
+  let html = '';
 
-    let raw = [];
+  data.forEach(block => {
 
-    if (Array.isArray(response)) raw = response;
-    else if (Array.isArray(response.data)) raw = response.data;
-    else {
-      console.error("❌ Nieznana struktura:", response);
-      return;
-    }
+    html += `
+      <div style="margin-bottom:40px;">
+        <h2 style="color:white;">
+          ${block.category}
+        </h2>
 
-    const map = {};
+        <div style="color:#ccc;margin-bottom:10px;">
+          🕒 ${block.startTime || "--:--"}
+        </div>
 
-    raw.forEach(r => {
+        <div style="display:flex;flex-wrap:wrap;gap:20px;">
+    `;
 
-      const name = r.zawodnik;
-      if(!name) return;
+    block.stations.forEach(st => {
 
-      const w = String(r.waga || "").trim();
-      if(!w) return;
+      html += `
+        <div style="
+          background:#12384d;
+          color:white;
+          padding:15px;
+          border-radius:10px;
+          min-width:250px;
+        ">
+          <h3>Stanowisko ${st.station}</h3>
 
-      const klub = String(r.klub || "").trim();
-      if(!klub) return;
+          <div style="margin-bottom:10px;">
+            👨‍⚖️ ${st.judge || "-"}
+          </div>
 
-      if(!map[name]){
-        map[name] = {
-          zawodnik: name,
-          klub: klub,
-          kategoria: r.kategoria || "",
-          waga: r.waga
-        };
-      }
+          <ul style="list-style:none;padding:0;">
+      `;
 
+      st.athletes.forEach(a => {
+        html += `
+          <li>
+            ${a.name}
+            <br>
+            <span style="font-size:12px;opacity:0.7;">
+              ${a.category.replace(/^k:/i,"")}
+            </span>
+          </li>
+        `;
+      });
+
+      html += `</ul></div>`;
     });
 
-    // 🔥 FINALNE DANE
-    DATA = Object.values(map);
+    html += `</div></div>`;
+  });
 
-    DATA.sort((a,b) =>
-      a.zawodnik.localeCompare(b.zawodnik,"pl")
-    );
-
-    // 🔥 ZAWSZE odśwież filtry
-    if (document.getElementById("clubFilter").options.length <= 1) {
-  fillFilters();
-}
-
-    // 🔥 zastosuj aktualne filtry
-    applyFilters();
-
-  }catch(e){
-    console.error("❌ Błąd API:", e);
-    alert("Błąd ładowania danych");
-  }
+  document.getElementById("live").innerHTML = html;
 }
 
 function render(arr){
