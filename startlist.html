@@ -1481,9 +1481,12 @@ if(!Array.isArray(results)){
   const checked = document.querySelectorAll(".catCheck:checked");
   const categories = Array.from(checked).map(c => c.value);
 
-  const payload = {
-    category: categories.join(", "),
-    startTime: startTime,
+  const competitionType = document.getElementById("competitionSelect").value;
+
+const payload = {
+  category: categories.join(", "),
+  startTime: startTime,
+  competitionType: competitionType, // 🔥 NOWE
     stations: CURRENT_STATIONS.map((station, i) => {
 
       const judge = document.querySelectorAll(".judgeSelect")[i]?.value || "";
