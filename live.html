@@ -69,7 +69,9 @@ async function load(){
         <div style="color:#4fc3f7;margin-bottom:15px;font-size:18px;font-weight:bold;">
           🕒 ${formatTime(block.startTime)}
         </div>
-
+<div style="color:#ffd54f;margin-bottom:5px;font-weight:bold;">
+  ${getCompetitionLabel(block.competitionType)}
+</div>
         <div style="display:flex;flex-wrap:wrap;gap:20px;">
     `;
 
@@ -119,6 +121,18 @@ setInterval(load, 10000);
 load();
 function cleanCategory(cat){
   return (cat || "").replace(/^k:/i,"").trim();
+}
+  function getCompetitionLabel(type){
+
+  if(type === "individual"){
+    return "SNATCH";
+  }
+
+  if(type === "group"){
+    return "TGU | 1KBPR | 2KBPR | 2KBSQ";
+  }
+
+  return "";
 }
 </script>
 
