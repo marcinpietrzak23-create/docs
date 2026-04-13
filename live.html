@@ -28,7 +28,27 @@ h1{
 <script>
 
 const API_BASE = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
+function formatTime(t){
 
+  if(!t) return "--:--";
+
+  // jeśli normalna godzina
+  if(typeof t === "string" && t.includes(":")){
+    return t;
+  }
+
+  // jeśli dziwna data z Sheets
+  const d = new Date(t);
+
+  if(!isNaN(d)){
+    return d.toLocaleTimeString("pl-PL", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
+  return t;
+}
 async function load(){
 
   const res = await fetch(API_BASE + "?api=getStartlist");
@@ -41,11 +61,11 @@ async function load(){
     html += `
       <div style="margin-bottom:40px;">
         <h2 style="color:white;">
-          ${block.category}
+          ${cleanCategory(block.category)}
         </h2>
 
-        <div style="color:#ccc;margin-bottom:10px;">
-          🕒 ${block.startTime || "--:--"}
+        <div style="color:#4fc3f7;margin-bottom:15px;font-size:18px;font-weight:bold;">
+          🕒 ${formatTime(block.startTime)}
         </div>
 
         <div style="display:flex;flex-wrap:wrap;gap:20px;">
@@ -76,7 +96,7 @@ async function load(){
             ${a.name}
             <br>
             <span style="font-size:12px;opacity:0.7;">
-              ${a.category.replace(/^k:/i,"")}
+              ${cleanCategory(a.category)}
             </span>
           </li>
         `;
@@ -95,7 +115,9 @@ async function load(){
 setInterval(load, 10000);
 
 load();
-
+function cleanCategory(cat){
+  return (cat || "").replace(/^k:/i,"").trim();
+}
 </script>
 
 </body>
