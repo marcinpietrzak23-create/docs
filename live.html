@@ -32,19 +32,21 @@ function formatTime(t){
 
   if(!t) return "--:--";
 
-  // jeśli normalna godzina
-  if(typeof t === "string" && t.includes(":")){
-    return t;
+  // jeśli ISO string z datą (Sheets)
+  if(typeof t === "string" && t.includes("T")){
+    const d = new Date(t);
+
+    if(!isNaN(d)){
+      return d.toLocaleTimeString("pl-PL", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    }
   }
 
-  // jeśli dziwna data z Sheets
-  const d = new Date(t);
-
-  if(!isNaN(d)){
-    return d.toLocaleTimeString("pl-PL", {
-      hour: "2-digit",
-      minute: "2-digit"
-    });
+  // jeśli normalna godzina "09:00"
+  if(typeof t === "string" && t.match(/^\d{1,2}:\d{2}$/)){
+    return t;
   }
 
   return t;
