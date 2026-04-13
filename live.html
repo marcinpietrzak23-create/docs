@@ -51,11 +51,32 @@ function formatTime(t){
 
   return t;
 }
+  function timeToStart(t){
+
+  if(!t) return "";
+
+  const now = new Date();
+
+  const [h,m] = formatTime(t).split(":");
+
+  const start = new Date();
+  start.setHours(h, m, 0);
+
+  const diff = Math.floor((start - now)/60000);
+
+  if(diff > 0) return `za ${diff} min`;
+  if(diff > -15) return "TRWA";
+  return "";
+}
 async function load(){
 
   const res = await fetch(API_BASE + "?api=getStartlist");
   const data = await res.json();
-
+data.sort((a,b) => {
+  const ta = formatTime(a.startTime);
+  const tb = formatTime(b.startTime);
+  return ta.localeCompare(tb);
+});
   let html = '';
 
   data.forEach(block => {
@@ -66,9 +87,9 @@ async function load(){
           ${cleanCategory(block.category)}
         </h2>
 
-        <div style="color:#4fc3f7;margin-bottom:15px;font-size:18px;font-weight:bold;">
-          🕒 ${formatTime(block.startTime)}
-        </div>
+        <div style="color:#aaa;font-size:13px;">
+  ${timeToStart(block.startTime)}
+</div>
 <div style="color:#ffd54f;margin-bottom:5px;font-weight:bold;">
   ${getCompetitionLabel(block.competitionType)}
 </div>
