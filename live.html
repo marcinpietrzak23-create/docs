@@ -34,51 +34,59 @@ async function load(){
   const res = await fetch(API_BASE + "?api=getStartlist");
   const data = await res.json();
 
-  let html = '<div style="display:flex;flex-wrap:wrap;gap:20px;">';
+  let html = '';
 
-  const grouped = {};
-
-  data.forEach(r => {
-    if(!grouped[r.station]) grouped[r.station] = [];
-    grouped[r.station].push(r);
-  });
-
-  Object.keys(grouped).forEach(st => {
-
-    const list = grouped[st];
-    const judge = list[0].judge;
+  data.forEach(block => {
 
     html += `
-      <div style="
-        background:#12384d;
-        color:white;
-        padding:15px;
-        border-radius:10px;
-        min-width:250px;
-      ">
-        <h3>Stanowisko ${st}</h3>
-        <div style="margin-bottom:10px;">
-          👨‍⚖️ ${judge}
+      <div style="margin-bottom:40px;">
+        <h2 style="color:white;">
+          ${block.category}
+        </h2>
+
+        <div style="color:#ccc;margin-bottom:10px;">
+          🕒 ${block.startTime || "--:--"}
         </div>
-        <ul style="list-style:none;padding:0;">
+
+        <div style="display:flex;flex-wrap:wrap;gap:20px;">
     `;
 
-    list.forEach(a => {
+    block.stations.forEach(st => {
+
       html += `
-        <li style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.2);">
-          ${a.name}
-          <br>
-          <span style="font-size:12px;opacity:0.7;">
-            ${a.category.replace(/^k:/i,"")}
-          </span>
-        </li>
+        <div style="
+          background:#12384d;
+          color:white;
+          padding:15px;
+          border-radius:10px;
+          min-width:250px;
+        ">
+          <h3>Stanowisko ${st.station}</h3>
+
+          <div style="margin-bottom:10px;">
+            👨‍⚖️ ${st.judge || "-"}
+          </div>
+
+          <ul style="list-style:none;padding:0;">
       `;
+
+      st.athletes.forEach(a => {
+        html += `
+          <li style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.2);">
+            ${a.name}
+            <br>
+            <span style="font-size:12px;opacity:0.7;">
+              ${a.category.replace(/^k:/i,"")}
+            </span>
+          </li>
+        `;
+      });
+
+      html += `</ul></div>`;
     });
 
-    html += "</ul></div>";
+    html += `</div></div>`;
   });
-
-  html += "</div>";
 
   document.getElementById("live").innerHTML = html;
 }
