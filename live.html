@@ -87,8 +87,14 @@ data.sort((a,b) => {
           ${cleanCategory(block.category)}
         </h2>
 
-        <div style="color:#aaa;font-size:13px;">
-  ${timeToStart(block.startTime)}
+        <div style="display:flex;gap:10px;align-items:center;">
+  <div>🕒 ${formatTime(block.startTime)}</div>
+  
+  ${timeToStart(block.startTime) ? `
+    <div style="color:#aaa;font-size:13px;">
+      (${timeToStart(block.startTime)})
+    </div>
+  ` : ""}
 </div>
 <div style="color:#ffd54f;margin-bottom:5px;font-weight:bold;">
   ${getCompetitionLabel(block.competitionType)}
