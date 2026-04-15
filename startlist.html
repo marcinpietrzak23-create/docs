@@ -1037,7 +1037,7 @@ const comp = (COMP_LABELS[compRaw] || []).join(" | ");
 if(compRaw === "group"){
   competitionsToPrint = getGroupCompetitions(data);
 }else{
-  competitionsToPrint = [compRaw];
+  competitionsToPrint = ["SNATCH"];
 }
   const mode = document.getElementById("printMode")?.value || "list";
 
@@ -1048,7 +1048,9 @@ if(compRaw === "group"){
   let categories = [];
   checked.forEach(c => categories.push(c.value.replace(/^K:/,"")));
 
-  const categoryText = categories.join(", ");
+  const categoryText = categories
+  .map(c => c.replace(/^k:/i,""))
+  .join(", ");
 
   let html = "";
 
