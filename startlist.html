@@ -372,11 +372,6 @@ function showFirst(){
 
   function showStations(){
 
-  if (!currentCategory) {
-    alert("Najpierw wybierz kategorię");
-    return;
-  }
-
   const checked = document.querySelectorAll(".catCheck:checked");
 
 if (checked.length === 0) {
@@ -407,10 +402,12 @@ Object.values(grouped).forEach(group => {
 
     });
 
-    if(match && !seen.has(r.zawodnik)){
-      athletes.push(r);
-      seen.add(r.zawodnik);
-    }
+   const key = r.zawodnik + "|" + r.kategoria;
+
+if(match && !seen.has(key)){
+  athletes.push(r);
+  seen.add(key);
+}
 
   });
 });
@@ -434,8 +431,7 @@ if (type === "group") {
   return;
 }
 
-result = fillStationsSmart(structure, selectedCats);
-
+result = fillStationsSmart(structure, athletes);
   CURRENT_STATIONS = result;
 renderStations(result);
 }
@@ -844,34 +840,30 @@ function mixCategories(selectedCats){
 
   return result;
 }
-  function fillStationsSmart(structure, selectedCats){
+  function fillStationsSmart(structure, athletes){
 
   const slots = structure.map(s => s.length);
   const result = slots.map(() => []);
 
-  // 🔥 każda kategoria osobno
-  selectedCats.forEach(cat => {
+  let pool = sortAthletes([...athletes]);
 
-    let pool = sortAthletes([...(grouped[cat] || [])]);
+  let i = 0;
 
-    let i = 0;
+  while (pool.length > 0) {
 
-    while (pool.length > 0) {
+    const stationOrder = [...result.keys()]
+      .sort((a,b) => slots[b] - slots[a]);
 
-      const stationOrder = [...result.keys()].sort((a,b) => slots[b] - slots[a]);
-const stationIndex = stationOrder[i % stationOrder.length];
+    const stationIndex = stationOrder[i % stationOrder.length];
 
-      if (result[stationIndex].length < slots[stationIndex]) {
-        result[stationIndex].push(pool.shift());
-      }
-
-      i++;
-
-      // zabezpieczenie
-      if (i > result.length * 10) break;
+    if (result[stationIndex].length < slots[stationIndex]) {
+      result[stationIndex].push(pool.shift());
     }
 
-  });
+    i++;
+
+    if (i > result.length * 20) break;
+  }
 
   return result;
 }
@@ -999,6 +991,34 @@ const stationIndex = stationOrder[i % stationOrder.length];
   a.click();
 
 }
+  function getGroupCompetitions(data){
+
+  const hasPro = data.some(a =>
+    (a.kategoria || "").toLowerCase().includes("pro") ||
+    (a.kategoria_dodatkowa || "").toLowerCase().includes("pro")
+  );
+
+  const comps = ["TGU1RM"];
+
+  // PRESS
+  if(hasPro){
+    comps.push("2KBPR1RM");
+  }else{
+    comps.push("1KBPR1RM");
+  }
+
+  // SQUAT zawsze
+  comps.push("2KBSQ1RM");
+
+  return comps;
+}
+  function prettyCompName(c){
+  if(c === "TGU1RM") return "TGU";
+  if(c === "1KBPR1RM") return "1KB PRESS";
+  if(c === "2KBPR1RM") return "2KB PRESS";
+  if(c === "2KBSQ1RM") return "2KB SQUAT";
+  return c;
+}
  function printStation(index){
 
   const stations = CURRENT_STATIONS;
@@ -1012,6 +1032,13 @@ const COMP_LABELS = {
 };
 
 const comp = (COMP_LABELS[compRaw] || []).join(" | ");
+   let competitionsToPrint = [];
+
+if(compRaw === "group"){
+  competitionsToPrint = getGroupCompetitions(data);
+}else{
+  competitionsToPrint = [compRaw];
+}
   const mode = document.getElementById("printMode")?.value || "list";
 
   const selects = document.querySelectorAll(".judgeSelect");
@@ -1033,7 +1060,7 @@ const comp = (COMP_LABELS[compRaw] || []).join(" | ");
     html += `
       <h2>Kategoria: ${categoryText}</h2>
       <h3>Stanowisko: ${index+1}</h3>
-      <h4>Bój: ${comp}</h4>
+      <h4>Bój: ${competitionsToPrint.map(prettyCompName).join(" | ")}</h4>
 
       <table>
         <tr>
@@ -1061,88 +1088,70 @@ const comp = (COMP_LABELS[compRaw] || []).join(" | ");
   // ======================
   else{
 
-  html += `
-    <h2>Kategoria: ${categoryText}</h2>
-    <h3>Stanowisko: ${index+1}</h3>
-    <h4>Bój: ${comp}</h4>
-    
-    <table>
-      <tr>
-        <th>ID</th>
-        <th>Imię</th>
-        <th>Nazwisko</th>
-        <th>Kategoria</th>
-  `;
-
-  if(compRaw === "individual"){
-    html += `
-        <th>Ciężar</th>
-        <th>Powtórzenia</th>
-        <th>Zaliczone ✓/✗</th>
-        <th>Potw. z zaw. ✓/✗</th>
-      </tr>
-    `;
-  }
-  else if(compRaw === "manual"){
-    html += `
-        <th>Punkty</th>
-        <th>Zaliczone ✓/✗</th>
-      </tr>
-    `;
-  }
-  else{
-    html += `
-        <th>Próba 1</th>
-        <th>✓</th>
-        <th>Próba 2</th>
-        <th>✓</th>
-        <th>Próba 3</th>
-        <th>✓</th>
-      </tr>
-    `;
-  }
-
-  data.forEach((a,i)=>{
-
-    const parts = (a.zawodnik || "").split(" ");
-    const imie = parts[0] || "";
-    const nazwisko = parts.slice(1).join(" ");
+  competitionsToPrint.forEach(singleComp => {
 
     html += `
-      <tr>
-        <td>${i+1}</td>
-        <td>${imie}</td>
-        <td>${nazwisko}</td>
-        <td>${(() => {
-  const extraJunior = (a.kategoria_dodatkowa || "")
-  .split(",")
-  .map(x => x.trim().replace(/^k:/i, "")) // 🔥 KLUCZ
-  .find(x => x.toLowerCase().includes("junior"));
+      <div style="page-break-after: always;">
+        <h2>Kategoria: ${categoryText}</h2>
+        <h3>Stanowisko: ${index+1}</h3>
+        <h4>Bój: ${prettyCompName(singleComp)}</h4>
 
-  return extraJunior
-    ? getMainCategory(a.kategoria).replace(/^k:/i,"") + " / " + extraJunior
-    : getMainCategory(a.kategoria).replace(/^k:/i,"");
-})()}</td>
+        <table>
+          <tr>
+            <th>ID</th>
+            <th>Imię</th>
+            <th>Nazwisko</th>
+            <th>Kategoria</th>
     `;
 
-    if(compRaw === "individual"){
-      html += `<td style="height:35px;"></td><td></td><td></td><td></td>`;
-    }
-    else if(compRaw === "manual"){
-      html += `<td style="height:35px;"></td><td></td>`;
-    }
-    else{
+    // 🔥 kolumny
+    if(singleComp === "TGU1RM"){
+      html += `<th>Ciężar</th><th>✓</th>`;
+    }else{
       html += `
-        <td style="height:35px;"></td><td></td>
-        <td></td><td></td>
-        <td></td><td></td>
+        <th>Próba 1</th><th>✓</th>
+        <th>Próba 2</th><th>✓</th>
+        <th>Próba 3</th><th>✓</th>
+        <th>SUMA / MAX</th>
       `;
     }
 
-    html += "</tr>";
+    html += `</tr>`;
+
+    data.forEach((a,i)=>{
+
+      const parts = (a.zawodnik || "").split(" ");
+      const imie = parts[0] || "";
+      const nazwisko = parts.slice(1).join(" ");
+
+      html += `
+        <tr>
+          <td>${i+1}</td>
+          <td>${imie}</td>
+          <td>${nazwisko}</td>
+          <td>${getMainCategory(a.kategoria).replace(/^k:/i,"")}</td>
+      `;
+
+      if(singleComp === "TGU1RM"){
+        html += `<td style="height:35px;"></td><td></td>`;
+      }else{
+        html += `
+          <td style="height:35px;"></td><td></td>
+          <td></td><td></td>
+          <td></td><td></td>
+          <td></td>
+        `;
+      }
+
+      html += `</tr>`;
+    });
+
+    html += `
+        </table>
+      </div>
+    `;
   });
 
-  html += "</table>";
 }
 
   const win = window.open("", "_blank");
@@ -1152,6 +1161,9 @@ const comp = (COMP_LABELS[compRaw] || []).join(" | ");
     <head>
       <title>Druk</title>
       <style>
+      @page {
+    size: landscape;
+  }
         body {
           font-family: Arial;
           padding: 20px;
@@ -1710,10 +1722,12 @@ Object.values(grouped).forEach(group => {
 
     });
 
-    if(match && !seen.has(r.zawodnik)){
-      rows.push(r);
-      seen.add(r.zawodnik);
-    }
+    const key = r.zawodnik + "|" + r.kategoria;
+
+if(match && !seen.has(key)){
+  rows.push(r);
+  seen.add(key);
+}
 
   });
 });
