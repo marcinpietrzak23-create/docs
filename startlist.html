@@ -1105,16 +1105,12 @@ if(compRaw === "group"){
     `;
 
     // 🔥 kolumny
-    if(singleComp === "TGU1RM"){
-      html += `<th>Ciężar</th><th>✓</th>`;
-    }else{
-      html += `
-        <th>Próba 1</th><th>✓</th>
-        <th>Próba 2</th><th>✓</th>
-        <th>Próba 3</th><th>✓</th>
-        <th>SUMA / MAX</th>
-      `;
-    }
+    html += `
+  <th>Próba 1</th><th>✓</th>
+  <th>Próba 2</th><th>✓</th>
+  <th>Próba 3</th><th>✓</th>
+  <th>SUMA / MAX</th>
+`;
 
     html += `</tr>`;
 
@@ -1132,16 +1128,12 @@ if(compRaw === "group"){
           <td>${getMainCategory(a.kategoria).replace(/^k:/i,"")}</td>
       `;
 
-      if(singleComp === "TGU1RM"){
-        html += `<td style="height:35px;"></td><td></td>`;
-      }else{
-        html += `
-          <td style="height:35px;"></td><td></td>
-          <td></td><td></td>
-          <td></td><td></td>
-          <td></td>
-        `;
-      }
+      html += `
+  <td style="height:35px;"></td><td></td>
+  <td></td><td></td>
+  <td></td><td></td>
+  <td></td>
+`;
 
       html += `</tr>`;
     });
