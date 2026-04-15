@@ -1106,13 +1106,22 @@ if(compRaw === "group"){
             <th>Kategoria</th>
     `;
 
-    // 🔥 kolumny
-    html += `
-  <th>Próba 1</th><th>✓</th>
-  <th>Próba 2</th><th>✓</th>
-  <th>Próba 3</th><th>✓</th>
-  <th>SUMA / MAX</th>
-`;
+   if(compRaw === "individual"){ // SNATCH
+  html += `
+    <th>Ciężar</th>
+    <th>Powtórzenia</th>
+    <th>Zaliczone ✓/✗</th>
+    <th>Potw. z zaw. ✓/✗</th>
+  `;
+}
+else{ // group (TGU + PRESS + SQ)
+  html += `
+    <th>Próba 1</th><th>✓</th>
+    <th>Próba 2</th><th>✓</th>
+    <th>Próba 3</th><th>✓</th>
+    <th>SUMA / MAX</th>
+  `;
+}
 
     html += `</tr>`;
 
@@ -1130,12 +1139,22 @@ if(compRaw === "group"){
           <td>${getMainCategory(a.kategoria).replace(/^k:/i,"")}</td>
       `;
 
-      html += `
-  <td style="height:35px;"></td><td></td>
-  <td></td><td></td>
-  <td></td><td></td>
-  <td></td>
-`;
+      if(compRaw === "individual"){ // SNATCH
+  html += `
+    <td style="height:35px;"></td>
+    <td></td>
+    <td></td>
+    <td></td>
+  `;
+}
+else{
+  html += `
+    <td style="height:35px;"></td><td></td>
+    <td></td><td></td>
+    <td></td><td></td>
+    <td></td>
+  `;
+}
 
       html += `</tr>`;
     });
