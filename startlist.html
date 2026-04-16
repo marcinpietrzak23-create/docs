@@ -1368,16 +1368,17 @@ if(!Array.isArray(results)){
 
       const key = keyBase + "|" + level;
 
-      if(!snatchMap[key] || wynik > snatchMap[key].wynik){
-        snatchMap[key] = {
-          zawodnik: r.zawodnik,
-          wynik,
-          waga: weight,
-          klub: r.klub,
-          gender,
-          level
-        };
-      }
+     if(!snatchMap[key] || wynik > snatchMap[key].wynik){
+  snatchMap[key] = {
+    zawodnik: r.zawodnik,
+    wynik,
+    waga: weight,
+    klub: r.klub,
+    gender,
+    level,
+    kategoria: kat // 🔥 KLUCZOWE
+  };
+}
     }
 
   });
