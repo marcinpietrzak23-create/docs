@@ -1301,10 +1301,10 @@ if(!Array.isArray(results)){
   const out = {
     TGU: { M: [], K: [] },
     SNATCH: {
-      Junior: { M: [], K: [] },
-      Amator: { M: [], K: [] },
-      Pro: { M: [], K: [] }
-    }
+  Junior: { M:[], K:[] },
+  Amator: {}, // 🔥 dynamiczne kategorie
+  Pro: { M:[], K:[] }
+}
   };
 
   function getGender(kat){
@@ -1395,20 +1395,56 @@ if(!Array.isArray(results)){
     out.TGU[g] = out.TGU[g].slice(0,3);
   });
 
-  // ===== SORT SNATCH =====
-  Object.values(snatchMap).forEach(r=>{
+ // ===== WRZUCANIE DO STRUKTURY =====
+Object.values(snatchMap).forEach(r=>{
+
+  if(r.level === "Amator"){
+
+   const cat = (r.kategoria || "UNKNOWN").replace(/^k:/i,"");
+
+    if(!out.SNATCH.Amator[cat]){
+      out.SNATCH.Amator[cat] = [];
+    }
+
+    out.SNATCH.Amator[cat].push(r);
+
+  }else{
+
     out.SNATCH[r.level][r.gender].push(r);
+
+  }
+
+});
+
+
+// ===== SORT AMATOR (po kategoriach) =====
+Object.keys(out.SNATCH.Amator).forEach(cat => {
+
+  out.SNATCH.Amator[cat].sort((a,b)=>{
+    if(b.wynik !== a.wynik) return b.wynik - a.wynik;
+    return a.waga - b.waga;
   });
 
-  ["Junior","Amator","Pro"].forEach(level=>{
-    ["M","K"].forEach(g=>{
-      out.SNATCH[level][g].sort((a,b)=>{
-        if(b.wynik !== a.wynik) return b.wynik - a.wynik;
-        return a.waga - b.waga;
-      });
-      out.SNATCH[level][g] = out.SNATCH[level][g].slice(0,3);
+  out.SNATCH.Amator[cat] =
+    out.SNATCH.Amator[cat].slice(0,3);
+
+});
+
+
+// ===== SORT RESZTY (Junior + Pro) =====
+["Junior","Pro"].forEach(level=>{
+  ["K","M"].forEach(g=>{
+
+    out.SNATCH[level][g].sort((a,b)=>{
+      if(b.wynik !== a.wynik) return b.wynik - a.wynik;
+      return a.waga - b.waga;
     });
+
+    out.SNATCH[level][g] =
+      out.SNATCH[level][g].slice(0,3);
+
   });
+});
 
   return out;
 }
@@ -1648,14 +1684,36 @@ Object.values(athletes).forEach(a => {
     });
   });
 
-  ["Junior","Amator","Pro"].forEach(level=>{
-    ["K","M"].forEach(g=>{
-      html += `<h4>SNATCH ${level} ${g}</h4>`;
-      (best.SNATCH[level][g]||[]).forEach((r,i)=>{
-        html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
-      });
+  // ===== SNATCH =====
+
+// 🔹 JUNIOR + PRO (bez zmian)
+["Junior","Pro"].forEach(level=>{
+
+  ["K","M"].forEach(g=>{
+
+    html += `<h4>SNATCH ${level} ${g}</h4>`;
+
+    (best.SNATCH[level][g]||[]).forEach((r,i)=>{
+      html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
     });
+
   });
+
+});
+
+
+// 🔥 AMATOR (po kategoriach)
+html += `<h3>SNATCH Amator</h3>`;
+
+Object.keys(best.SNATCH.Amator || {}).forEach(cat => {
+
+  html += `<h4>${cat}</h4>`;
+
+  (best.SNATCH.Amator[cat]||[]).forEach((r,i)=>{
+    html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
+  });
+
+});
 
   html += `</div>`;
 
