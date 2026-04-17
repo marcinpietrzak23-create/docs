@@ -293,18 +293,27 @@ if (key.includes("masters")) {
 
   const byAth = {};
 
-  rows.forEach(r => {
-    if (!byAth[r.ZAWODNIK]) {
-      byAth[r.ZAWODNIK] = {
-        name: r.ZAWODNIK,
-        klub: klubMap[norm(r.ZAWODNIK)] || "-",
-        waga: r.WAGA || "-",
-        sum: 0,
-        pts: {}
-      };
-    }
-    byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = Number(r.PKT) || 0;
-  });
+  const key = norm(CATEGORY_KEY);
+
+rows.forEach(r => {
+
+  // 👉 tylko dla Masters filtrujemy konkurencje
+  if (key.includes("masters") && !compsInCategory.includes(r.KONKURENCJA)) {
+    return;
+  }
+
+  if (!byAth[r.ZAWODNIK]) {
+    byAth[r.ZAWODNIK] = {
+      name: r.ZAWODNIK,
+      klub: klubMap[norm(r.ZAWODNIK)] || "-",
+      waga: r.WAGA || "-",
+      sum: 0,
+      pts: {}
+    };
+  }
+
+  byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = Number(r.PKT) || 0;
+});
 
   const athletesCount = Object.keys(byAth).length;
 
