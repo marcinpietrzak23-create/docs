@@ -221,23 +221,28 @@ const punktyMap = {};
   };
 });
   
-  const filteredBoje = (bojeRows || [])
+  const key = norm(CATEGORY_KEY);
+
+// 👇 lista bojów dla Masters
+const mastersComps = ["SNUB3","2KBSQ1RM","TGU1RM"];
+
+const filteredBoje = (bojeRows || [])
   .filter(r => {
 
     const kat = norm(r.kategoria);
     const katDod = norm(r.kategoria_dodatkowa);
+    const comp = r.konkurencja;
 
-    const key = norm(CATEGORY_KEY);
-
-    const match =
+    const matchCategory =
       kat.includes(key) ||
       katDod.includes(key);
 
-    if (match) {
-      console.log("BOJE MATCH:", r);
+    // 👉 dodatkowy filtr tylko dla Masters
+    if (key.includes("masters")) {
+      return matchCategory && mastersComps.includes(comp);
     }
 
-    return match;
+    return matchCategory;
   });
 console.log("CATEGORY_KEY:", CATEGORY_KEY);
 
@@ -261,7 +266,20 @@ function buildGeneralka(rows, bojeRows){
     }
   });
 
-  const compsInCategory = [...new Set(rows.map(r => r.KONKURENCJA))];
+  let compsInCategory;
+
+const key = norm(CATEGORY_KEY);
+
+// 👉 tylko dla Masters
+if (key.includes("masters")) {
+
+  compsInCategory = ["SNUB3","2KBSQ1RM","TGU1RM"];
+
+} else {
+
+  compsInCategory = [...new Set(rows.map(r => r.KONKURENCJA))];
+
+}
   if(!rows.length) return;
 
   if(!SHOW_GENERALKA){
