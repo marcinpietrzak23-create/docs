@@ -443,15 +443,23 @@ box.insertAdjacentHTML("beforeend",`<h2>🏋️ ${fullName}</h2>`);
       html+=`<th>P1</th><th>P2</th><th>P3</th><th>MAX</th><th>Wynik</th><th>Punkty</th>`;
     }
 
-    html+=`</tr></thead><tbody>`;
+  html+=`</tr></thead><tbody>`;
 
-    list.forEach((a,i)=>{
+let place = 0;
+let lastPts = null;
 
-      html+=`<tr>
-        <td>${i+1}</td>
-        <td>${a.zawodnik}</td>
-        <td>${a.klub||"-"}</td>
-        <td>${a.waga||"-"}</td>`;
+list.forEach((a,i)=>{
+
+  if (a.punkty !== lastPts) {
+    place = i + 1;
+    lastPts = a.punkty;
+  }
+
+  html+=`<tr>
+    <td>${place}</td>
+    <td>${a.zawodnik}</td>
+    <td>${a.klub||"-"}</td>
+    <td>${a.waga||"-"}</td>`;
 
       if(/SN/i.test(comp)){
 
