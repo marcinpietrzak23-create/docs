@@ -62,13 +62,13 @@ if (!TOKEN) {
 let competitionsMap = {};
 let athletes = [];
   
-let currentRequestId = 0; // 🔥 dodaj raz na górze pliku
+let currentRequestId = 0; 
 
 async function loadAthletes(kategoria) {
 
   const requestId = ++currentRequestId;
 
-  // 🔥 LOADER TU
+  
   document.getElementById("tableBody").innerHTML = `
     <tr>
       <td colspan="4" style="text-align:center; padding:20px;">
@@ -87,12 +87,17 @@ const url = API + "?api=athletes"
   const res = await fetch(url);
   const data = await res.json();
 
-  // 🔥 zabezpieczenie przed szybkim klikaniem
+  
   if (requestId !== currentRequestId) return;
 
   athletes = data;
 
-  renderTable();
+
+athletes.sort((a, b) =>
+  a.zawodnik.localeCompare(b.zawodnik, "pl", { sensitivity: "base" })
+);
+
+renderTable();
 }
 async function init() {
 
@@ -108,7 +113,7 @@ async function init() {
   Object.keys(competitionsMap).forEach(k => {
     const opt = document.createElement("option");
     opt.value = k;
-    opt.textContent = k;
+    opt.textContent = k.replace(/^K:/, "");
     select.appendChild(opt);
   });
 
@@ -190,7 +195,7 @@ function renderTable() {
         `;
       }
 
-      // 🔥 BLOKADA (dla KAŻDEJ konkurencji)
+      
       if (brakWagi) {
         tr.style.opacity = "0.4";
         tr.title = "Brak wagi - nie można wpisać wyniku";
@@ -203,7 +208,7 @@ function renderTable() {
       body.appendChild(tr);
     });
 
-  // 🔥 auto SUMA dla snatch
+  
   if (isSnatch(konk)) {
     document.querySelectorAll("#tableBody tr").forEach(row => {
       const kg = row.querySelector(".kg");
@@ -285,7 +290,7 @@ function isTiebreak(k) {
     const waga = tr.dataset.waga;
 
 if (!waga) {
-  return; // ⛔ pomijamy zawodnika bez wagi
+  return; 
 }
     const zawodnik = tr.children[0].textContent;
 
