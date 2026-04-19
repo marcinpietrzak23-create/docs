@@ -379,7 +379,7 @@ if (check.overwrite) {
   }
 }
 
-  const BATCH_SIZE = 5;
+  const BATCH_SIZE = 3;
 
 try {
 
@@ -400,7 +400,7 @@ try {
     if (!res.ok) {
       throw new Error("Błąd odpowiedzi serwera");
     }
-await new Promise(r => setTimeout(r, 300));
+await new Promise(r => setTimeout(r, 500));
   }
 
 
