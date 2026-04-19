@@ -389,72 +389,89 @@ try {
 
     try {
 
-      console.log("Wysyłam batch:", chunk);
-  for (const r of chunk) {
- if (!r.zawodnik || r.zawodnik.trim() === "") {
-    alert("❌ Brak nazwiska zawodnika!");
-    console.error(r);
-    return;
-  }
+      // ✅ WALIDACJA – tylko to co ma sens
+      for (const r of chunk) {
 
-  // 🔴 2. wynik nie jest liczbą
-  if (r.wynik === "" || r.wynik === null || isNaN(r.wynik)) {
-    alert("❌ Błędny wynik u: " + r.zawodnik);
-    console.error(r);
-    return;
-  }
-    console.log("ZAWODNIK:", r.zawodnik);
+        if (!r.zawodnik || r.zawodnik.trim() === "") {
+          alert("❌ Brak nazwiska zawodnika!");
+          console.error("BAD ROW:", r);
+          resetBtn();
+          return;
+        }
 
-    if (r.zawodnik) {
-      for (let i = 0; i < r.zawodnik.length; i++) {
-        console.log(
-          r.zawodnik[i],
-          r.zawodnik.charCodeAt(i)
-        );
+        if (r.wynik === "" || r.wynik === null || isNaN(r.wynik)) {
+          alert("❌ Błędny wynik u: " + r.zawodnik);
+          console.error("BAD ROW:", r);
+          resetBtn();
+          return;
+        }
       }
-    }
 
-    console.log("WYNIK:", r.wynik, typeof r.wynik);
-  }
-      const res = await fetch(API + "?api=saveResults&token=" + TOKEN + "&force=1", {
+      // ✅ JEDYNY LOG KTÓRY MA SENS
+      const payload = {
+        api: "saveResults",
+        token: TOKEN,
+        force: 1,
+        kategoria,
+        konkurencja,
+        rows: chunk
+      };
+
+      console.log("📦 SIZE:", JSON.stringify(payload).length, " | Zawodnicy:", chunk.map(r => r.zawodnik));
+
+      // ✅ POPRAWIONY FETCH (BEZ PARAMÓW W URL!)
+      const res = await fetch(API, {
         method: "POST",
-        body: JSON.stringify({
-          kategoria,
-          konkurencja,
-          rows: chunk
-        })
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
       });
 
       if (!res.ok) {
-        throw new Error("Błąd odpowiedzi serwera");
+        const text = await res.text();
+        console.error("SERVER RESPONSE:", text);
+
+        alert(
+          "❌ Błąd serwera!\n\n" +
+          "Zawodnicy:\n" +
+          chunk.map(r => r.zawodnik).join("\n") +
+          "\n\nStatus: " + res.status
+        );
+
+        resetBtn();
+        return;
       }
 
     } catch (err) {
 
-      console.error("BŁĄD NA BATCHU:", chunk);
+      console.error("❌ FETCH ERROR:", err);
+      console.error("❌ BATCH:", chunk);
 
       alert(
-        "❌ Błąd zapisu!\n\nProblem z zawodnikiem:\n\n" +
-        chunk.map(r => r.zawodnik || JSON.stringify(r)).join("\n")
+        "❌ Błąd zapisu (sieć / limit)\n\n" +
+        "Zawodnicy:\n" +
+        chunk.map(r => r.zawodnik).join("\n")
       );
 
       resetBtn();
       return;
     }
 
-    await new Promise(r => setTimeout(r, 1200));
+    await new Promise(r => setTimeout(r, 600));
   }
 
 } catch (err) {
 
   console.error("SAVE ERROR:", err);
 
-  alert("Błąd zapisu (sieć lub limit). Spróbuj ponownie.");
+  alert("❌ Krytyczny błąd zapisu");
 
   resetBtn();
   return;
 }
 
+// ✅ końcówka bez zmian
 const brakWagi = athletes.some(a => !a.waga);
 
 if (brakWagi) {
