@@ -363,7 +363,9 @@ const checkRes = await fetch(API, {
   body: JSON.stringify({
     api: "checkOverwrite",
     token: TOKEN,
-    data: payload
+    kategoria: payload.kategoria,
+    konkurencja: payload.konkurencja,
+    rows: payload.rows
   })
 });
 
@@ -477,6 +479,11 @@ if (brakWagi) {
 btn.classList.remove("loading");
 btn.innerHTML = "ZAPISZ";
  }
+  function resetBtn(){
+  const btn = document.getElementById("saveBtn");
+  btn.classList.remove("loading");
+  btn.innerHTML = "ZAPISZ";
+}
 </script>
 
 </body>
