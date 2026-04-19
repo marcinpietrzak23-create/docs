@@ -379,7 +379,7 @@ if (check.overwrite) {
   }
 }
 
-  const BATCH_SIZE = 3;
+  const BATCH_SIZE = 2;
 
 try {
 
@@ -431,7 +431,7 @@ try {
       return;
     }
 
-    await new Promise(r => setTimeout(r, 900));
+    await new Promise(r => setTimeout(r, 1000));
   }
 
 } catch (err) {
