@@ -705,4 +705,21 @@ table thead th {
 
 }
 
+/* =========================
+   FIX: WYNIKI MOBILE (TABLE PAGE)
+========================= */
+@media (max-width: 768px) {
 
+  .table-page .table-panel table {
+    display: table !important;
+  }
+
+  .table-page .table-panel {
+    overflow-x: auto;
+  }
+
+  .table-page table {
+    min-width: 600px;
+  }
+
+}
