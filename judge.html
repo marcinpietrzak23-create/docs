@@ -357,9 +357,17 @@ if (!waga) {
     }))
   }));
 
-  const checkRes = await fetch(
-    API + `?api=checkOverwrite&token=${TOKEN}&data=${payload}`
-  );
+  const checkRes = await fetch(API, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    api: "checkOverwrite",
+    token: TOKEN,
+    data: payload
+  })
+});
 
   const check = await checkRes.json();
 
@@ -414,7 +422,7 @@ try {
 
       console.log("📦 SIZE:", JSON.stringify(payload).length, " | Zawodnicy:", chunk.map(r => r.zawodnik));
 
-     const res = await fetch(API + "?t=" + Date.now() + "&force=1", {
+     const res = await fetch(API, {
   method: "POST",
   headers: {
     "Content-Type": "application/json"
