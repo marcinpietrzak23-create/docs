@@ -379,25 +379,39 @@ if (check.overwrite) {
   }
 }
 
-  const BATCH_SIZE = 15;
+  const BATCH_SIZE = 10;
 
-for (let i = 0; i < rowsToSave.length; i += BATCH_SIZE) {
+try {
 
-  const chunk = rowsToSave.slice(i, i + BATCH_SIZE);
+  for (let i = 0; i < rowsToSave.length; i += BATCH_SIZE) {
 
-  await fetch(API + "?api=saveResults&token=" + TOKEN + "&force=1", {
-    method: "POST",
-    body: JSON.stringify({
-      kategoria,
-      konkurencja,
-      rows: chunk
-    })
-  });
- if (!res.ok) {
-    alert("Błąd zapisu – spróbuj ponownie");
-    resetBtn();
-    return;
+    const chunk = rowsToSave.slice(i, i + BATCH_SIZE);
+
+    const res = await fetch(API + "?api=saveResults&token=" + TOKEN + "&force=1", {
+      method: "POST",
+      body: JSON.stringify({
+        kategoria,
+        konkurencja,
+        rows: chunk
+      })
+    });
+
+    // 👉 jeśli serwer odpowiedział ale z błędem
+    if (!res.ok) {
+      throw new Error("Błąd odpowiedzi serwera");
+    }
+
   }
+
+
+} catch (err) {
+
+  console.error("SAVE ERROR:", err);
+
+  alert("Błąd zapisu (sieć lub limit). Spróbuj ponownie.");
+
+  resetBtn();
+  return;
 }
 
   const brakWagi = athletes.some(a => !a.waga);
