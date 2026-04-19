@@ -399,12 +399,7 @@ try {
           return;
         }
 
-        if (r.wynik === "" || r.wynik === null || isNaN(r.wynik)) {
-          alert("❌ Błędny wynik u: " + r.zawodnik);
-          console.error("BAD ROW:", r);
-          resetBtn();
-          return;
-        }
+    
       }
 
       // ✅ JEDYNY LOG KTÓRY MA SENS
@@ -419,14 +414,13 @@ try {
 
       console.log("📦 SIZE:", JSON.stringify(payload).length, " | Zawodnicy:", chunk.map(r => r.zawodnik));
 
-      // ✅ POPRAWIONY FETCH (BEZ PARAMÓW W URL!)
-      const res = await fetch(API, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
+     const res = await fetch(API + "?t=" + Date.now() + "&force=1", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(payload)
+});
 
       if (!res.ok) {
         const text = await res.text();
