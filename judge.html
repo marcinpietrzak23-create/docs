@@ -390,7 +390,21 @@ try {
     try {
 
       console.log("Wysyłam batch:", chunk);
+  for (const r of chunk) {
 
+    console.log("ZAWODNIK:", r.zawodnik);
+
+    if (r.zawodnik) {
+      for (let i = 0; i < r.zawodnik.length; i++) {
+        console.log(
+          r.zawodnik[i],
+          r.zawodnik.charCodeAt(i)
+        );
+      }
+    }
+
+    console.log("WYNIK:", r.wynik, typeof r.wynik);
+  }
       const res = await fetch(API + "?api=saveResults&token=" + TOKEN + "&force=1", {
         method: "POST",
         body: JSON.stringify({
