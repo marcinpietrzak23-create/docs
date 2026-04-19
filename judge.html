@@ -391,7 +391,18 @@ try {
 
       console.log("Wysyłam batch:", chunk);
   for (const r of chunk) {
+ if (!r.zawodnik || r.zawodnik.trim() === "") {
+    alert("❌ Brak nazwiska zawodnika!");
+    console.error(r);
+    return;
+  }
 
+  // 🔴 2. wynik nie jest liczbą
+  if (r.wynik === "" || r.wynik === null || isNaN(r.wynik)) {
+    alert("❌ Błędny wynik u: " + r.zawodnik);
+    console.error(r);
+    return;
+  }
     console.log("ZAWODNIK:", r.zawodnik);
 
     if (r.zawodnik) {
