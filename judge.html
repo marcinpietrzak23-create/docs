@@ -387,87 +387,61 @@ if (check.overwrite) {
   }
 }
 
-  const BATCH_SIZE = 1;
+  try {
 
-try {
-
-  for (let i = 0; i < rowsToSave.length; i += BATCH_SIZE) {
-
-    const chunk = rowsToSave.slice(i, i + BATCH_SIZE);
-
-    try {
-
-      // ✅ WALIDACJA
-      for (const r of chunk) {
-        if (!r.zawodnik || r.zawodnik.trim() === "") {
-          alert("❌ Brak nazwiska zawodnika!");
-          console.error("BAD ROW:", r);
-          resetBtn();
-          return;
-        }
-      }
-
-      // ✅ PAYLOAD (zostaje tylko do loga)
-      const payload = {
-        api: "saveResults",
-        token: TOKEN,
-        force: 1,
-        kategoria,
-        konkurencja,
-        rows: chunk
-      };
-
-      console.log(
-        "📦 SIZE:",
-        JSON.stringify(payload).length,
-        "| Zawodnicy:",
-        chunk.map(r => r.zawodnik)
-      );
-
-      // ✅ KLUCZOWA ZMIANA — POST (bez headers!)
-      const res = await fetch(API, {
-        method: "POST",
-        body: JSON.stringify(payload)
-      });
-
-      const json = await res.json();
-
-      if (!json.ok) {
-        console.error("SERVER ERROR:", json);
-        alert("❌ Błąd zapisu");
-        resetBtn();
-        return;
-      }
-
-    } catch (err) {
-
-      console.error("❌ FETCH ERROR:", err);
-      console.error("❌ BATCH:", chunk);
-
-      alert(
-        "❌ Błąd zapisu (sieć / limit)\n\n" +
-        "Zawodnicy:\n" +
-        chunk.map(r => r.zawodnik).join("\n")
-      );
-
+  // ✅ WALIDACJA (wszystkich naraz)
+  for (const r of rowsToSave) {
+    if (!r.zawodnik || r.zawodnik.trim() === "") {
+      alert("❌ Brak nazwiska zawodnika!");
+      console.error("BAD ROW:", r);
       resetBtn();
       return;
     }
+  }
 
-    await new Promise(r => setTimeout(r, 600));
+  // ✅ JEDEN PAYLOAD Z WSZYSTKIMI
+  const payload = {
+    api: "saveResults",
+    token: TOKEN,
+    force: 1,
+    kategoria,
+    konkurencja,
+    rows: rowsToSave
+  };
+
+  console.log(
+    "🚀 WYSYŁAM CAŁOŚĆ:",
+    rowsToSave.length,
+    "zawodników | SIZE:",
+    JSON.stringify(payload).length
+  );
+
+  // ✅ JEDEN REQUEST
+  const res = await fetch(API, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+
+  const json = await res.json();
+
+  if (!json.ok) {
+    console.error("SERVER ERROR:", json);
+    alert("❌ Błąd zapisu");
+    resetBtn();
+    return;
   }
 
 } catch (err) {
 
-  console.error("SAVE ERROR:", err);
+  console.error("❌ FETCH ERROR:", err);
 
-  alert("❌ Krytyczny błąd zapisu");
+  alert("❌ Błąd zapisu (sieć)");
 
   resetBtn();
   return;
 }
 
-// ✅ końcówka
+// ✅ końcówka (zostaje bez zmian)
 const brakWagi = athletes.some(a => !a.waga);
 
 if (brakWagi) {
@@ -478,12 +452,6 @@ if (brakWagi) {
 
 btn.classList.remove("loading");
 btn.innerHTML = "ZAPISZ";
- }
-  function resetBtn(){
-  const btn = document.getElementById("saveBtn");
-  btn.classList.remove("loading");
-  btn.innerHTML = "ZAPISZ";
-}
 </script>
 
 </body>
