@@ -387,22 +387,38 @@ try {
 
     const chunk = rowsToSave.slice(i, i + BATCH_SIZE);
 
-    const res = await fetch(API + "?api=saveResults&token=" + TOKEN + "&force=1", {
-      method: "POST",
-      body: JSON.stringify({
-        kategoria,
-        konkurencja,
-        rows: chunk
-      })
-    });
+    try {
 
-    // 👉 jeśli serwer odpowiedział ale z błędem
-    if (!res.ok) {
-      throw new Error("Błąd odpowiedzi serwera");
+      console.log("Wysyłam batch:", chunk);
+
+      const res = await fetch(API + "?api=saveResults&token=" + TOKEN + "&force=1", {
+        method: "POST",
+        body: JSON.stringify({
+          kategoria,
+          konkurencja,
+          rows: chunk
+        })
+      });
+
+      if (!res.ok) {
+        throw new Error("Błąd odpowiedzi serwera");
+      }
+
+    } catch (err) {
+
+      console.error("BŁĄD NA BATCHU:", chunk);
+
+      alert(
+        "❌ Błąd zapisu!\n\nProblem z zawodnikiem:\n\n" +
+        chunk.map(r => r.zawodnik || JSON.stringify(r)).join("\n")
+      );
+
+      resetBtn();
+      return;
     }
-await new Promise(r => setTimeout(r, 900));
-  }
 
+    await new Promise(r => setTimeout(r, 900));
+  }
 
 } catch (err) {
 
@@ -413,8 +429,8 @@ await new Promise(r => setTimeout(r, 900));
   resetBtn();
   return;
 }
-   
-  const brakWagi = athletes.some(a => !a.waga);
+
+const brakWagi = athletes.some(a => !a.waga);
 
 if (brakWagi) {
   alert("Zapisano! Część zawodników bez wagi została pominięta");
@@ -422,10 +438,11 @@ if (brakWagi) {
   alert("Zapisano!");
 }
 
-  btn.classList.remove("loading");
-  btn.innerHTML = "ZAPISZ";
+btn.classList.remove("loading");
+btn.innerHTML = "ZAPISZ";
 }
-  function resetBtn() {
+
+function resetBtn() {
   const btn = document.getElementById("saveBtn");
   btn.classList.remove("loading");
   btn.innerHTML = "ZAPISZ";
