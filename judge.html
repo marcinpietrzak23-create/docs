@@ -379,14 +379,26 @@ if (check.overwrite) {
   }
 }
 
+  const BATCH_SIZE = 15;
+
+for (let i = 0; i < rowsToSave.length; i += BATCH_SIZE) {
+
+  const chunk = rowsToSave.slice(i, i + BATCH_SIZE);
+
   await fetch(API + "?api=saveResults&token=" + TOKEN + "&force=1", {
     method: "POST",
     body: JSON.stringify({
       kategoria,
       konkurencja,
-      rows: rowsToSave
+      rows: chunk
     })
   });
+ if (!res.ok) {
+    alert("Błąd zapisu – spróbuj ponownie");
+    resetBtn();
+    return;
+  }
+}
 
   const brakWagi = athletes.some(a => !a.waga);
 
