@@ -346,23 +346,28 @@ if (!waga) {
     return;
   }
 
-  const payload = encodeURIComponent(JSON.stringify({
-    kategoria,
-    konkurencja,
-    rows: rows.map(r => ({
-      zawodnik: r.zawodnik,
-      p1: r.p1,
-      p2: r.p2,
-      p3: r.p3
-    }))
-  }));
+ const payload = {
+  kategoria,
+  konkurencja,
+  rows: rows.map(r => ({
+    zawodnik: r.zawodnik,
+    p1: r.p1,
+    p2: r.p2,
+    p3: r.p3
+  }))
+};
 
-  const checkRes = await fetch(
-  API + "?api=checkOverwrite"
-  + "&token=" + TOKEN
-  + "&data=" + payload
-  + "&t=" + Date.now()
-);
+ const checkRes = await fetch(API, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    api: "checkOverwrite",
+    token: TOKEN,
+    data: JSON.stringify(payload)
+  })
+});
 
   const check = await checkRes.json();
 
@@ -382,7 +387,7 @@ if (check.overwrite) {
   }
 }
 
-  const BATCH_SIZE = 2;
+  const BATCH_SIZE = 1;
 
 try {
 
@@ -417,15 +422,20 @@ try {
 
       console.log("📦 SIZE:", JSON.stringify(payload).length, " | Zawodnicy:", chunk.map(r => r.zawodnik));
 
-     const payloadStr = encodeURIComponent(JSON.stringify(payload));
-
-const res = await fetch(
-  API + "?api=saveResults"
-  + "&token=" + TOKEN
-  + "&force=1"
-  + "&data=" + payloadStr
-  + "&t=" + Date.now()
-);
+     const res = await fetch(API, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    api: "saveResults",
+    token: TOKEN,
+    force: 1,
+    kategoria,
+    konkurencja,
+    rows: chunk
+  })
+});
 
       if (!res.ok) {
         const text = await res.text();
