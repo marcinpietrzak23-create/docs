@@ -99,7 +99,12 @@ function norm(s){
     .replace(/\s+/g," ")
     .toLowerCase();
 }
-
+function cleanComp(c){
+  return String(c || "")
+    .replace(/'/g, "")
+    .trim()
+    .toUpperCase();
+}
 /* ================= GLOBAL STATE ================= */
 let COMP_ORDER = [];
 let CATEGORY_LABEL = "Wyniki: " + CATEGORY_KEY;
