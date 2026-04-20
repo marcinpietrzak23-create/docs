@@ -101,9 +101,7 @@ renderTable();
 }
 async function init() {
 
- try {
-
-    // 1. pobierz kategorie
+  try {
     const res = await fetch(API + "?api=competitions&token=" + TOKEN);
 
     console.log("STATUS:", res.status);
@@ -124,7 +122,18 @@ async function init() {
     return;
   }
 
-  // 2. pierwsze ładowanie
+  // ✅ TO DODAJ
+  const select = document.getElementById("category");
+// 🔥 WYPEŁNIENIE DROPDOWNA KATEGORII
+select.innerHTML = "";
+
+Object.keys(competitionsMap).forEach(k => {
+  const opt = document.createElement("option");
+  opt.value = k;
+  opt.textContent = k.replace(/^K:/, "");
+  select.appendChild(opt);
+});
+  // 🔥 I DOPIERO TERAZ używaj select
   updateCompetitions(select.value);
 
   const firstComp = document.getElementById("competition").value;
@@ -132,31 +141,23 @@ async function init() {
 
   await loadAthletes(select.value);
 
-  // 3. zmiana kategorii
   select.addEventListener("change", async () => {
-
     updateCompetitions(select.value);
 
     const firstComp = document.getElementById("competition").value;
     renderHeader(firstComp);
 
     await loadAthletes(select.value);
-
   });
 
-  // 4. zmiana konkurencji
-document.getElementById("competition").addEventListener("change", async () => {
+  document.getElementById("competition").addEventListener("change", async () => {
+    const konk = document.getElementById("competition").value;
+    renderHeader(konk);
 
-  const konk = document.getElementById("competition").value;
-  renderHeader(konk);
+    await loadAthletes(document.getElementById("category").value);
+  });
 
-  await loadAthletes(document.getElementById("category").value);
-
-});
-
-  // 5. search
   document.getElementById("search").addEventListener("input", renderTable);
-
 }
 
 
@@ -235,7 +236,7 @@ function renderTable() {
   }
 }
 
-init();
+document.addEventListener("DOMContentLoaded", init);
 function updateCompetitions(kategoria) {
 
   const comps = competitionsMap[kategoria] || [];
