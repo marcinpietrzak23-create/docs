@@ -224,7 +224,7 @@ const punktyMap = {};
   const key = norm(CATEGORY_KEY);
 
 // 👇 lista bojów dla Masters
-const mastersComps = ["SNUB3","2KBSQ1RM","TGU1RM"];
+const mastersComps = ["SNUB3'","2KBSQ1RM","TGU1RM"];
 
 const filteredBoje = (bojeRows || [])
   .filter(r => {
@@ -433,7 +433,7 @@ box.insertAdjacentHTML("beforeend",`<h2>🏋️ ${fullName}</h2>`);
       <th>Klub</th>
       <th>Waga</th>`;
 
-    if(/SN/i.test(comp)){
+    if(cleanComp(comp).includes("SN")){
       html+=`<th>Odważnik</th><th>Powt.</th><th>Wynik</th><th>Punkty</th>`;
     } 
     else if(/TIEBREAK/i.test(comp)){
@@ -461,7 +461,7 @@ list.forEach((a,i)=>{
     <td>${a.klub||"-"}</td>
     <td>${a.waga||"-"}</td>`;
 
-      if(/SN/i.test(comp)){
+      if(cleanComp(comp).includes("SN")){
 
         html+=`
           <td>${a.odciezar}</td>
