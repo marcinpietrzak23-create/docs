@@ -101,21 +101,28 @@ renderTable();
 }
 async function init() {
 
-  // 1. pobierz kategorie
-  const res = await fetch(API + "?api=competitions&token=" + TOKEN);
-  competitionsMap = await res.json();
+ try {
 
-  const select = document.getElementById("category");
+    // 1. pobierz kategorie
+    const res = await fetch(API + "?api=competitions&token=" + TOKEN);
 
-  // wyczyść (na wszelki wypadek)
-  select.innerHTML = "";
+    console.log("STATUS:", res.status);
 
-  Object.keys(competitionsMap).forEach(k => {
-    const opt = document.createElement("option");
-    opt.value = k;
-    opt.textContent = k.replace(/^K:/, "");
-    select.appendChild(opt);
-  });
+    const text = await res.text();
+    console.log("RAW:", text);
+
+    competitionsMap = JSON.parse(text);
+
+  } catch (err) {
+    console.error("INIT ERROR:", err);
+
+    document.body.innerHTML = `
+      <h2 style="color:red">❌ Błąd ładowania API</h2>
+      <pre>${err}</pre>
+    `;
+
+    return;
+  }
 
   // 2. pierwsze ładowanie
   updateCompetitions(select.value);
