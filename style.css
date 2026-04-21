@@ -716,10 +716,32 @@ table thead th {
 
   .table-page .table-panel {
     overflow-x: auto;
+    overflow-y: visible; /* 👈 KLUCZOWE */
   }
 
   .table-page table {
     min-width: 600px;
   }
 
+}
+/* =========================
+   STICKY HEADER – FIX
+========================= */
+
+.table-page table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+/* ===== STICKY HEADER FINAL FIX (OSTATECZNY) ===== */
+
+.table-page table {
+  border-collapse: separate; /* 🔴 TO JEST KLUCZ */
+}
+
+.table-page table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #102a43;
 }
