@@ -1303,7 +1303,7 @@ if(!Array.isArray(results)){
     SNATCH: {
   Junior: { M:[], K:[] },
   Amator: {}, // 🔥 dynamiczne kategorie
-  Pro: { M:[], K:[] }
+  Pro: {}
 }
   };
 
@@ -1411,9 +1411,21 @@ Object.values(snatchMap).forEach(r=>{
 
   }else{
 
-    out.SNATCH[r.level][r.gender].push(r);
+  if(r.level === "Pro"){
 
+    const cat = (r.kategoria || "UNKNOWN").replace(/^k:/i,"");
+
+    if(!out.SNATCH.Pro[cat]){
+      out.SNATCH.Pro[cat] = [];
+    }
+
+    out.SNATCH.Pro[cat].push(r);
+
+  }else{
+    out.SNATCH[r.level][r.gender].push(r);
   }
+
+}
 
 });
 
@@ -1430,10 +1442,21 @@ Object.keys(out.SNATCH.Amator).forEach(cat => {
     out.SNATCH.Amator[cat].slice(0,3);
 
 });
+    // ===== SORT PRO =====
+Object.keys(out.SNATCH.Pro).forEach(cat => {
+
+  out.SNATCH.Pro[cat].sort((a,b)=>{
+    if(b.wynik !== a.wynik) return b.wynik - a.wynik;
+    return a.waga - b.waga;
+  });
+
+  out.SNATCH.Pro[cat] = out.SNATCH.Pro[cat].slice(0,3);
+
+});
 
 
-// ===== SORT RESZTY (Junior + Pro) =====
-["Junior","Pro"].forEach(level=>{
+// ===== SORT RESZTY (TYLKO JUNIOR) =====
+["Junior"].forEach(level=>{
   ["K","M"].forEach(g=>{
 
     out.SNATCH[level][g].sort((a,b)=>{
@@ -1619,11 +1642,10 @@ const CEREMONY_ORDER_MAP = {
 };
   const TOKEN = sessionStorage.getItem("session_token");
 
-  const [view, extra, boje] = await Promise.all([
-    fetch(API_BASE + "?arkusz=API_VIEW&token=" + TOKEN).then(r=>r.json()),
-    fetch(API_BASE + "?arkusz=API_DODATKOWE&token=" + TOKEN).then(r=>r.json()),
-    fetch(API_BASE + "?api=boje&token=" + TOKEN).then(r=>r.json())
-  ]);
+  const view = await fetch(API_BASE + "?arkusz=API_VIEW&token=" + TOKEN).then(r=>r.json());
+const extra = await fetch(API_BASE + "?arkusz=API_DODATKOWE&token=" + TOKEN).then(r=>r.json());
+const boje = await fetch(API_BASE + "?api=boje&token=" + TOKEN).then(r=>r.json());
+  
 
   const rows = [];
 
@@ -1752,9 +1774,12 @@ const bestOrder = [
   {type:"AMATOR", cat:"M 85"},
   {type:"AMATOR", cat:"M +85"},
 
+  
   // 7–10 PRO
-  {type:"SNATCH", level:"Pro", gender:"K"},
-  {type:"SNATCH", level:"Pro", gender:"M"},
+{type:"PRO", cat:"K 65"},
+{type:"PRO", cat:"K +65"},
+{type:"PRO", cat:"M 85"},
+{type:"PRO", cat:"M +85"},
 
   // 11–12 TGU
   {type:"TGU", gender:"K"},
@@ -1791,19 +1816,51 @@ bestOrder.forEach(item => {
   }
 
   // ===== AMATOR =====
+
   if(item.type === "AMATOR"){
 
-   const key = Object.keys(best.SNATCH.Amator || {}).find(k =>
-  k.toUpperCase().includes(item.cat)
-);
+  const key = Object.keys(best.SNATCH.Amator || {}).find(k => {
 
-    if(!key) return;
+    const up = k.toUpperCase();
 
-    html += `<h4>${key}</h4>`;
+    if(item.cat === "K 65") return up.includes("K") && up.includes("65") && !up.includes("+");
+    if(item.cat === "K +65") return up.includes("K") && up.includes("+65");
+    if(item.cat === "M 85") return up.includes("M") && up.includes("85") && !up.includes("+");
+    if(item.cat === "M +85") return up.includes("M") && up.includes("+85");
 
-    (best.SNATCH.Amator[key]||[]).forEach((r,i)=>{
-  html += `<div>${i+1}. ${r.zawodnik} (${r.wynik}${item.type==="TGU" ? " kg" : ""})</div>`;
-});
+    return false;
+  });
+
+  if(!key) return;
+
+  html += `<h4>${key}</h4>`;
+
+  (best.SNATCH.Amator[key]||[]).forEach((r,i)=>{
+    html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
+  });
+
+}
+if(item.type === "PRO"){
+
+  const key = Object.keys(best.SNATCH.Pro || {}).find(k => {
+
+    const up = k.toUpperCase();
+
+    if(item.cat === "K 65") return up.includes("K") && up.includes("65") && !up.includes("+");
+    if(item.cat === "K +65") return up.includes("K") && up.includes("+65");
+    if(item.cat === "M 85") return up.includes("M") && up.includes("85") && !up.includes("+");
+    if(item.cat === "M +85") return up.includes("M") && up.includes("+85");
+
+    return false;
+  });
+
+  if(!key) return;
+
+  html += `<h4>${key}</h4>`;
+
+  (best.SNATCH.Pro[key]||[]).forEach((r,i)=>{
+    html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
+  });
 
   }
 
