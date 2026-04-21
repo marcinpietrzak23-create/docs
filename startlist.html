@@ -1917,25 +1917,44 @@ if(match && !seen.has(key)){
 
   const c = cat.toUpperCase();
 
-  if(c.includes("JUNIOR") && c.includes("K:K")) return "JUNIOR DZ";
-  if(c.includes("JUNIOR") && c.includes("K:M")) return "JUNIOR CH";
+  // helpery
+  const isK = c.includes("K:K");
+  const isM = c.includes("K:M");
 
-  if(c.includes("AMATOR") && c.includes("K:K") && c.includes("65")) return "AMATOR K 65";
-  if(c.includes("AMATOR") && c.includes("K:K") && c.includes("+")) return "AMATOR K +65";
+  const isJunior = c.includes("JUNIOR");
+  const isAmator = c.includes("AMATOR");
+  const isPro = c.includes("PRO");
+  const isMasters = c.includes("MASTERS");
 
-  if(c.includes("AMATOR") && c.includes("K:M") && c.includes("85")) return "AMATOR M 85";
-  if(c.includes("AMATOR") && c.includes("K:M") && c.includes("+")) return "AMATOR M +85";
+  const isPlus = c.includes("+");
 
-  if(c.includes("PRO") && c.includes("K:K") && c.includes("65")) return "PRO K 65";
-  if(c.includes("PRO") && c.includes("K:K") && c.includes("+")) return "PRO K +65";
+  // ===== JUNIOR =====
+  if(isJunior && isK) return "JUNIOR DZ";
+  if(isJunior && isM) return "JUNIOR CH";
 
-  if(c.includes("PRO") && c.includes("K:M") && c.includes("85")) return "PRO M 85";
-  if(c.includes("PRO") && c.includes("K:M") && c.includes("+")) return "PRO M +85";
+  // ===== AMATOR =====
+  if(isAmator && isK && isPlus) return "AMATOR K +65";
+  if(isAmator && isK && !isPlus) return "AMATOR K 65";
 
-  if(c.includes("MASTERS") && c.includes("K:K")) return "MASTERS K";
-  if(c.includes("MASTERS") && c.includes("K:M")) return "MASTERS M";
+  if(isAmator && isM && isPlus) return "AMATOR M +85";
+  if(isAmator && isM && !isPlus) return "AMATOR M 85";
 
-  return cat; // fallback
+  // ===== PRO =====
+  if(isPro && isK && isPlus) return "PRO K +65";
+  if(isPro && isK && !isPlus) return "PRO K 65";
+
+  if(isPro && isM && isPlus) return "PRO M +85";
+  if(isPro && isM && !isPlus) return "PRO M 85";
+
+  // ===== MASTERS =====
+  if(isMasters && isK) return "MASTERS K";
+  if(isMasters && isM) return "MASTERS M";
+
+  // ===== ZĄBKOWICE =====
+  if(c.includes("ZĄBKOWICZANKA")) return "NAJLEPSZA ZĄBKOWICZANKA";
+  if(c.includes("ZĄBKOWICZANIN")) return "NAJLEPSZY ZĄBKOWICZANIN";
+
+  return "OTHER";
 }
 </script>
 
