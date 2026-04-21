@@ -1726,54 +1726,95 @@ Object.values(athletes).forEach(a => {
   });
 
   // ===== BEST =====
-    html += `<div style="page-break-before: always;"></div>`;
-  html += `<div class="ceremony-block">`;
-  html += `<h3>🏆 BEST</h3>`;
+html += `<div style="page-break-before: always;"></div>`;
+html += `<div class="ceremony-block">`;
+html += `<h3>🏆 BEST</h3>`;
 
-  const best = window.BEST;
+// ===== BEST W TWOJEJ KOLEJNOŚCI 🔥 =====
 
-  ["K","M"].forEach(g=>{
-    html += `<h4>${g==="K"?"Kobiety":"Mężczyźni"} - TGU</h4>`;
-    (best.TGU[g]||[]).forEach((r,i)=>{
-      html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
-    });
-  });
+const best = window.BEST;
 
-  // ===== SNATCH =====
-
-// 🔹 JUNIOR + PRO (bez zmian)
-["Junior","Pro"].forEach(level=>{
-
-  ["K","M"].forEach(g=>{
-
-    html += `<h4>SNATCH ${level} ${g}</h4>`;
-
-    (best.SNATCH[level][g]||[]).forEach((r,i)=>{
-      html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
-    });
-
-  });
-
-});
-
-
-// 🔥 AMATOR (po kategoriach)
-html += `<h3>SNATCH Amator</h3>`;
-
-Object.keys(best.SNATCH.Amator || {}).forEach(cat => {
-
-  html += `<h4>${cat}</h4>`;
-
-  (best.SNATCH.Amator[cat]||[]).forEach((r,i)=>{
-    html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
-  });
-
-});
-
+if(!best){
+  html += `<div style="color:#aaa;">Brak wyników</div>`;
   html += `</div>`;
-
   document.getElementById("content").innerHTML = html;
+  return; // 🔥 KLUCZ
 }
+const bestOrder = [
+
+  // 1–2 JUNIOR
+  {type:"SNATCH", level:"Junior", gender:"K"},
+  {type:"SNATCH", level:"Junior", gender:"M"},
+
+  // 3–6 AMATOR
+  {type:"AMATOR", cat:"K 65"},
+  {type:"AMATOR", cat:"K +65"},
+  {type:"AMATOR", cat:"M 85"},
+  {type:"AMATOR", cat:"M +85"},
+
+  // 7–10 PRO
+  {type:"SNATCH", level:"Pro", gender:"K"},
+  {type:"SNATCH", level:"Pro", gender:"M"},
+
+  // 11–12 TGU
+  {type:"TGU", gender:"K"},
+  {type:"TGU", gender:"M"}
+
+];
+
+bestOrder.forEach(item => {
+
+  // ===== TGU =====
+  if(item.type === "TGU"){
+
+    html += `<h4>${item.gender==="K"?"Kobiety":"Mężczyźni"} - TGU</h4>`;
+
+    (best.TGU[item.gender]||[]).forEach((r,i)=>{
+  html += `<div>${i+1}. ${r.zawodnik} (${r.wynik}${item.type==="TGU" ? " kg" : ""})</div>`;
+});
+
+    return;
+  }
+
+  // ===== JUNIOR / PRO =====
+  if(item.type === "SNATCH"){
+
+    const genderLabel = item.gender==="K" ? "Kobiety" : "Mężczyźni";
+
+    html += `<h4>SNATCH ${item.level} - ${genderLabel}</h4>`;
+
+    (best.SNATCH[item.level][item.gender]||[]).forEach((r,i)=>{
+      html += `<div>${i+1}. ${r.zawodnik} (${r.wynik}${item.type==="TGU" ? " kg" : ""})</div>`;
+    });
+
+    return;
+  }
+
+  // ===== AMATOR =====
+  if(item.type === "AMATOR"){
+
+   const key = Object.keys(best.SNATCH.Amator || {}).find(k =>
+  k.toUpperCase().includes(item.cat)
+);
+
+    if(!key) return;
+
+    html += `<h4>${key}</h4>`;
+
+    (best.SNATCH.Amator[key]||[]).forEach((r,i)=>{
+  html += `<div>${i+1}. ${r.zawodnik} (${r.wynik}${item.type==="TGU" ? " kg" : ""})</div>`;
+});
+
+  }
+
+});
+
+// 🔥 ZAMKNIĘCIE BLOKU (RAZ!)
+html += `</div>`;
+
+// 🔥 RENDER (RAZ!)
+document.getElementById("content").innerHTML = html;
+  }
   async function printCeremony(){
 
   // 🔥 jeśli nie ma ceremonii → generuj ją
@@ -1921,7 +1962,7 @@ if(match && !seen.has(key)){
   const isK = c.includes("K:K");
   const isM = c.includes("K:M");
 
-  const isJunior = c.includes("JUNIOR");
+  const isJunior = c.includes("JUNIOR") || c.includes("U18");
   const isAmator = c.includes("AMATOR");
   const isPro = c.includes("PRO");
   const isMasters = c.includes("MASTERS");
@@ -1929,8 +1970,8 @@ if(match && !seen.has(key)){
   const isPlus = c.includes("+");
 
   // ===== JUNIOR =====
-  if(isJunior && isK) return "JUNIOR DZ";
-  if(isJunior && isM) return "JUNIOR CH";
+  if(isJunior && (isK || c.includes("DZ"))) return "JUNIOR DZ";
+if(isJunior && (isM || c.includes("CH"))) return "JUNIOR CH";
 
   // ===== AMATOR =====
   if(isAmator && isK && isPlus) return "AMATOR K +65";
