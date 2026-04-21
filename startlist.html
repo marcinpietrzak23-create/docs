@@ -1574,7 +1574,49 @@ const payload = {
   alert("Zapisano blok startowy ✅");
 }
   async function renderCeremony(){
+const CEREMONY_ORDER_MAP = {
 
+  // 🔥 SNATCH TOTAL
+  "SN JUNIOR DZ": 1,
+  "SN JUNIOR CH": 2,
+
+  "SN AMATOR K 65": 3,
+  "SN AMATOR K +65": 4,
+  "SN AMATOR M 85": 5,
+  "SN AMATOR M +85": 6,
+
+  "SN PRO K 65": 7,
+  "SN PRO K +65": 8,
+  "SN PRO M 85": 9,
+  "SN PRO M +85": 10,
+
+  // 🔥 BEST TGU
+  "BEST TGU K": 11,
+  "BEST TGU M": 12,
+
+  // 🔥 NAGRODY SPECJALNE
+  "NAJLEPSZA ZĄBKOWICZANKA": 13,
+  "NAJLEPSZY ZĄBKOWICZANIN": 14,
+
+  // 🔥 MASTER
+  "MASTERS K": 15,
+  "MASTERS M": 16,
+
+  // 🔥 NORMALNE KATEGORIE
+  "JUNIOR DZ": 17,
+  "JUNIOR CH": 18,
+
+  "AMATOR K 65": 19,
+  "AMATOR K +65": 20,
+  "AMATOR M 85": 21,
+  "AMATOR M +85": 22,
+
+  "PRO K 65": 23,
+  "PRO K +65": 24,
+  "PRO M 85": 25,
+  "PRO M +85": 26
+
+};
   const TOKEN = sessionStorage.getItem("session_token");
 
   const [view, extra, boje] = await Promise.all([
@@ -1632,7 +1674,19 @@ const payload = {
   let html = `<h2 style="color:#fff;text-align:center;">🎤 CEREMONIA DEKORACJI</h2>`;
 
   // ===== GENERALKI =====
-  Object.keys(byCategory).forEach(cat=>{
+  Object.keys(byCategory)
+  .sort((a,b)=>{
+
+    const na = normalizeCategoryName(a);
+    const nb = normalizeCategoryName(b);
+
+    const pa = CEREMONY_ORDER_MAP[na] || 999;
+    const pb = CEREMONY_ORDER_MAP[nb] || 999;
+
+    return pa - pb;
+
+  })
+  .forEach(cat=>{
 
     const athletes = {};
 
@@ -1858,6 +1912,30 @@ if(match && !seen.has(key)){
   html += "</tbody></table></div>";
 
   container.innerHTML = html;
+}
+  function normalizeCategoryName(cat){
+
+  const c = cat.toUpperCase();
+
+  if(c.includes("JUNIOR") && c.includes("K:K")) return "JUNIOR DZ";
+  if(c.includes("JUNIOR") && c.includes("K:M")) return "JUNIOR CH";
+
+  if(c.includes("AMATOR") && c.includes("K:K") && c.includes("65")) return "AMATOR K 65";
+  if(c.includes("AMATOR") && c.includes("K:K") && c.includes("+")) return "AMATOR K +65";
+
+  if(c.includes("AMATOR") && c.includes("K:M") && c.includes("85")) return "AMATOR M 85";
+  if(c.includes("AMATOR") && c.includes("K:M") && c.includes("+")) return "AMATOR M +85";
+
+  if(c.includes("PRO") && c.includes("K:K") && c.includes("65")) return "PRO K 65";
+  if(c.includes("PRO") && c.includes("K:K") && c.includes("+")) return "PRO K +65";
+
+  if(c.includes("PRO") && c.includes("K:M") && c.includes("85")) return "PRO M 85";
+  if(c.includes("PRO") && c.includes("K:M") && c.includes("+")) return "PRO M +85";
+
+  if(c.includes("MASTERS") && c.includes("K:K")) return "MASTERS K";
+  if(c.includes("MASTERS") && c.includes("K:M")) return "MASTERS M";
+
+  return cat; // fallback
 }
 </script>
 
