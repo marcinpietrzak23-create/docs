@@ -183,7 +183,10 @@ Object.keys(s)
   document.getElementById("loader").style.display="none";
   document.getElementById("content").style.display="block";
 }
-
+function fmt(n){
+  const num = Number(n);
+  return Number.isInteger(num) ? num : num.toFixed(1);
+}
 /* ================= RENDER ================= */
 function renderAll(baseRes, extraRes, bojeRows){
   const baseRows=(baseRes.data||[])
@@ -264,7 +267,9 @@ console.log("CATEGORY_KEY:", CATEGORY_KEY);
 /* ================= GENERALKA ================= */
 function buildGeneralka(rows, bojeRows){
   const klubMap = {};
-
+const startMap = new Set(
+  rows.map(r => `${norm(r.ZAWODNIK)}|${norm(r.KONKURENCJA)}`)
+);
   (bojeRows || []).forEach(r => {
     if (r.zawodnik && r.klub) {
       klubMap[norm(r.zawodnik)] = r.klub;
@@ -371,8 +376,17 @@ Object.values(byAth).forEach(a=>{
         <td>${r.name}</td>
         <td>${r.klub}</td>
         <td>${r.waga}</td>
-        <td>${r.sum}</td>
-        ${compsInCategory.map(c=>`<td>${rows.find(x => x.ZAWODNIK===r.name && x.KONKURENCJA===c) ? r.pts[c] : "-"}</td>`).join("")}
+        <td>${fmt(r.sum)}</td>
+        ${compsInCategory.map(c=>{
+  const hasStart = startMap.has(`${norm(r.name)}|${norm(c)}`);
+  const isTiebreak = /TIEBREAK/i.test(c);
+
+  if(!hasStart) return `<td>-</td>`;
+
+  const val = r.pts[c];
+
+  return `<td>${isTiebreak ? fmt(val) : val}</td>`;
+}).join("")}
       </tr>
     `);
 
