@@ -234,7 +234,7 @@ const punktyMap = {};
   const key = norm(CATEGORY_KEY);
 
 // 👇 lista bojów dla Masters
-const mastersComps = ["SNUB3'","2KBSQ1RM","TGU1RM"];
+const mastersComps = ["SNUB3'","2KBSQ1RM","TGU1RM","TIEBREAK"];
 
 const filteredBoje = (bojeRows || [])
   .filter(r => {
@@ -301,7 +301,7 @@ const is3BojeCategory = special3BojeKeys.some(k => key.includes(k));
 
 if (is3BojeCategory) {
 
-  compsInCategory = ["SNUB3'","2KBSQ1RM","TGU1RM"];
+  compsInCategory = ["SNUB3'","2KBSQ1RM","TGU1RM","TIEBREAK"];
 
 } else {
 
