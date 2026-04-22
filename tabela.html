@@ -323,9 +323,17 @@ rows.forEach(r => {
 // uzupełniamy brakujące konkurencje
 Object.values(byAth).forEach(a => {
   compsInCategory.forEach(c => {
+
+    const isTiebreak = /TIEBREAK/i.test(c);
+
     if (a.pts[c] == null) {
-      a.pts[c] = athletesCount; // ostatnie miejsce
+      if (isTiebreak) {
+        a.pts[c] = 0; // 👈 NIE doliczamy karnego miejsca
+      } else {
+        a.pts[c] = athletesCount; // 👈 normalnie ostatnie miejsce
+      }
     }
+
   });
 });
 
