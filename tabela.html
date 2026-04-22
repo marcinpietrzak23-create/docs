@@ -523,14 +523,13 @@ list.forEach((a,i)=>{
   <td>${a.punkty}</td>`;
 
       }
-      else if(/TIEBREAK/i.test(comp)){
+     else if(/TIEBREAK/i.test(comp)){
 
-        html+=`
-          <td>${a.wynik}</td>
-          <td>${a.wynikFinal != null ? Number(a.wynikFinal).toFixed(2) : "-"}</td>
-          <td>${a.punkty}</td>`;
-
-      }
+  html+=`
+    <td>${a.wynik}</td>
+    <td>${fmt(a.punkty)}</td>
+    <td>${a.punkty}</td>`;
+}
       else{
 
         const p=a.proby.sort((x,y)=>x.nr-y.nr).map(x=>Number(x.val));
