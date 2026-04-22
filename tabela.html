@@ -338,7 +338,14 @@ rows.forEach(r => {
     };
   }
 
-  byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = Number(r.PKT) || 0;
+  const isTiebreak = /TIEBREAK/i.test(r.KONKURENCJA);
+
+// jeśli już mamy wartość z API_VIEW, nie nadpisuj jej gorszą
+if (isTiebreak && byAth[r.ZAWODNIK].pts[r.KONKURENCJA] != null) {
+  return;
+}
+
+byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = Number(r.PKT) || 0;
 });
 
   const athletesCount = Object.keys(byAth).length;
