@@ -166,7 +166,27 @@ function renderTable() {
   const search = document.getElementById("search").value.toLowerCase();
   const body = document.getElementById("tableBody");
   const konk = document.getElementById("competition").value;
+const key = document.getElementById("category").value
+  .toLowerCase()
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "");
 
+const isSpecial =
+  key.includes("masters") ||
+  key.includes("zabkowiczanin") ||
+  key.includes("zabkowiczanka");
+
+// 🚫 blokada wszystkiego poza TIEBREAK
+if (isSpecial && !isTiebreak(konk)) {
+  body.innerHTML = `
+    <tr>
+      <td colspan="4" style="text-align:center; padding:20px;">
+        ⚠️ W tej kategorii dostępny jest tylko TIEBREAK
+      </td>
+    </tr>
+  `;
+  return;
+}
   body.innerHTML = "";
 
   athletes
@@ -240,12 +260,25 @@ document.addEventListener("DOMContentLoaded", init);
 function updateCompetitions(kategoria) {
 
   const comps = competitionsMap[kategoria] || [];
-
   const select = document.getElementById("competition");
+
+  const key = kategoria.toLowerCase();
+
+  const isSpecial =
+    key.includes("masters") ||
+    key.includes("zabkowiczanin") ||
+    key.includes("zabkowiczanka");
 
   select.innerHTML = "";
 
-  comps.forEach(c => {
+  let filtered = comps;
+
+  // 👉 dla specjalnych kategorii zostaw tylko TIEBREAK
+  if (isSpecial) {
+    filtered = comps.filter(c => c.toUpperCase().includes("TIEBREAK"));
+  }
+
+  filtered.forEach(c => {
     const opt = document.createElement("option");
     opt.value = c;
     opt.textContent = c;
@@ -262,7 +295,21 @@ function isTiebreak(k) {
   function renderHeader(konk) {
 
   const head = document.getElementById("tableHead");
+const key = document.getElementById("category").value
+  .toLowerCase()
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "");
 
+const isSpecial =
+  key.includes("masters") ||
+  key.includes("zabkowiczanin") ||
+  key.includes("zabkowiczanka");
+
+// 🚫 blokada headera dla innych bojów
+if (isSpecial && !isTiebreak(konk)) {
+  head.innerHTML = "";
+  return;
+}
   if (isTiebreak(konk)) {
     head.innerHTML = `
       <th>Zawodnik</th>
