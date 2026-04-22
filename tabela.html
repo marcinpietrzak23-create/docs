@@ -222,7 +222,7 @@ COMP_ORDER.forEach(c=>{
   
 const punktyMap = {};
 
-[...baseRows, ...extraRows].forEach(r=>{
+[...extraRows, ...baseRows].forEach(r=>{
   const key = norm(r.ZAWODNIK)+"|"+norm(r.KONKURENCJA);
 
   punktyMap[key] = {
@@ -528,7 +528,6 @@ list.forEach((a,i)=>{
   html+=`
     <td>${a.wynik}</td>
     <td>${fmt(a.punkty)}</td>
-    <td>${place}</td>`;
 
 }
       else{
