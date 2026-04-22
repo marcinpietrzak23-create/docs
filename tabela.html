@@ -94,6 +94,8 @@ const CATEGORY_KEY = decodeURIComponent(params.get("arkusz") || "");
 /* ================= HELPERS ================= */
 function norm(s){
   return String(s||"")
+    .normalize("NFD")                // rozbija ą → a + ogonek
+    .replace(/[\u0300-\u036f]/g,"") // usuwa ogonki
     .replace(/\u00A0/g," ")
     .trim()
     .replace(/\s+/g," ")
