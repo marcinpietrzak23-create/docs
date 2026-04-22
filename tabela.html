@@ -246,11 +246,20 @@ const filteredBoje = (bojeRows || [])
       katDod.includes(key);
 
     // 👉 dodatkowy filtr tylko dla Masters
-    if (key.includes("masters")) {
-      return matchCategory && mastersComps.includes(comp);
-    }
+    const special3BojeKeys = [
+  "masters",
+  "zabkowiczanin",
+  "zabkowiczanka"
+];
 
-    return matchCategory;
+const is3BojeCategory = special3BojeKeys.some(k => key.includes(k));
+
+// 👉 filtr dla kategorii 3-bojowych
+if (is3BojeCategory) {
+  return matchCategory && mastersComps.includes(comp);
+}
+
+return matchCategory;
   });
 console.log("CATEGORY_KEY:", CATEGORY_KEY);
 
@@ -280,8 +289,15 @@ const startMap = new Set(
 
 const key = norm(CATEGORY_KEY);
 
-// 👉 tylko dla Masters
-if (key.includes("masters")) {
+const special3BojeKeys = [
+  "masters",
+  "zabkowiczanin",
+  "zabkowiczanka"
+];
+
+const is3BojeCategory = special3BojeKeys.some(k => key.includes(k));
+
+if (is3BojeCategory) {
 
   compsInCategory = ["SNUB3'","2KBSQ1RM","TGU1RM"];
 
@@ -306,9 +322,9 @@ if (key.includes("masters")) {
 rows.forEach(r => {
 
   // 👉 tylko dla Masters filtrujemy konkurencje
-  if (key.includes("masters") && !compsInCategory.includes(r.KONKURENCJA)) {
-    return;
-  }
+  if (is3BojeCategory && !compsInCategory.includes(r.KONKURENCJA)) {
+  return;
+}
 
   if (!byAth[r.ZAWODNIK]) {
     byAth[r.ZAWODNIK] = {
