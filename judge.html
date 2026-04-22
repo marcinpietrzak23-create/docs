@@ -259,10 +259,12 @@ if (isSpecial && !isTiebreak(konk)) {
 document.addEventListener("DOMContentLoaded", init);
 function updateCompetitions(kategoria) {
 
-  const comps = competitionsMap[kategoria] || [];
   const select = document.getElementById("competition");
 
-  const key = kategoria.toLowerCase();
+  const key = kategoria
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
 
   const isSpecial =
     key.includes("masters") ||
@@ -271,14 +273,19 @@ function updateCompetitions(kategoria) {
 
   select.innerHTML = "";
 
-  let filtered = comps;
-
-  // 👉 dla specjalnych kategorii zostaw tylko TIEBREAK
+  // 🔥 jeśli specjalna → tylko TIEBREAK
   if (isSpecial) {
-    filtered = comps.filter(c => c.toUpperCase().includes("TIEBREAK"));
+    const opt = document.createElement("option");
+    opt.value = "TIEBREAK";
+    opt.textContent = "TIEBREAK";
+    select.appendChild(opt);
+    return;
   }
 
-  filtered.forEach(c => {
+  // 🔥 normalne kategorie
+  const comps = competitionsMap[kategoria] || [];
+
+  comps.forEach(c => {
     const opt = document.createElement("option");
     opt.value = c;
     opt.textContent = c;
