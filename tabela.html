@@ -447,8 +447,8 @@ box.insertAdjacentHTML("beforeend",`<h2>🏋️ ${fullName}</h2>`);
       <th>Waga</th>`;
 
     if(cleanComp(comp).includes("SN")){
-      html+=`<th>Odważnik</th><th>Powt.</th><th>Wynik</th><th>Punkty</th>`;
-    } 
+  html+=`<th>Odważnik</th><th>Powt.</th><th>Total</th><th>Wynik</th><th>Punkty</th>`;
+}
     else if(/TIEBREAK/i.test(comp)){
       html+=`<th>Wynik</th><th>Punkty</th>`;
     } 
@@ -477,11 +477,11 @@ list.forEach((a,i)=>{
       if(cleanComp(comp).includes("SN")){
 
         html+=`
-          <td>${a.odciezar}</td>
-          <td>${a.powtorzenia}</td>
-          <td>${a.wynik}</td>
-          <td>${a.wynikFinal != null ? Number(a.wynikFinal).toFixed(2) : "-"}</td>
-          <td>${a.punkty}</td>`;
+  <td>${a.odciezar}</td>
+  <td>${a.powtorzenia}</td>
+  <td>${a.wynik}</td> <!-- TOTAL -->
+  <td>${a.wynikFinal != null ? Number(a.wynikFinal).toFixed(2) : "-"}</td> <!-- WYNIK -->
+  <td>${a.punkty}</td>`;
 
       }
       else if(/TIEBREAK/i.test(comp)){
