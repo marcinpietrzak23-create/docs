@@ -258,7 +258,14 @@ const is3BojeCategory = special3BojeKeys.some(k => key.includes(k));
 
 // 👉 filtr dla kategorii 3-bojowych
 if (is3BojeCategory) {
-  return matchCategory && mastersComps.includes(comp);
+  const c = cleanComp(comp);
+
+  return matchCategory && (
+    c.includes("SN") ||
+    c.includes("SQUAT") ||
+    c.includes("TGU") ||
+    c.includes("TIEBREAK")
+  );
 }
 
 return matchCategory;
