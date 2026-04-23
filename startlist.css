@@ -107,7 +107,7 @@ body.startlist-page .panel{
   color:#fff;
 }
 
-/* 🔥 DRUK */
+/*  DRUK */
 @media print {
 
   body{
@@ -116,7 +116,7 @@ body.startlist-page .panel{
   }
 
   .ceremony-block{
-    /* 🔥 NIE rozdzielaj kategorii na strony */
+    /*  NIE rozdzielaj kategorii na strony */
     page-break-inside: avoid;
 
     /* wygląd do druku */
