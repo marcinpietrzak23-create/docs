@@ -1806,67 +1806,55 @@ bestOrder.forEach(item => {
 
   // ===== TGU =====
   if(item.type === "TGU"){
-
     html += `<h4>${item.gender==="K"?"Kobiety":"Mężczyźni"} - TGU</h4>`;
-
     (best.TGU[item.gender]||[]).forEach((r,i)=>{
-  html += `<div>${i+1}. ${r.zawodnik} (${r.wynik}${item.type==="TGU" ? " kg" : ""})</div>`;
-});
-
+      html += `<div>${i+1}. ${r.zawodnik} (${r.wynik} kg)</div>`;
+    });
     return;
   }
 
-  // ===== JUNIOR / PRO =====
+  // ===== SNATCH =====
   if(item.type === "SNATCH"){
-
     const genderLabel = item.gender==="K" ? "Kobiety" : "Mężczyźni";
-
     html += `<h4>SNATCH ${item.level} - ${genderLabel}</h4>`;
-
     (best.SNATCH[item.level][item.gender]||[]).forEach((r,i)=>{
-      html += `<div>${i+1}. ${r.zawodnik} (${r.wynik}${item.type==="TGU" ? " kg" : ""})</div>`;
+      html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
+    });
+    return;
+  }
+
+  // ===== AMATOR =====
+  if(item.type === "AMATOR"){
+    const key = Object.keys(best.SNATCH.Amator || {}).find(k => {
+      const up = k.toUpperCase();
+      if(item.cat === "K 65") return up.includes("K") && up.includes("65") && !up.includes("+");
+      if(item.cat === "K +65") return up.includes("K") && up.includes("+65");
+      if(item.cat === "M 85") return up.includes("M") && up.includes("85") && !up.includes("+");
+      if(item.cat === "M +85") return up.includes("M") && up.includes("+85");
+      return false;
+    });
+
+    if(!key) return;
+
+    html += `<h4>${key}</h4>`;
+    (best.SNATCH.Amator[key]||[]).forEach((r,i)=>{
+      html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
     });
 
     return;
   }
 
-  // ===== AMATOR =====
+  // ===== PRO =====
+  if(item.type === "PRO"){
+    const gender = item.cat.includes("K") ? "K" : "M";
+    const label = gender === "K" ? "Kobiety PRO" : "Mężczyźni PRO";
 
-  if(item.type === "AMATOR"){
+    html += `<h4>${label}</h4>`;
+    (best.SNATCH.Pro[gender]||[]).forEach((r,i)=>{
+      html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
+    });
 
-  const key = Object.keys(best.SNATCH.Amator || {}).find(k => {
-
-    const up = k.toUpperCase();
-
-    if(item.cat === "K 65") return up.includes("K") && up.includes("65") && !up.includes("+");
-    if(item.cat === "K +65") return up.includes("K") && up.includes("+65");
-    if(item.cat === "M 85") return up.includes("M") && up.includes("85") && !up.includes("+");
-    if(item.cat === "M +85") return up.includes("M") && up.includes("+85");
-
-    return false;
-  });
-
-  if(!key) return;
-
-  html += `<h4>${key}</h4>`;
-
-  (best.SNATCH.Amator[key]||[]).forEach((r,i)=>{
-    html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
-  });
-
-}
-if(item.type === "PRO"){
-
-  const gender = item.cat.includes("K") ? "K" : "M";
-  const label = gender === "K" ? "Kobiety PRO" : "Mężczyźni PRO";
-
-  html += `<h4>${label}</h4>`;
-
-  (best.SNATCH.Pro[gender]||[]).forEach((r,i)=>{
-    html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
-  });
-
-}
+    return;
   }
 
 });
