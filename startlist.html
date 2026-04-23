@@ -1728,7 +1728,24 @@ byCategory[cat].forEach(r => {
 
 // 🔥 LICZENIE SUMY (jak w table)
 Object.values(athletes).forEach(a => {
-  a.sum = Object.values(a.pts).reduce((s,v)=>s+v,0);
+
+  const c = cat.toUpperCase();
+
+  const EXCLUDE_PRESS =
+    c.includes("ZĄBKOWICZ") ||
+    c.includes("MASTERS");
+
+  let comps = Object.keys(a.pts);
+
+  if(EXCLUDE_PRESS){
+    const PRESS_COMPS = ["1KBPR1RM", "2KBPR1RM"];
+    comps = comps.filter(comp => !PRESS_COMPS.includes(comp));
+  }
+
+  a.sum = comps.reduce((sum,comp)=>{
+    return sum + (a.pts[comp] || 0);
+  },0);
+
 });
 
     const list = Object.values(athletes)
