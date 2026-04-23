@@ -1411,17 +1411,15 @@ Object.values(snatchMap).forEach(r=>{
 
   }else{
 
-  if(r.level === "Pro"){
+ if(r.level === "Pro"){
 
-    const cat = (r.kategoria || "UNKNOWN").replace(/^k:/i,"");
+  if(!out.SNATCH.Pro[r.gender]){
+    out.SNATCH.Pro[r.gender] = [];
+  }
 
-    if(!out.SNATCH.Pro[cat]){
-      out.SNATCH.Pro[cat] = [];
-    }
+  out.SNATCH.Pro[r.gender].push(r);
 
-    out.SNATCH.Pro[cat].push(r);
-
-  }else{
+}else{
     out.SNATCH[r.level][r.gender].push(r);
   }
 
@@ -1443,14 +1441,16 @@ Object.keys(out.SNATCH.Amator).forEach(cat => {
 
 });
     // ===== SORT PRO =====
-Object.keys(out.SNATCH.Pro).forEach(cat => {
+["K","M"].forEach(g=>{
 
-  out.SNATCH.Pro[cat].sort((a,b)=>{
+  const list = out.SNATCH.Pro[g] || [];
+
+  list.sort((a,b)=>{
     if(b.wynik !== a.wynik) return b.wynik - a.wynik;
     return a.waga - b.waga;
   });
 
-  out.SNATCH.Pro[cat] = out.SNATCH.Pro[cat].slice(0,3);
+  out.SNATCH.Pro[g] = list.slice(0,3);
 
 });
 
@@ -1793,10 +1793,8 @@ const bestOrder = [
 
   
   // 7–10 PRO
-{type:"PRO", cat:"K 65"},
-{type:"PRO", cat:"K +65"},
-{type:"PRO", cat:"M 85"},
-{type:"PRO", cat:"M +85"},
+{type:"PRO", cat:"K"},
+{type:"PRO", cat:"M"},
 
   // 11–12 TGU
   {type:"TGU", gender:"K"},
@@ -1859,17 +1857,16 @@ bestOrder.forEach(item => {
 }
 if(item.type === "PRO"){
 
-  const key = Object.keys(best.SNATCH.Pro || {}).find(k => {
+  const gender = item.cat.includes("K") ? "K" : "M";
+  const label = gender === "K" ? "Kobiety PRO" : "Mężczyźni PRO";
 
-    const up = k.toUpperCase();
+  html += `<h4>${label}</h4>`;
 
-    if(item.cat === "K 65") return up.includes("K") && up.includes("65") && !up.includes("+");
-    if(item.cat === "K +65") return up.includes("K") && up.includes("+65");
-    if(item.cat === "M 85") return up.includes("M") && up.includes("85") && !up.includes("+");
-    if(item.cat === "M +85") return up.includes("M") && up.includes("+85");
-
-    return false;
+  (best.SNATCH.Pro[gender]||[]).forEach((r,i)=>{
+    html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
   });
+
+}
 
   if(!key) return;
 
