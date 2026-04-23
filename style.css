@@ -378,7 +378,6 @@ th {
 
 /* =========================================================
    ====== NOWE STYLE – TYLKO NADPISANIA (TABLE PAGE) ======
-   NIC POWYŻEJ NIE ZOSTAŁO USUNIĘTE
 ========================================================= */
 
 /* Panel tabeli – granat zamiast białego */
@@ -419,7 +418,7 @@ th {
   color: #f1f5f9;
 }
 /* =========================
-   TABLE PAGE – NADPISANIA MINIMALNE
+   TABLE PAGE 
 ========================= */
 
 /* panel tabeli */
@@ -462,7 +461,6 @@ th {
 }
 /* =========================================================
    ====== INDEX PAGE – KATEGORIE (KOSMETYKA) ======
-   Nadpisania tylko dla strony głównej
 ========================================================= */
 
 /* Sekcje kategorii */
@@ -716,7 +714,7 @@ table thead th {
 
   .table-page .table-panel {
     overflow-x: auto;
-    overflow-y: visible; /* 👈 KLUCZOWE */
+    overflow-y: visible; 
   }
 
   .table-page table {
@@ -736,7 +734,7 @@ table thead th {
 /* ===== STICKY HEADER FINAL FIX (OSTATECZNY) ===== */
 
 .table-page table {
-  border-collapse: separate; /* 🔴 TO JEST KLUCZ */
+  border-collapse: separate; 
 }
 
 .table-page table thead th {
