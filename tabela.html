@@ -247,7 +247,7 @@ const filteredBoje = (bojeRows || [])
       kat.includes(key) ||
       katDod.includes(key);
 
-    // 👉 dodatkowy filtr tylko dla Masters
+   
     const special3BojeKeys = [
   "masters",
   "zabkowiczanin",
@@ -256,7 +256,7 @@ const filteredBoje = (bojeRows || [])
 
 const is3BojeCategory = special3BojeKeys.some(k => key.includes(k));
 
-// 👉 filtr dla kategorii 3-bojowych
+
 if (is3BojeCategory) {
   const c = cleanComp(comp);
 
@@ -330,7 +330,7 @@ if (is3BojeCategory) {
 
 rows.forEach(r => {
 
-  // 👉 tylko dla Masters filtrujemy konkurencje
+ 
   if (is3BojeCategory && !compsInCategory.includes(r.KONKURENCJA)) {
   return;
 }
@@ -365,9 +365,9 @@ Object.values(byAth).forEach(a => {
 
     if (a.pts[c] == null) {
       if (isTiebreak) {
-        a.pts[c] = 0; // 👈 NIE doliczamy karnego miejsca
+        a.pts[c] = 0; 
       } else {
-        a.pts[c] = athletesCount; // 👈 normalnie ostatnie miejsce
+        a.pts[c] = athletesCount; 
       }
     }
 
