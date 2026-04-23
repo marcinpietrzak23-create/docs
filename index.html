@@ -53,9 +53,9 @@
     </div>
     <div class="header-links">
       <a id="liveLink" href="#" target="_blank" style="display:none">🔴 LIVE</a>
-      <a href="startlist.html">Judge</a>
       <a href="final.html">Lista zawodników</a>
       <a href="live.html" style="color:#fff;">📺 Tablica startowa</a>
+      <a id="regulaminLink" href="#" target="_blank" style="display:none">📄 Regulamin</a>
       <a href="kontakt.html">Kontakt</a>
     </div>
   </div>
@@ -166,11 +166,19 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWT
 fetch(`${API_URL}?settings=1`)
   .then(r => r.json())
   .then(res => {
-    const btn = document.getElementById("liveLink");
+    // LIVE
+    const liveBtn = document.getElementById("liveLink");
     if (res?.settings?.live_url) {
-      btn.href = res.settings.live_url;
-      btn.textContent = res.settings.live_text || "🔴 LIVE";
-      btn.style.display = "inline-block";
+      liveBtn.href = res.settings.live_url;
+      liveBtn.textContent = res.settings.live_text || "🔴 LIVE";
+      liveBtn.style.display = "inline-block";
+    }
+
+    // REGULAMIN
+    const regBtn = document.getElementById("regulaminLink");
+    if (res?.settings?.regulamin) {
+      regBtn.href = res.settings.regulamin;
+      regBtn.style.display = "inline-block";
     }
   })
   .catch(()=>{});
@@ -208,7 +216,7 @@ if ("serviceWorker" in navigator) {
   }
 });
 </script>
-
+<a href="startlist.html" class="judge-floating">Judge</a>
 </body>
 </html>
 
