@@ -174,7 +174,7 @@ async function loginJudge(){
   const btn = document.querySelector("#loginBox button");
   const spinner = document.getElementById("loginSpinner");
 
-  // 🔥 START LOADING
+  
   btn.disabled = true;
   btn.innerText = "Logowanie...";
   spinner.style.display = "block";
@@ -204,7 +204,7 @@ async function loginJudge(){
 
   }finally{
 
-    // 🔥 STOP LOADING
+    
     btn.disabled = false;
     btn.innerText = "Zaloguj";
     spinner.style.display = "none";
@@ -227,7 +227,7 @@ const res = await fetch(
 
  const data = await res.json();
   console.log("STARTLIST DATA:", data);
-// 🔥 POBIERAMY BOJE (POPRAWNY ENDPOINT)
+
 const res2 = await fetch(
   API_BASE + "?api=boje&token=" + TOKEN
 );
@@ -326,10 +326,10 @@ checkbox.value = cat;
 checkbox.className = "catCheck";
 checkbox.style.transform = "scale(1.2)";
 
-// 🔥 blokuje klik wrappera
+
 checkbox.onclick = (e) => e.stopPropagation();
 
-// 🔥 NOWE – od razu odświeża tabelę
+
 checkbox.onchange = () => renderSelectedCategories();
     // kliknięcie w nazwę kategorii nadal pokazuje tabelę
     wrapper.onclick = () => renderSelectedCategories();
@@ -348,7 +348,7 @@ checkbox.onchange = () => renderSelectedCategories();
   btn.style.marginLeft = "10px";
 
   tabs.appendChild(btn);
-  // 🔥 BEST BUTTON
+ 
 const bestBtn = document.createElement("button");
 bestBtn.textContent = "🎤 CEREMONIA";
 bestBtn.onclick = renderCeremony;
@@ -491,7 +491,7 @@ function renderStations(data){
 
   const extraJunior = (a.kategoria_dodatkowa || "")
   .split(",")
-  .map(x => x.trim().replace(/^k:/i, "")) // 🔥 KLUCZ
+  .map(x => x.trim().replace(/^k:/i, "")) 
   .find(x => x.toLowerCase().includes("junior"));
 
   const categoryText = extraJunior
@@ -609,7 +609,7 @@ async function saveWeight(zawodnik,i){
 
   const btn = event.target;
 
-  // 🔥 blokada wielokrotnego kliknięcia
+  
   if(btn.dataset.loading === "1") return;
   btn.dataset.loading = "1";
 
@@ -619,13 +619,13 @@ async function saveWeight(zawodnik,i){
   const waga = input.value;
   const currentWeight = input.getAttribute("data-current") || "";
 
-  // 🔥 sprawdź czy są wyniki
+  
   const hasResults = (window.RESULTS_RAW || []).some(r =>
     r.zawodnik === zawodnik &&
     Number(r.wynik) > 0
   );
 
-  // 🔴 BLOKADA
+  
   if(currentWeight !== "" && hasResults){
     alert("❌ Zawodnik ma już wyniki — zmiana wagi tylko w arkuszu");
     btn.dataset.loading = "0";
@@ -633,7 +633,7 @@ async function saveWeight(zawodnik,i){
     return;
   }
 
-  // 🟡 OSTRZEŻENIE
+ 
   if(currentWeight === "" && hasResults){
     const confirmed = confirm(
       "⚠️ Są już wyniki dla tego zawodnika.\nCzy na pewno chcesz dodać wagę?"
@@ -645,7 +645,7 @@ async function saveWeight(zawodnik,i){
     }
   }
 
-  // 🟢 NADPISANIE
+  
   if(currentWeight !== "" && !hasResults){
     const confirmed = confirm(
       `UWAGA!\nZawodnik ma już wagę: ${currentWeight} kg.\nNadpisujesz na: ${waga} kg\n\nCzy na pewno?`
@@ -675,7 +675,7 @@ async function saveWeight(zawodnik,i){
 
   if(data.ok){
 
-    // ✅ UI
+    
     btn.innerText="✔ Zapisano";
     btn.style.background="#4CAF50";
     btn.style.color="white";
@@ -685,7 +685,7 @@ async function saveWeight(zawodnik,i){
     input.value = waga;
     input.setAttribute("data-current", waga);
 
-    // 🔥 🔥 🔥 KLUCZOWE — AKTUALIZACJA grouped
+    
     Object.keys(grouped).forEach(cat => {
       grouped[cat].forEach(a => {
         if (a.zawodnik === zawodnik) {
@@ -911,7 +911,7 @@ function mixCategories(selectedCats){
 
   const rounds = Math.ceil(n / stations);
 
-  // 🔥 NOWY WARUNEK (KLUCZOWY)
+  
   if (rounds <= 2) {
     return splitGroup(athletes, stations);
   }
@@ -1086,7 +1086,7 @@ if(compRaw === "group"){
   }
 
   // ======================
-  // KARTY STARTOWE 🔥
+  // KARTY STARTOWE 
   // ======================
   else{
 
@@ -1229,7 +1229,7 @@ else{
 
   const extraJunior = (a.kategoria_dodatkowa || "")
   .split(",")
-  .map(x => x.trim().replace(/^k:/i, "")) // 🔥 KLUCZ
+  .map(x => x.trim().replace(/^k:/i, "")) 
   .find(x => x.toLowerCase().includes("junior"));
 
   const categoryText = extraJunior
@@ -1302,7 +1302,7 @@ if(!Array.isArray(results)){
     TGU: { M: [], K: [] },
     SNATCH: {
   Junior: { M:[], K:[] },
-  Amator: {}, // 🔥 dynamiczne kategorie
+  Amator: {}, 
   Pro: {}
 }
   };
@@ -1376,7 +1376,7 @@ if(!Array.isArray(results)){
     klub: r.klub,
     gender,
     level,
-    kategoria: kat // 🔥 KLUCZOWE
+    kategoria: kat 
   };
 }
     }
@@ -1569,7 +1569,7 @@ Object.keys(out.SNATCH.Amator).forEach(cat => {
 const payload = {
   category: categories.join(", "),
   startTime: startTime,
-  competitionType: competitionType, // 🔥 NOWE
+  competitionType: competitionType, 
     stations: CURRENT_STATIONS.map((station, i) => {
 
       const judge = document.querySelectorAll(".judgeSelect")[i]?.value || "";
@@ -1599,7 +1599,7 @@ const payload = {
   async function renderCeremony(){
 const CEREMONY_ORDER_MAP = {
 
-  // 🔥 SNATCH TOTAL
+  
   "SN JUNIOR DZ": 1,
   "SN JUNIOR CH": 2,
 
@@ -1613,19 +1613,19 @@ const CEREMONY_ORDER_MAP = {
   "SN PRO M 85": 9,
   "SN PRO M +85": 10,
 
-  // 🔥 BEST TGU
+  
   "BEST TGU K": 11,
   "BEST TGU M": 12,
 
-  // 🔥 NAGRODY SPECJALNE
+ 
   "NAJLEPSZA ZĄBKOWICZANKA": 13,
   "NAJLEPSZY ZĄBKOWICZANIN": 14,
 
-  // 🔥 MASTER
+  
   "MASTERS K": 15,
   "MASTERS M": 16,
 
-  // 🔥 NORMALNE KATEGORIE
+  
   "JUNIOR DZ": 17,
   "JUNIOR CH": 18,
 
@@ -1649,26 +1649,26 @@ const boje = await fetch(API_BASE + "?api=boje&token=" + TOKEN).then(r=>r.json()
 
   const rows = [];
 
-// 🔥 PODSTAWOWE
+//  PODSTAWOWE
 (view.data||[]).forEach(r=>{
   if(r.KATEGORIA_PODSTAWOWA){
     rows.push(r);
   }
 });
 
-// 🔥 DODATKOWE (Junior, Masters itd.)
+//  DODATKOWE (Junior, Masters itd.)
 (extra.data||[]).forEach(r=>{
   if(r.KATEGORIA_DODATKOWA){
     rows.push(r);
   }
 });
 
-  // 🔥 grupowanie po nazwie kategorii (TAKIEJ JAK NA STRONIE)
+  //  grupowanie po nazwie kategorii (TAKIEJ JAK NA STRONIE)
   const byCategory = {};
 
   rows.forEach(r=>{
 
-  // 🔥 podstawowa kategoria
+  //  podstawowa kategoria
   const baseCat = r.KATEGORIA || r.KATEGORIA_PODSTAWOWA;
 
   if(baseCat){
@@ -1676,7 +1676,7 @@ const boje = await fetch(API_BASE + "?api=boje&token=" + TOKEN).then(r=>r.json()
     byCategory[baseCat].push(r);
   }
 
-  // 🔥 dodatkowe (mogą być 2+!)
+  //  dodatkowe (mogą być 2+!)
   if(r.KATEGORIA_DODATKOWA){
 
     const extraCats = String(r.KATEGORIA_DODATKOWA)
@@ -1726,7 +1726,7 @@ byCategory[cat].forEach(r => {
     Number(r.PKT) || 0;
 });
 
-// 🔥 LICZENIE SUMY (jak w table)
+//  LICZENIE SUMY (jak w table)
 Object.values(athletes).forEach(a => {
 
   const c = cat.toUpperCase();
@@ -1769,7 +1769,7 @@ html += `<div style="page-break-before: always;"></div>`;
 html += `<div class="ceremony-block">`;
 html += `<h3>🏆 BEST</h3>`;
 
-// ===== BEST W TWOJEJ KOLEJNOŚCI 🔥 =====
+// ===== BEST =====
 
 const best = window.BEST;
 
@@ -1777,7 +1777,7 @@ if(!best){
   html += `<div style="color:#aaa;">Brak wyników</div>`;
   html += `</div>`;
   document.getElementById("content").innerHTML = html;
-  return; // 🔥 KLUCZ
+  return; 
 }
 const bestOrder = [
 
@@ -1859,15 +1859,15 @@ bestOrder.forEach(item => {
 
 });
 
-// 🔥 ZAMKNIĘCIE BLOKU (RAZ!)
+
 html += `</div>`;
 
-// 🔥 RENDER (RAZ!)
+
 document.getElementById("content").innerHTML = html;
   }
   async function printCeremony(){
 
-  // 🔥 jeśli nie ma ceremonii → generuj ją
+  
   if(!document.querySelector(".ceremony-block")){
     await renderCeremony();
   }
@@ -1891,7 +1891,7 @@ document.getElementById("content").innerHTML = html;
   }
 
   .ceremony-block{
-    page-break-inside: avoid; /* 🔥 NIE rozdziela */
+    page-break-inside: avoid; 
     margin-bottom:30px;
   }
 </style>
