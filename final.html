@@ -21,32 +21,48 @@ input {
   width:250px;
 }
 
+/* ===== TABLE DARK IMPROVED ===== */
+
 table {
   width:100%;
   border-collapse:collapse;
-  background:#ffffff;
-  color:#000;
-  border-radius:8px;
+  background:#0b1220;
+  color:#f1f5f9;
+  border-radius:10px;
   overflow:hidden;
+  border:1px solid rgba(239,68,68,0.25);
 }
 
 th {
-  background:#102a43;
+  background: linear-gradient(90deg,#1e293b,#0f172a);
   color:#fff;
-  padding:10px;
+  padding:12px;
+  border-bottom:2px solid #ef4444;
 }
 
+/* 🔥 pionowe linie */
+td, th{
+  border-right:1px solid rgba(239,68,68,0.15);
+}
+
+td:last-child, th:last-child{
+  border-right:none;
+}
+
+/* 🔥 lepszy kontrast */
 td {
-  padding:8px;
-  border-bottom:1px solid #ddd;
+  padding:10px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
 }
 
+/* 🔥 zebra */
 tr:nth-child(even){
-  background:#f3f4f6;
+  background:#111827;
 }
 
+/* 🔥 hover */
 tr:hover{
-  background:#e2e8f0;
+  background:rgba(239,68,68,0.15);
 }
 #count{
   text-align:center;
