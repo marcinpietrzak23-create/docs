@@ -1865,25 +1865,101 @@ html += `</div>`;
 
 document.getElementById("content").innerHTML = html;
   }
-  function addSignatureProtocol(html){
+ function generateCeremonyProtocol(){
 
-  return html.replace(
-    /(\d+)\.\s([^<(]+)/g,
-    (match, place, name) => {
+  const best = window.BEST;
 
-      return `
-        <div style="display:flex; justify-content:space-between; margin:10px 0;">
-          <div style="width:60%; font-size:16px;">
-            ${place}. ${name.trim()}
-          </div>
-          <div style="width:35%; border-bottom:1px solid black;">
-            &nbsp;
-          </div>
-        </div>
-      `;
+  let rows = [];
+  let lp = 1;
+
+  // ===== SNATCH =====
+  ["Junior","Amator","Pro"].forEach(level=>{
+
+    // JUNIOR
+    if(level === "Junior"){
+      ["K","M"].forEach(g=>{
+        const list = (best.SNATCH[level][g]||[]);
+        list.forEach(r=>{
+          rows.push({
+            lp: lp++,
+            prize: `BEST SNATCH ${level} ${g==="K"?"K":"M"}`,
+            name: r.zawodnik
+          });
+        });
+      });
     }
-  );
 
+    // AMATOR
+    if(level === "Amator"){
+      Object.keys(best.SNATCH.Amator||{}).forEach(cat=>{
+        (best.SNATCH.Amator[cat]||[]).forEach(r=>{
+          rows.push({
+            lp: lp++,
+            prize: `BEST SNATCH ${cat}`,
+            name: r.zawodnik
+          });
+        });
+      });
+    }
+
+    // PRO
+    if(level === "Pro"){
+      ["K","M"].forEach(g=>{
+        (best.SNATCH.Pro[g]||[]).forEach(r=>{
+          rows.push({
+            lp: lp++,
+            prize: `BEST SNATCH PRO ${g==="K"?"K":"M"}`,
+            name: r.zawodnik
+          });
+        });
+      });
+    }
+
+  });
+
+  // ===== TGU =====
+  ["K","M"].forEach(g=>{
+    (best.TGU[g]||[]).forEach(r=>{
+      rows.push({
+        lp: lp++,
+        prize: `BEST TGU ${g==="K"?"K":"M"}`,
+        name: r.zawodnik
+      });
+    });
+  });
+
+  // ===== HTML =====
+  let html = `
+    <h2 style="text-align:center;">PROTOKÓŁ ODBIORU NAGRÓD</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>L.p.</th>
+          <th>Nazwa nagrody</th>
+          <th>Wartość brutto</th>
+          <th>Imię i nazwisko</th>
+          <th>Pokwitowanie odbioru</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  rows.forEach(r=>{
+    html += `
+      <tr>
+        <td>${r.lp}</td>
+        <td>${r.prize}</td>
+        <td></td>
+        <td>${r.name}</td>
+        <td style="height:50px;"></td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+
+  return html;
 }
   async function printCeremony(){
 
@@ -1892,7 +1968,7 @@ document.getElementById("content").innerHTML = html;
     await renderCeremony();
   }
 
-  const content = document.getElementById("content").innerHTML;
+  const content = generateCeremonyProtocol();
 
   const win = window.open("", "_blank");
 
@@ -1914,10 +1990,29 @@ document.getElementById("content").innerHTML = html;
     page-break-inside: avoid; 
     margin-bottom:30px;
   }
+  table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top:20px;
+}
+
+th, td {
+  border: 1px solid black;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background: #eee;
+}
+
+td:last-child {
+  height: 60px;
+}
 </style>
     </head>
     <body>
-      ${addSignatureProtocol(content)}
+      ${content}
     </body>
     </html>
   `);
