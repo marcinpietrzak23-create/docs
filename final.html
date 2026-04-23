@@ -238,9 +238,9 @@ function render(arr){
         <td>${r.klub||""}</td>
 
         <td>
-          ${(r.kategorie || [])
-            .map(k => k.replace(/^K:/,""))
-            .join(" / ")}
+          (Array.isArray(r.kategorie) ? r.kategorie : [])
+  .map(k => (k || "").replace(/^K:/,""))
+  .join(" / ")
         </td>
 
         <td>
