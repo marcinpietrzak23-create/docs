@@ -54,7 +54,6 @@ tr:hover{
   font-size:18px;
   color:#38bdf8;
 }
-    /* ===== RED STYLE UPGRADE ===== */
 
 .topbar{
   background: linear-gradient(90deg,#b91c1c,#7f1d1d);
@@ -196,7 +195,7 @@ async function load(){
     zawodnik: name,
     klub: r.klub || "",
     kategoria: r.kategoria || "",
-    kategorie: r.kategorie || [],   // 🔥 TO DODAJESZ
+    kategorie: r.kategorie || [],   
     waga: r.waga || "",
     wazony: !!w
   };
@@ -204,19 +203,19 @@ async function load(){
 
     });
 
-    // 🔥 FINALNE DANE
+    
     DATA = Object.values(map);
 
     DATA.sort((a,b) =>
       a.zawodnik.localeCompare(b.zawodnik,"pl")
     );
 
-    // 🔥 ZAWSZE odśwież filtry
+   
     if (document.getElementById("clubFilter").options.length <= 1) {
   fillFilters();
 }
 
-    // 🔥 zastosuj aktualne filtry
+  
     applyFilters();
 
   }catch(e){
@@ -299,7 +298,7 @@ function fillFilters(){
       .filter(c => c !== "")
   )].sort();
 
-  console.log("CLUBS:", clubs); // 🔥 DEBUG
+  console.log("CLUBS:", clubs); 
 
   const clubSel = document.getElementById("clubFilter");
   const catSel = document.getElementById("categoryFilter");
