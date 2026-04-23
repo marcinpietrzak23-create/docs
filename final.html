@@ -236,7 +236,9 @@ function render(arr){
         <td>${i+1}</td>
         <td>${r.zawodnik}</td>
         <td>${r.klub||""}</td>
-        <td>${(r.kategoria || "").replace(/^K:/,"")}</td>
+        <td>${(r.kategorie || [])
+  .map(k => k.replace(/^K:/,""))
+  .join(" / ")}}</td>
         <td>
   ${r.wazony 
     ? r.waga 
