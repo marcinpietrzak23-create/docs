@@ -122,9 +122,9 @@ async function init() {
     return;
   }
 
-  // ✅ TO DODAJ
+  
   const select = document.getElementById("category");
-// 🔥 WYPEŁNIENIE DROPDOWNA KATEGORII
+
 select.innerHTML = "";
 
 Object.keys(competitionsMap).forEach(k => {
@@ -133,7 +133,7 @@ Object.keys(competitionsMap).forEach(k => {
   opt.textContent = k.replace(/^K:/, "");
   select.appendChild(opt);
 });
-  // 🔥 I DOPIERO TERAZ używaj select
+  
   updateCompetitions(select.value);
 
   const firstComp = document.getElementById("competition").value;
@@ -176,7 +176,7 @@ const isSpecial =
   key.includes("zabkowiczanin") ||
   key.includes("zabkowiczanka");
 
-// 🚫 blokada wszystkiego poza TIEBREAK
+
 if (isSpecial && !isTiebreak(konk)) {
   body.innerHTML = `
     <tr>
@@ -273,7 +273,7 @@ function updateCompetitions(kategoria) {
 
   select.innerHTML = "";
 
-  // 🔥 jeśli specjalna → tylko TIEBREAK
+ 
   if (isSpecial) {
     const opt = document.createElement("option");
     opt.value = "TIEBREAK";
@@ -282,7 +282,7 @@ function updateCompetitions(kategoria) {
     return;
   }
 
-  // 🔥 normalne kategorie
+ 
   const comps = competitionsMap[kategoria] || [];
 
   comps.forEach(c => {
@@ -451,7 +451,7 @@ if (check.overwrite) {
 
   try {
 
-  // ✅ WALIDACJA (wszystkich naraz)
+  
   for (const r of rowsToSave) {
     if (!r.zawodnik || r.zawodnik.trim() === "") {
       alert("❌ Brak nazwiska zawodnika!");
@@ -461,7 +461,7 @@ if (check.overwrite) {
     }
   }
 
-  // ✅ JEDEN PAYLOAD Z WSZYSTKIMI
+  
   const payload = {
     api: "saveResults",
     token: TOKEN,
@@ -478,7 +478,7 @@ if (check.overwrite) {
     JSON.stringify(payload).length
   );
 
-  // ✅ JEDEN REQUEST
+  
   const res = await fetch(API, {
     method: "POST",
     body: JSON.stringify(payload)
@@ -503,7 +503,7 @@ if (check.overwrite) {
   return;
 }
 
-// ✅ końcówka (zostaje bez zmian)
+
 const brakWagi = athletes.some(a => !a.waga);
 
 if (brakWagi) {
