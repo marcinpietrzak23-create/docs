@@ -1366,7 +1366,7 @@ if(!Array.isArray(results)){
       const level = getLevel(kat);
       if(!level) return;
 
-      const key = keyBase + "|" + level;
+      const key = keyBase + "|" + level + "|" + (r.kategoria || "");
 
      if(!snatchMap[key] || wynik > snatchMap[key].wynik){
   snatchMap[key] = {
@@ -1437,7 +1437,7 @@ Object.keys(out.SNATCH.Amator).forEach(cat => {
   });
 
   out.SNATCH.Amator[cat] =
-    out.SNATCH.Amator[cat].slice(0,3);
+  out.SNATCH.Amator[cat].slice(0,1);
 
 });
     // ===== SORT PRO =====
@@ -1450,7 +1450,7 @@ Object.keys(out.SNATCH.Amator).forEach(cat => {
     return a.waga - b.waga;
   });
 
-  out.SNATCH.Pro[g] = list.slice(0,3);
+  out.SNATCH.Pro[g] = list.slice(0,1);
 
 });
 
@@ -1465,7 +1465,7 @@ Object.keys(out.SNATCH.Amator).forEach(cat => {
     });
 
     out.SNATCH[level][g] =
-      out.SNATCH[level][g].slice(0,3);
+  out.SNATCH[level][g].slice(0,1);
 
   });
 });
@@ -1758,7 +1758,7 @@ Object.values(athletes).forEach(a => {
     `;
 
     list.forEach((a,i)=>{
-      html += `<div>${i+1}. ${a.name} (${a.sum})</div>`;
+      html += `<div>🥇 ${a.name} (${a.sum})</div>`;
     });
 
     html += `</div>`;
@@ -1865,6 +1865,26 @@ html += `</div>`;
 
 document.getElementById("content").innerHTML = html;
   }
+  function addSignatureProtocol(html){
+
+  return html.replace(
+    /(\d+)\.\s([^<(]+)/g,
+    (match, place, name) => {
+
+      return `
+        <div style="display:flex; justify-content:space-between; margin:10px 0;">
+          <div style="width:60%; font-size:16px;">
+            ${place}. ${name.trim()}
+          </div>
+          <div style="width:35%; border-bottom:1px solid black;">
+            &nbsp;
+          </div>
+        </div>
+      `;
+    }
+  );
+
+}
   async function printCeremony(){
 
   
@@ -1897,7 +1917,7 @@ document.getElementById("content").innerHTML = html;
 </style>
     </head>
     <body>
-      ${content}
+      ${addSignatureProtocol(content)}
     </body>
     </html>
   `);
