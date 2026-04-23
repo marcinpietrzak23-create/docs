@@ -519,7 +519,7 @@ if (brakWagi) {
 } else {
   alert("Zapisano!");
 }
-
+await loadResultsRaw();
 btn.classList.remove("loading");
 btn.innerHTML = "ZAPISZ";
  }
@@ -559,7 +559,10 @@ btn.innerHTML = "ZAPISZ";
   function runValidation(){
 
   const results = window.RESULTS_RAW || [];
-
+if(!results.length){
+  alert("Brak danych do weryfikacji");
+  return;
+}
   let errors = [];
   let warnings = [];
   let ok = 0;
@@ -624,7 +627,9 @@ btn.innerHTML = "ZAPISZ";
   Object.keys(byComp).forEach(comp => {
 
     const vals = byComp[comp].filter(v => v > 0);
-    const avg = vals.reduce((a,b)=>a+b,0)/(vals.length||1);
+    if(vals.length === 0) return;
+
+const avg = vals.reduce((a,b)=>a+b,0)/vals.length;
 
     results.forEach(r=>{
       const v = Number(r.wynik);
