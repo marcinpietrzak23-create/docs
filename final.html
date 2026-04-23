@@ -127,9 +127,73 @@ table{
   background:#dc2626;
   transform:translateX(-2px);
 }
+    /* ===== LOADER ===== */
+
+#loader{
+  position:fixed;
+  inset:0;
+  background:rgba(2,6,23,0.95);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  z-index:9999;
+  font-size:18px;
+  color:#fff;
+}
+
+.spinner{
+  width:44px;
+  height:44px;
+  border:4px solid #1e293b;
+  border-top:4px solid #ef4444;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+  margin-bottom:14px;
+}
+
+@keyframes spin{
+  to{ transform:rotate(360deg); }
+}
+
+/* ===== DARK TABLE ===== */
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  background:#0b1220;
+  color:#e5e7eb;
+  border-radius:10px;
+  overflow:hidden;
+  border:1px solid rgba(239,68,68,0.25);
+}
+
+th {
+  background: linear-gradient(90deg,#1e293b,#0f172a);
+  color:#fff;
+  padding:12px;
+  border-bottom:2px solid #ef4444;
+}
+
+td {
+  padding:10px;
+  border-bottom:1px solid rgba(255,255,255,0.05);
+}
+
+tr:nth-child(even){
+  background:#0f172a;
+}
+
+tr:hover{
+  background:rgba(239,68,68,0.08);
+}
   </style>
 </head>
 <body>
+  <div id="loader">
+  <div class="spinner"></div>
+  <div>Ładowanie zawodników...</div>
+</div>
 <div class="topbar">
   Hardstyle Kettlebell European Championship
 </div>
@@ -160,12 +224,26 @@ table{
 </table>
 
 <script>
+  let firstLoad = true;
+
+function showLoader(){
+  if(firstLoad){
+    document.getElementById("loader").style.display = "flex";
+  }
+}
+
+function hideLoader(){
+  document.getElementById("loader").style.display = "none";
+  firstLoad = false;
+}
 
 const API_BASE = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWTVvIrqGtvoGX61z61QPilUpOXT6vImh1gg9z1IPQ18kvmhg/exec";
 
 let DATA = [];
 
 async function load(){
+
+  showLoader();
 
   try{
 
@@ -217,10 +295,11 @@ async function load(){
 
   
     applyFilters();
-
+hideLoader();
   }catch(e){
     console.error("❌ Błąd API:", e);
     alert("Błąd ładowania danych");
+    hideLoader();
   }
 }
 
