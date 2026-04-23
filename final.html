@@ -135,9 +135,9 @@ table{
   Hardstyle Kettlebell European Championship
 </div>
   <div class="back-btn" onclick="goHome()">⬅ Powrót do strony głównej</div>
-<h2>📋 Zważeni zawodnicy</h2>
+<h2>📋 Lista zawodników</h2>
 <p style="text-align:center;opacity:0.7;margin-top:-10px;">
-  Lista zawodników po ważeniu
+  Lista zawodników (status ważenia)
 </p><div id="count"></div>
 <input id="search" placeholder="Szukaj..." onkeyup="applyFilters()">
 <select id="clubFilter" onchange="applyFilters()">
@@ -190,19 +190,16 @@ async function load(){
       if(!name) return;
 
       const w = String(r.waga || "").trim();
-      if(!w) return;
-
-      const klub = String(r.klub || "").trim();
-      if(!klub) return;
 
       if(!map[name]){
-        map[name] = {
-          zawodnik: name,
-          klub: klub,
-          kategoria: r.kategoria || "",
-          waga: r.waga
-        };
-      }
+  map[name] = {
+    zawodnik: name,
+    klub: r.klub || "",
+    kategoria: r.kategoria || "",
+    waga: r.waga || "",
+    wazony: !!w
+  };
+}
 
     });
 
@@ -235,12 +232,16 @@ function render(arr){
   arr.forEach((r,i)=>{
 
     tbody.innerHTML += `
-      <tr>
+      <tr style="${!r.wazony ? 'opacity:0.6' : ''}">
         <td>${i+1}</td>
         <td>${r.zawodnik}</td>
         <td>${r.klub||""}</td>
         <td>${(r.kategoria || "").replace(/^K:/,"")}</td>
-        <td>${r.waga}</td>
+        <td>
+  ${r.wazony 
+    ? r.waga 
+    : '<span style="color:#ef4444;font-weight:600">brak</span>'}
+</td>
       </tr>
     `;
 
