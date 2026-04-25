@@ -414,33 +414,7 @@ if (!waga) {
     return;
   }
 
-  // 🔍 CHECK OVERWRITE
-  const checkRes = await fetch(API, {
-    method: "POST",
-    body: JSON.stringify({
-      api: "checkOverwrite",
-      token: TOKEN,
-      kategoria,
-      konkurencja,
-      rows
-    })
-  });
-
-  const check = await checkRes.json();
-
-  if (check.overwrite) {
-
-    const lista = (check.conflicts || []).join("\n");
-
-    const confirmOverwrite = confirm(
-      "Nadpiszesz wyniki dla:\n\n" + lista + "\n\nKontynuować?"
-    );
-
-    if (!confirmOverwrite) {
-      resetBtn();
-      return;
-    }
-  }
+ 
 
   try {
 
@@ -455,10 +429,10 @@ if (!waga) {
     }
 
     // 🚀 CHUNK SAVE (KLUCZ FIXA)
-    const CHUNK_SIZE = 10; // możesz zmienić na 15
+   
 
    const CHUNK_SIZE = 10;
-
+let overwriteAccepted = false;
 for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
 
   const chunk = rows.slice(i, i + CHUNK_SIZE);
@@ -473,7 +447,6 @@ for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
     body: JSON.stringify({
       api: "saveResults",
       token: TOKEN,
-      force: 1,
       kategoria,
       konkurencja,
       rows: chunk
@@ -481,6 +454,44 @@ for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
   });
 
   const json = await res.json();
+
+// 🔥 NOWE — backend wykrył overwrite
+if (json.overwrite) {
+
+  if (!overwriteAccepted) {
+
+    const confirmOverwrite = confirm("Istnieją już wyniki. Nadpisać?");
+
+    if (!confirmOverwrite) {
+      resetBtn();
+      return;
+    }
+
+    overwriteAccepted = true;
+  }
+
+  const res2 = await fetch(API, {
+    method: "POST",
+    body: JSON.stringify({
+      api: "saveResults",
+      token: TOKEN,
+      force: 1,
+      kategoria,
+      konkurencja,
+      rows: chunk
+    })
+  });
+
+  const json2 = await res2.json();
+
+  if (!json2.ok) {
+    alert("Błąd nadpisywania");
+    resetBtn();
+    return;
+  }
+
+  continue;
+}
 
   // 🔴 JEŚLI PACZKA PADNIE → debug 1 po 1
   if (!json.ok) {
