@@ -512,10 +512,20 @@ function buildBoje(rows, punktyMap){
 
     /* ===== SORTOWANIE ===== */
 
-   list.sort((a,b)=>{
+ list.sort((a,b)=>{
+
+  const isTiebreak = /TIEBREAK/i.test(comp);
+
+  if (isTiebreak) {
+    // 👇 rosnąco (mniejszy lepszy)
+    return Number(a.wynik) - Number(b.wynik);
+  }
+
+  // 👇 normalnie (większy lepszy)
   const wa = Number(a.wynikFinal ?? -Infinity);
   const wb = Number(b.wynikFinal ?? -Infinity);
   return wb - wa;
+
 });
 
     const fullName = window.COMP_MAP[comp]?.full || comp;
