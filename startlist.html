@@ -1651,20 +1651,30 @@ const rankingPoints = {};
 // grupowanie po konkurencji
 const byComp = {};
 
-(boje || []).forEach(r => {
- const cat = r.kategoria || r.kategoria_dodatkowa || "OTHER";
+Object.keys(byComp).forEach(comp => {
 
-if(!byComp[r.konkurencja]) byComp[r.konkurencja] = {};
-if(!byComp[r.konkurencja][cat]) byComp[r.konkurencja][cat] = {};
+  Object.keys(byComp[comp]).forEach(cat => {
 
-const key = r.zawodnik;
+    const list = Object.values(byComp[comp][cat]);
 
- if(
-  !byComp[r.konkurencja][key] ||
-  Number(r.wynik || 0) > Number(byComp[r.konkurencja][key].wynik || 0)
-){
-  byComp[r.konkurencja][key] = r;
-}
+    list.sort((a,b)=>Number(b.wynik||0)-Number(a.wynik||0));
+
+    let place = 0;
+    let last = null;
+
+    list.forEach((r,i)=>{
+      const score = Number(r.wynik || 0);
+
+      if(score !== last){
+        place = i + 1;
+        last = score;
+      }
+
+      rankingPoints[r.zawodnik + "|" + comp] = place;
+    });
+
+  });
+
 });
 
 // liczenie miejsc IDENTYCZNIE jak w bojach
