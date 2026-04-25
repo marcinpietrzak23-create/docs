@@ -285,7 +285,7 @@ if (is3BojeCategory) {
 
   return matchCategory && (
     c.includes("SN") ||
-    c.includes("SQUAT") ||
+    c.includes("SQ") ||
     c.includes("TGU") ||
     c.includes("TIEBREAK")
   );
@@ -354,8 +354,16 @@ if (is3BojeCategory) {
 rows.forEach(r => {
 
  
-  if (is3BojeCategory && !compsInCategory.includes(r.KONKURENCJA)) {
-  return;
+ if (is3BojeCategory) {
+
+  const c = cleanComp(r.KONKURENCJA);
+
+  const isSN = c.includes("SN");
+  const isSQ = c.includes("SQ");     // ✅ FIX
+  const isTGU = c.includes("TGU");
+  const isTB = c.includes("TIEBREAK");
+
+  if (!(isSN || isSQ || isTGU || isTB)) return;
 }
 
   if (!byAth[r.ZAWODNIK]) {
