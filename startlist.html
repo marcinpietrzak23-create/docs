@@ -1602,6 +1602,9 @@ const payload = {
   alert("Zapisano blok startowy ✅");
 }
  async function renderCeremony(){
+   console.log("rankingPoints:", rankingPoints);
+console.log("sample key:", Object.keys(rankingPoints)[0]);
+console.log("checking key:", r.ZAWODNIK + "|" + r.KONKURENCJA);
 const CEREMONY_ORDER_MAP = {
 
   "SN JUNIOR DZ": 1,
@@ -1650,7 +1653,24 @@ const rankingPoints = {};
 
 // grupowanie po konkurencji
 const byComp = {};
+(boje || []).forEach(r => {
 
+  const comp = r.konkurencja;
+  const cat = r.kategoria || r.kategoria_dodatkowa || "OTHER";
+
+  if(!byComp[comp]) byComp[comp] = {};
+  if(!byComp[comp][cat]) byComp[comp][cat] = {};
+
+  const key = r.zawodnik;
+
+  if(
+    !byComp[comp][cat][key] ||
+    Number(r.wynik || 0) > Number(byComp[comp][cat][key].wynik || 0)
+  ){
+    byComp[comp][cat][key] = r;
+  }
+
+});
 Object.keys(byComp).forEach(comp => {
 
   Object.keys(byComp[comp]).forEach(cat => {
@@ -1678,49 +1698,7 @@ Object.keys(byComp).forEach(comp => {
 });
 
 // liczenie miejsc IDENTYCZNIE jak w bojach
-Object.keys(byComp).forEach(comp => {
 
-  Object.keys(byComp[comp]).forEach(cat => {
-
-  const list = Object.values(byComp[comp][cat]);
-
-  list.sort((a,b)=>Number(b.wynik||0)-Number(a.wynik||0));
-
-  let place = 0;
-  let last = null;
-
-  list.forEach((r,i)=>{
-    const score = Number(r.wynik || 0);
-
-    if(score !== last){
-      place = i + 1;
-      last = score;
-    }
-
-    rankingPoints[r.zawodnik + "|" + comp] = place;
-  });
-
-});
-
-  list.sort((a,b)=>{
-    return Number(b.wynik || 0) - Number(a.wynik || 0);
-  });
-
-  let place = 0;
-  let last = null;
-
-  list.forEach((r,i)=>{
-    const score = Number(r.wynik || 0);
-
-    if(score !== last){
-      place = i + 1;
-      last = score;
-    }
-
-    rankingPoints[r.zawodnik + "|" + comp] = place;
-  });
-
-});
 // ================== KLUCZOWE: punktyMap ==================
 const punktyMap = {};
 
