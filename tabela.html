@@ -350,7 +350,45 @@ if (is3BojeCategory) {
   document.getElementById("generalkaInfo").style.display="none";
 
  const byAth = {};
+// 🔥 LICZENIE RANKINGU (TAK JAK W BOJACH)
+const rankingMap = {};
+const byCompRank = {};
 
+(bojeRows || []).forEach(r => {
+
+  const comp = r.konkurencja;
+  if(!byCompRank[comp]) byCompRank[comp] = [];
+
+  byCompRank[comp].push(r);
+});
+
+Object.keys(byCompRank).forEach(comp => {
+
+  const list = byCompRank[comp];
+
+  list.sort((a,b)=>{
+    const wa = Number(window.PUNKTY_MAP?.[norm(a.ZAWODNIK)+"|"+norm(comp)]?.wynik ?? -Infinity);
+    const wb = Number(window.PUNKTY_MAP?.[norm(b.ZAWODNIK)+"|"+norm(comp)]?.wynik ?? -Infinity);
+    return wb - wa;
+  });
+
+  let place = 0;
+  let last = null;
+
+  list.forEach((r,i)=>{
+    const score = Number(
+  window.PUNKTY_MAP?.[norm(r.zawodnik)+"|"+norm(comp)]?.wynik ?? -Infinity
+);
+
+    if(score !== last){
+      place = i+1;
+      last = score;
+    }
+
+    rankingMap[norm(r.zawodnik)+"|"+norm(comp)] = place;
+  });
+
+});
 rows.forEach(r => {
 
  
@@ -385,10 +423,9 @@ if (isTiebreak && byAth[r.ZAWODNIK].pts[r.KONKURENCJA] != null) {
 
 const key = norm(r.ZAWODNIK)+"|"+norm(r.KONKURENCJA);
 
-// bierzemy punkty z punktyMap jeśli istnieją
-const val = window.PUNKTY_MAP?.[key]?.pkt ?? r.PKT;
+const val = rankingMap[key] ?? 0;
 
-byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = Number(val) || 0;
+byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = val;
 });
 
   const athletesCount = Object.keys(byAth).length;
@@ -399,13 +436,9 @@ Object.values(byAth).forEach(a => {
 
     const isTiebreak = /TIEBREAK/i.test(c);
 
-    if (a.pts[c] == null) {
-      if (isTiebreak) {
-        a.pts[c] = 0; 
-      } else {
-        a.pts[c] = athletesCount; 
-      }
-    }
+   if (a.pts[c] == null) {
+  a.pts[c] = 0;
+}
 
   });
 });
