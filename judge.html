@@ -407,7 +407,7 @@ if (!waga) {
   const konkurencja = document.getElementById("competition").value;
 
   const rows = collectResults();
-
+console.log("ROWS:", rows);
   if (rows.length === 0) {
     alert("Brak danych do zapisania");
     resetBtn();
