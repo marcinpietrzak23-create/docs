@@ -407,6 +407,27 @@ if (!waga) {
   const konkurencja = document.getElementById("competition").value;
 
   const rows = collectResults();
+   // 🔥 CHECK OVERWRITE (PRZED zapisem)
+const checkRes = await fetch(API, {
+  method: "POST",
+  body: JSON.stringify({
+    api: "checkOverwrite",
+    token: TOKEN,
+    kategoria,
+    konkurencja,
+    rows
+  })
+});
+
+const checkJson = await checkRes.json();
+
+if (checkJson.overwrite) {
+  const confirmOverwrite = confirm("Istnieją już wyniki. Nadpisać?");
+  if (!confirmOverwrite) {
+    resetBtn();
+    return;
+  }
+}
 console.log("ROWS:", rows);
   if (rows.length === 0) {
     alert("Brak danych do zapisania");
@@ -432,7 +453,7 @@ console.log("ROWS:", rows);
    
 
    const CHUNK_SIZE = 10;
-let overwriteAccepted = false;
+
 for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
 
   const chunk = rows.slice(i, i + CHUNK_SIZE);
@@ -449,93 +470,23 @@ for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
       token: TOKEN,
       kategoria,
       konkurencja,
+      force: 1, // 🔥 KLUCZ
       rows: chunk
     })
   });
 
   const json = await res.json();
-console.log("API RESPONSE:", json);
-// 🔥 NOWE — backend wykrył overwrite
-if (json.overwrite) {
+  console.log("API RESPONSE:", json);
 
-  if (!overwriteAccepted) {
-
-    const confirmOverwrite = confirm("Istnieją już wyniki. Nadpisać?");
-
-    if (!confirmOverwrite) {
-      resetBtn();
-      return;
-    }
-
-    overwriteAccepted = true;
-  }
-
-  const res2 = await fetch(API, {
-    method: "POST",
-    body: JSON.stringify({
-      api: "saveResults",
-      token: TOKEN,
-      force: 1,
-      kategoria,
-      konkurencja,
-      rows: chunk
-    })
-  });
-
-  const json2 = await res2.json();
-
-  if (!json2.ok) {
-    alert("Błąd nadpisywania");
-    resetBtn();
-    return;
-  }
-
-  continue;
-}
-
-  // 🔴 JEŚLI PACZKA PADNIE → debug 1 po 1
-  if (!json.ok && !json.overwrite) {
-
-    console.warn("⚠️ PACZKA PADŁA — szukam winnego...");
-
-    for (const single of chunk) {
-
-      console.log("➡️ TEST:", single);
-
-      const testRes = await fetch(API, {
-        method: "POST",
-        body: JSON.stringify({
-          api: "saveResults",
-          token: TOKEN,
-          force: 1,
-          kategoria,
-          konkurencja,
-          rows: [single]
-        })
-      });
-
-      const testJson = await testRes.json();
-
-      if (!testJson.ok) {
-        console.error("💀 WYKRZACZA:", single);
-
-        alert(
-          "Błąd zapisu zawodnika:\n\n" +
-          single.zawodnik +
-          "\n\nSprawdź dane (puste / złe wartości)"
-        );
-
-        resetBtn();
-        return;
-      }
-    }
-
-    // jeśli pojedynczo przeszło → dziwny błąd GAS
-    alert("Błąd paczki, ale pojedyncze zapisy OK — spróbuj ponownie");
+  if (!json.ok) {
+    console.error("❌ BACKEND ERROR:", json);
+    alert("❌ Błąd zapisu");
     resetBtn();
     return;
   }
 }
+
+
 
   } catch (err) {
 
