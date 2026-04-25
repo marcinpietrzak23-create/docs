@@ -205,11 +205,18 @@ fetch(`${API_URL}?settings=1`)
 })();
 
 /* ===== NAV + LOADER ===== */
+const isJudge = window.location.pathname.includes("table_sedziowie");
+
 document.querySelectorAll("a[data-arkusz]").forEach(a => {
-  a.href = "tabela.html?arkusz=" + encodeURIComponent(a.dataset.arkusz);
+
+  const base = isJudge ? "table_sedziowie.html" : "tabela.html";
+
+  a.href = base + "?arkusz=" + encodeURIComponent(a.dataset.arkusz);
+
   a.addEventListener("click", () => {
     document.getElementById("pageLoader").classList.add("active");
   });
+
 });
 
 /* ===== SERVICE WORKER ===== */
