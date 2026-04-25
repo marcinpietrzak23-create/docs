@@ -1696,7 +1696,7 @@ const boje = await fetch(API_BASE + "?api=boje&token=" + TOKEN).then(r=>r.json()
   let html = `<h2 style="color:#fff;text-align:center;">🎤 CEREMONIA DEKORACJI</h2>`;
 
   // ===== GENERALKI =====
-  Object.keys(byCategory)
+ Object.keys(byCategory)
   .sort((a,b)=>{
 
     const na = normalizeCategoryName(a);
@@ -1710,21 +1710,40 @@ const boje = await fetch(API_BASE + "?api=boje&token=" + TOKEN).then(r=>r.json()
   })
   .forEach(cat=>{
 
+    const seen = new Set(); // ✅ TU
+
     const athletes = {};
 
-byCategory[cat].forEach(r => {
+    byCategory[cat].forEach(r => {
 
-  if (!athletes[r.ZAWODNIK]) {
-    athletes[r.ZAWODNIK] = {
-      name: r.ZAWODNIK,
-      klub: r.KLUB || "-",
-      pts: {}
-    };
-  }
+     const dedupeKey =
+  r.ZAWODNIK + "|" +
+  r.KONKURENCJA + "|" +
+  cat;
 
-  athletes[r.ZAWODNIK].pts[r.KONKURENCJA] =
-    Number(r.PKT) || 0;
-});
+      if (seen.has(dedupeKey)) return;
+      seen.add(dedupeKey);
+
+      const athleteKey = r.ZAWODNIK + "|" + cat;
+
+      if (!athletes[athleteKey]) {
+        athletes[athleteKey] = {
+          name: r.ZAWODNIK,
+          klub: r.KLUB || "-",
+          pts: {}
+        };
+      }
+
+      const val = Number(r.PKT) || 0;
+
+      if (
+        athletes[athleteKey].pts[r.KONKURENCJA] == null ||
+        val < athletes[athleteKey].pts[r.KONKURENCJA]
+      ) {
+        athletes[athleteKey].pts[r.KONKURENCJA] = val;
+      }
+
+    });
 
 //  LICZENIE SUMY (jak w table)
 Object.values(athletes).forEach(a => {
@@ -1735,16 +1754,18 @@ Object.values(athletes).forEach(a => {
     c.includes("ZĄBKOWICZ") ||
     c.includes("MASTERS");
 
-  let comps = Object.keys(a.pts);
+  const allowedComps = Object.keys(a.pts).filter(comp => {
 
   if(EXCLUDE_PRESS){
-    const PRESS_COMPS = ["1KBPR1RM", "2KBPR1RM"];
-    comps = comps.filter(comp => !PRESS_COMPS.includes(comp));
+    return !["1KBPR1RM", "2KBPR1RM"].includes(comp);
   }
 
-  a.sum = comps.reduce((sum,comp)=>{
-    return sum + (a.pts[comp] || 0);
-  },0);
+  return true;
+});
+
+a.sum = allowedComps.reduce((sum, comp) => {
+  return sum + (a.pts[comp] || 0);
+}, 0);
 
 });
 
@@ -1757,9 +1778,11 @@ Object.values(athletes).forEach(a => {
         <h3>${cat}</h3>
     `;
 
-    list.forEach((a,i)=>{
-      html += `<div>🥇 ${a.name} (${a.sum})</div>`;
-    });
+    const medals = ["🥇","🥈","🥉"];
+
+list.forEach((a,i)=>{
+  html += `<div>${medals[i] || ""} ${a.name} (${a.sum})</div>`;
+});
 
     html += `</div>`;
   });
