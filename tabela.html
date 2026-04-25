@@ -545,14 +545,43 @@ let lastScore = null;
 
 list.forEach((a,i)=>{
 
-  const score = Number(a.wynikFinal ?? -Infinity);
+  const isTiebreak = /TIEBREAK/i.test(comp);
+
+  let score;
+
+  if (isTiebreak) {
+    score = Number(a.wynik); // 👈 KLUCZOWE
+  } else {
+    score = Number(a.wynikFinal ?? -Infinity);
+  }
 
   if (score !== lastScore) {
     place = i + 1;
     lastScore = score;
   }
 
-  a.punkty = place;
+  // 👇 SPECJALNA LOGIKA TIEBREAK
+  if (isTiebreak) {
+
+    // znajdź najlepszy (najmniejszy) wynik
+    const allScores = list.map(x => Number(x.wynik));
+    const best = Math.min(...allScores);
+
+    if (Number(a.wynik) === best) {
+      a.punkty = -0.5;
+    } else {
+      a.punkty = 0;
+    }
+
+  } else {
+    a.punkty = place;
+  }
+
+  if(!window.RANKING_POINTS){
+    window.RANKING_POINTS = {};
+  }
+
+  window.RANKING_POINTS[norm(a.zawodnik)+"|"+norm(comp)] = a.punkty;
   if(!window.RANKING_POINTS){
   window.RANKING_POINTS = {};
 }
