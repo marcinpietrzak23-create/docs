@@ -561,7 +561,18 @@ list.forEach((a,i)=>{
 }
       else{
 
-        const p=a.proby.sort((x,y)=>x.nr-y.nr).map(x=>Number(x.val));
+        const uniqueProby = Object.values(
+  a.proby.reduce((acc, p) => {
+    if (!acc[p.nr]) {
+      acc[p.nr] = p; // bierzemy pierwszą próbę danego numeru
+    }
+    return acc;
+  }, {})
+);
+
+const p = uniqueProby
+  .sort((x,y)=>x.nr-y.nr)
+  .map(x=>Number(x.val));
 const max=p.length ? Math.max(...p) : "-";
 
         html+=`
