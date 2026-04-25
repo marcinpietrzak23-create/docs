@@ -191,6 +191,7 @@ function fmt(n){
 }
 /* ================= RENDER ================= */
 function renderAll(baseRes, extraRes, bojeRows){
+
   const baseRows=(baseRes.data||[])
     .filter(r =>
       norm(r.KATEGORIA_PODSTAWOWA)===norm(CATEGORY_KEY) ||
@@ -198,111 +199,108 @@ function renderAll(baseRes, extraRes, bojeRows){
     );
 
   const extraRows=(extraRes.data||[])
-  .filter(r => {
-    const key = norm(CATEGORY_KEY);
+    .filter(r => {
+      const key = norm(CATEGORY_KEY);
 
-    return String(r.KATEGORIA_DODATKOWA || "")
-      .split(",")
-      .map(s => norm(s))
-      .some(c => {
-        console.log("COMPARE:", c, "vs", key);
-        return c === key;
-      });
-  });
+      return String(r.KATEGORIA_DODATKOWA || "")
+        .split(",")
+        .map(s => norm(s))
+        .some(c => c === key);
+    });
 
-console.log("FINAL EXTRA ROWS:", extraRows.length);
-buildBoje(filteredBoje, punktyMap);
-  buildGeneralka([...baseRows,...extraRows], bojeRows);
-  console.log("COMP_ORDER:", COMP_ORDER);
-console.log("COMP_MAP:", window.COMP_MAP);
-COMP_ORDER.forEach(c=>{
-  console.log("KEY:", c, "MAP:", window.COMP_MAP[c]);
-});
+  console.log("FINAL EXTRA ROWS:", extraRows.length);
 
-  
-const punktyMap = {};
+  /* ================= MAPA PUNKTÓW ================= */
+
+  const punktyMap = {};
   window.PUNKTY_MAP = punktyMap;
 
-const specialKeys = ["junior", "masters", "zabkowicz"];
+  const specialKeys = ["junior", "masters", "zabkowicz"];
 
-function isSpecialCategory(cat){
-  const c = norm(cat);
-  return specialKeys.some(k => c.includes(k));
-}
+  function isSpecialCategory(cat){
+    const c = norm(cat);
+    return specialKeys.some(k => c.includes(k));
+  }
 
-// 1️⃣ najpierw wszystko z API_VIEW
-(baseRows || []).forEach(r=>{
-  const key = norm(r.ZAWODNIK)+"|"+norm(r.KONKURENCJA);
+  // API_VIEW
+  (baseRows || []).forEach(r=>{
+    const key = norm(r.ZAWODNIK)+"|"+norm(r.KONKURENCJA);
 
-  punktyMap[key] = {
-    pkt: r.PKT,
-    wynik: r["%MC"]
-  };
-});
+    punktyMap[key] = {
+      pkt: r.PKT,
+      wynik: r["%MC"]
+    };
+  });
 
-// 2️⃣ nadpisanie tylko dla specjalnych kategorii
-(extraRows || []).forEach(r=>{
+  // API_DODATKOWE
+  (extraRows || []).forEach(r=>{
+    if (!isSpecialCategory(r.KATEGORIA_DODATKOWA)) return;
 
-  // KLUCZOWE — sprawdzamy kategorię dodatkową
-  if (!isSpecialCategory(r.KATEGORIA_DODATKOWA)) return;
+    const key = norm(r.ZAWODNIK)+"|"+norm(r.KONKURENCJA);
 
-  const key = norm(r.ZAWODNIK)+"|"+norm(r.KONKURENCJA);
+    punktyMap[key] = {
+      pkt: r.PKT,
+      wynik: r["%MC"]
+    };
+  });
 
-  punktyMap[key] = {
-    pkt: r.PKT,
-    wynik: r["%MC"]
-  };
-});
-  
+  /* ================= FILTR BOJÓW ================= */
+
   const key = norm(CATEGORY_KEY);
 
-// 👇 lista bojów dla Masters
-const mastersComps = ["SNUB3'","2KBSQ1RM","TGU1RM","TIEBREAK"];
+  const special3BojeKeys = [
+    "masters",
+    "zabkowiczanin",
+    "zabkowiczanka"
+  ];
 
-const filteredBoje = (bojeRows || [])
-  .filter(r => {
+  const is3BojeCategory = special3BojeKeys.some(k => key.includes(k));
 
-    const kat = norm(r.kategoria);
-    const katDod = norm(r.kategoria_dodatkowa);
-    const comp = r.konkurencja;
+  const filteredBoje = (bojeRows || [])
+    .filter(r => {
 
-    const matchCategory =
-      kat.includes(key) ||
-      katDod.includes(key);
+      const kat = norm(r.kategoria);
+      const katDod = norm(r.kategoria_dodatkowa);
+      const comp = r.konkurencja;
 
-   
-    const special3BojeKeys = [
-  "masters",
-  "zabkowiczanin",
-  "zabkowiczanka"
-];
+      const matchCategory =
+        kat.includes(key) ||
+        katDod.includes(key);
 
-const is3BojeCategory = special3BojeKeys.some(k => key.includes(k));
+      if (is3BojeCategory) {
+        const c = cleanComp(comp);
 
+        return matchCategory && (
+          c.includes("SN") ||
+          c.includes("SQ") ||
+          c.includes("TGU") ||
+          c.includes("TIEBREAK")
+        );
+      }
 
-if (is3BojeCategory) {
-  const c = cleanComp(comp);
+      return matchCategory;
+    });
 
-  return matchCategory && (
-    c.includes("SN") ||
-    c.includes("SQ") ||
-    c.includes("TGU") ||
-    c.includes("TIEBREAK")
-  );
-}
+  console.log("CATEGORY_KEY:", CATEGORY_KEY);
 
-return matchCategory;
+  (bojeRows || []).slice(0,20).forEach(r => {
+    console.log("ROW:", {
+      kat: r.kategoria,
+      kat_dod: r.kategoria_dodatkowa,
+      konk: r.konkurencja
+    });
   });
-console.log("CATEGORY_KEY:", CATEGORY_KEY);
 
-(bojeRows || []).slice(0,20).forEach(r => {
-  console.log("ROW:", {
-    kat: r.kategoria,
-    kat_dod: r.kategoria_dodatkowa,
-    konk: r.konkurencja
-  });
-});
-  
+  /* ================= NAJWAŻNIEJSZE ================= */
+
+  // 1️⃣ najpierw ranking (tu powstaje RANKING_POINTS)
+  buildBoje(filteredBoje, punktyMap);
+
+  // 2️⃣ potem generalka (już korzysta z poprawnych punktów)
+  buildGeneralka([...baseRows,...extraRows], bojeRows);
+
+  console.log("COMP_ORDER:", COMP_ORDER);
+  console.log("COMP_MAP:", window.COMP_MAP);
 }
 
 /* ================= GENERALKA ================= */
@@ -592,7 +590,19 @@ if(!window.RANKING_POINTS){
   window.RANKING_POINTS = {};
 }
 
-window.RANKING_POINTS[norm(a.zawodnik)+"|"+norm(comp)] = a.punkty;
+if(!window.RANKING_POINTS){
+  window.RANKING_POINTS = {};
+}
+
+const key = norm(a.zawodnik)+"|"+norm(comp);
+
+if (/TIEBREAK/i.test(comp)) {
+  // tylko tutaj -0.5 / 0
+  window.RANKING_POINTS[key] = a.punkty;
+} else {
+  // reszta normalnie miejsca
+  window.RANKING_POINTS[key] = place;
+}
 
   html+=`<tr>
     <td>${place}</td>
