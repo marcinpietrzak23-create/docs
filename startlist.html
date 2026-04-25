@@ -1809,12 +1809,19 @@ async function renderCeremony(){
         c.includes("ZĄBKOWICZ") ||
         c.includes("MASTERS");
 
-      const allowedComps = Object.keys(a.pts).filter(comp => {
-        if(EXCLUDE_PRESS){
-          return !["1KBPR1RM", "2KBPR1RM"].includes(comp);
-        }
-        return true;
-      });
+      const ALL_COMPS = ["1KBPR1RM","2KBPR1RM","2KBSQ1RM","SNUB3'","TGU1RM"];
+
+const allowedComps = ALL_COMPS.filter(comp => {
+
+  // jeśli zawodnik nie ma wyniku → pomijamy
+  if(a.pts[comp] == null) return false;
+
+  if(EXCLUDE_PRESS){
+    return !["1KBPR1RM","2KBPR1RM"].includes(comp);
+  }
+
+  return true;
+});
 
       a.sum = allowedComps.reduce((sum, comp) => {
         return sum + (a.pts[comp] || 0);
