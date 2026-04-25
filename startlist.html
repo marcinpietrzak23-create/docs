@@ -1596,10 +1596,9 @@ const payload = {
 
   alert("Zapisano blok startowy ✅");
 }
-  async function renderCeremony(){
+ async function renderCeremony(){
 const CEREMONY_ORDER_MAP = {
 
-  
   "SN JUNIOR DZ": 1,
   "SN JUNIOR CH": 2,
 
@@ -1613,19 +1612,15 @@ const CEREMONY_ORDER_MAP = {
   "SN PRO M 85": 9,
   "SN PRO M +85": 10,
 
-  
   "BEST TGU K": 11,
   "BEST TGU M": 12,
 
- 
   "NAJLEPSZA ZĄBKOWICZANKA": 13,
   "NAJLEPSZY ZĄBKOWICZANIN": 14,
 
-  
   "MASTERS K": 15,
   "MASTERS M": 16,
 
-  
   "JUNIOR DZ": 17,
   "JUNIOR CH": 18,
 
@@ -1640,35 +1635,59 @@ const CEREMONY_ORDER_MAP = {
   "PRO M +85": 26
 
 };
-  const TOKEN = sessionStorage.getItem("session_token");
 
-  const view = await fetch(API_BASE + "?arkusz=API_VIEW&token=" + TOKEN).then(r=>r.json());
+const TOKEN = sessionStorage.getItem("session_token");
+
+const view = await fetch(API_BASE + "?arkusz=API_VIEW&token=" + TOKEN).then(r=>r.json());
 const extra = await fetch(API_BASE + "?arkusz=API_DODATKOWE&token=" + TOKEN).then(r=>r.json());
 const boje = await fetch(API_BASE + "?api=boje&token=" + TOKEN).then(r=>r.json());
-  
 
-  const rows = [];
+// ================== KLUCZOWE: punktyMap ==================
+const punktyMap = {};
 
-//  PODSTAWOWE
+const specialKeys = ["junior","masters","zabkowicz"];
+
+function isSpecial(cat){
+  const c = (cat || "").toLowerCase();
+  return specialKeys.some(k => c.includes(k));
+}
+
+// VIEW
+(view.data||[]).forEach(r=>{
+  const key = r.ZAWODNIK + "|" + r.KONKURENCJA;
+  punktyMap[key] = r.PKT;
+});
+
+// DODATKOWE (nadpisuje tylko special)
+(extra.data||[]).forEach(r=>{
+  if(!isSpecial(r.KATEGORIA_DODATKOWA)) return;
+
+  const key = r.ZAWODNIK + "|" + r.KONKURENCJA;
+  punktyMap[key] = r.PKT;
+});
+// ========================================================
+
+const rows = [];
+
+// PODSTAWOWE
 (view.data||[]).forEach(r=>{
   if(r.KATEGORIA_PODSTAWOWA){
     rows.push(r);
   }
 });
 
-//  DODATKOWE (Junior, Masters itd.)
+// DODATKOWE
 (extra.data||[]).forEach(r=>{
   if(r.KATEGORIA_DODATKOWA){
     rows.push(r);
   }
 });
 
-  //  grupowanie po nazwie kategorii (TAKIEJ JAK NA STRONIE)
-  const byCategory = {};
+// grupowanie
+const byCategory = {};
 
-  rows.forEach(r=>{
+rows.forEach(r=>{
 
-  //  podstawowa kategoria
   const baseCat = r.KATEGORIA || r.KATEGORIA_PODSTAWOWA;
 
   if(baseCat){
@@ -1676,9 +1695,7 @@ const boje = await fetch(API_BASE + "?api=boje&token=" + TOKEN).then(r=>r.json()
     byCategory[baseCat].push(r);
   }
 
-  //  dodatkowe (mogą być 2+!)
   if(r.KATEGORIA_DODATKOWA){
-
     const extraCats = String(r.KATEGORIA_DODATKOWA)
       .split(",")
       .map(c => c.trim())
@@ -1688,146 +1705,116 @@ const boje = await fetch(API_BASE + "?api=boje&token=" + TOKEN).then(r=>r.json()
       if(!byCategory[cat]) byCategory[cat] = [];
       byCategory[cat].push(r);
     });
-
   }
 
 });
 
-  let html = `<h2 style="color:#fff;text-align:center;">🎤 CEREMONIA DEKORACJI</h2>`;
+let html = `<h2 style="color:#fff;text-align:center;">🎤 CEREMONIA DEKORACJI</h2>`;
 
-  // ===== GENERALKI =====
- Object.keys(byCategory)
-  .sort((a,b)=>{
+// ===== GENERALKI =====
+Object.keys(byCategory)
+.sort((a,b)=>{
+  const na = normalizeCategoryName(a);
+  const nb = normalizeCategoryName(b);
+  return (CEREMONY_ORDER_MAP[na]||999) - (CEREMONY_ORDER_MAP[nb]||999);
+})
+.forEach(cat=>{
 
-    const na = normalizeCategoryName(a);
-    const nb = normalizeCategoryName(b);
+  const seen = new Set();
+  const athletes = {};
 
-    const pa = CEREMONY_ORDER_MAP[na] || 999;
-    const pb = CEREMONY_ORDER_MAP[nb] || 999;
+  byCategory[cat].forEach(r => {
 
-    return pa - pb;
+    const dedupeKey = r.ZAWODNIK + "|" + r.KONKURENCJA + "|" + cat;
+    if (seen.has(dedupeKey)) return;
+    seen.add(dedupeKey);
 
-  })
-  .forEach(cat=>{
+    const athleteKey = r.ZAWODNIK + "|" + cat;
 
-    const seen = new Set(); // ✅ TU
+    if (!athletes[athleteKey]) {
+      athletes[athleteKey] = {
+        name: r.ZAWODNIK,
+        klub: r.KLUB || "-",
+        pts: {}
+      };
+    }
 
-    const athletes = {};
+    // ✅ KLUCZOWA ZMIANA
+    const key = r.ZAWODNIK + "|" + r.KONKURENCJA;
+    const val = Number(punktyMap[key] ?? 0);
 
-    byCategory[cat].forEach(r => {
+    if (
+      athletes[athleteKey].pts[r.KONKURENCJA] == null ||
+      val < athletes[athleteKey].pts[r.KONKURENCJA]
+    ) {
+      athletes[athleteKey].pts[r.KONKURENCJA] = val;
+    }
 
-     const dedupeKey =
-  r.ZAWODNIK + "|" +
-  r.KONKURENCJA + "|" +
-  cat;
-
-      if (seen.has(dedupeKey)) return;
-      seen.add(dedupeKey);
-
-      const athleteKey = r.ZAWODNIK + "|" + cat;
-
-      if (!athletes[athleteKey]) {
-        athletes[athleteKey] = {
-          name: r.ZAWODNIK,
-          klub: r.KLUB || "-",
-          pts: {}
-        };
-      }
-
-      const val = Number(r.PKT) || 0;
-
-      if (
-        athletes[athleteKey].pts[r.KONKURENCJA] == null ||
-        val < athletes[athleteKey].pts[r.KONKURENCJA]
-      ) {
-        athletes[athleteKey].pts[r.KONKURENCJA] = val;
-      }
-
-    });
-
-//  LICZENIE SUMY (jak w table)
-Object.values(athletes).forEach(a => {
-
-  const c = cat.toUpperCase();
-
-  const EXCLUDE_PRESS =
-    c.includes("ZĄBKOWICZ") ||
-    c.includes("MASTERS");
-
-  const allowedComps = Object.keys(a.pts).filter(comp => {
-
-  if(EXCLUDE_PRESS){
-    return !["1KBPR1RM", "2KBPR1RM"].includes(comp);
-  }
-
-  return true;
-});
-
-a.sum = allowedComps.reduce((sum, comp) => {
-  return sum + (a.pts[comp] || 0);
-}, 0);
-
-});
-
-    const list = Object.values(athletes)
-      .sort((a,b)=>a.sum-b.sum)
-      .slice(0,3);
-
-    html += `
-      <div class="ceremony-block">
-        <h3>${cat}</h3>
-    `;
-
-    const medals = ["🥇","🥈","🥉"];
-
-list.forEach((a,i)=>{
-  html += `<div>${medals[i] || ""} ${a.name} (${a.sum})</div>`;
-});
-
-    html += `</div>`;
   });
 
-  // ===== BEST =====
-html += `<div style="page-break-before: always;"></div>`;
-html += `<div class="ceremony-block">`;
-html += `<h3>🏆 BEST</h3>`;
+  Object.values(athletes).forEach(a => {
+
+    const c = cat.toUpperCase();
+
+    const EXCLUDE_PRESS =
+      c.includes("ZĄBKOWICZ") ||
+      c.includes("MASTERS");
+
+    const allowedComps = Object.keys(a.pts).filter(comp => {
+      if(EXCLUDE_PRESS){
+        return !["1KBPR1RM", "2KBPR1RM"].includes(comp);
+      }
+      return true;
+    });
+
+    a.sum = allowedComps.reduce((sum, comp) => {
+      return sum + (a.pts[comp] || 0);
+    }, 0);
+
+  });
+
+  const list = Object.values(athletes)
+    .sort((a,b)=>a.sum-b.sum)
+    .slice(0,3);
+
+  html += `<div class="ceremony-block"><h3>${cat}</h3>`;
+
+  const medals = ["🥇","🥈","🥉"];
+
+  list.forEach((a,i)=>{
+    html += `<div>${medals[i]||""} ${a.name} (${a.sum})</div>`;
+  });
+
+  html += `</div>`;
+});
 
 // ===== BEST =====
+html += `<div style="page-break-before: always;"></div>`;
+html += `<div class="ceremony-block"><h3>🏆 BEST</h3>`;
 
 const best = window.BEST;
 
 if(!best){
-  html += `<div style="color:#aaa;">Brak wyników</div>`;
-  html += `</div>`;
+  html += `<div style="color:#aaa;">Brak wyników</div></div>`;
   document.getElementById("content").innerHTML = html;
-  return; 
+  return;
 }
-const bestOrder = [
 
-  // 1–2 JUNIOR
+const bestOrder = [
   {type:"SNATCH", level:"Junior", gender:"K"},
   {type:"SNATCH", level:"Junior", gender:"M"},
-
-  // 3–6 AMATOR
   {type:"AMATOR", cat:"K 65"},
   {type:"AMATOR", cat:"K +65"},
   {type:"AMATOR", cat:"M 85"},
   {type:"AMATOR", cat:"M +85"},
-
-  
-  // 7–10 PRO
-{type:"PRO", cat:"K"},
-{type:"PRO", cat:"M"},
-
-  // 11–12 TGU
+  {type:"PRO", cat:"K"},
+  {type:"PRO", cat:"M"},
   {type:"TGU", gender:"K"},
   {type:"TGU", gender:"M"}
-
 ];
 
 bestOrder.forEach(item => {
 
-  // ===== TGU =====
   if(item.type === "TGU"){
     html += `<h4>${item.gender==="K"?"Kobiety":"Mężczyźni"} - TGU</h4>`;
     (best.TGU[item.gender]||[]).forEach((r,i)=>{
@@ -1836,17 +1823,15 @@ bestOrder.forEach(item => {
     return;
   }
 
-  // ===== SNATCH =====
   if(item.type === "SNATCH"){
-    const genderLabel = item.gender==="K" ? "Kobiety" : "Mężczyźni";
-    html += `<h4>SNATCH ${item.level} - ${genderLabel}</h4>`;
+    const label = item.gender==="K"?"Kobiety":"Mężczyźni";
+    html += `<h4>SNATCH ${item.level} - ${label}</h4>`;
     (best.SNATCH[item.level][item.gender]||[]).forEach((r,i)=>{
       html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
     });
     return;
   }
 
-  // ===== AMATOR =====
   if(item.type === "AMATOR"){
     const key = Object.keys(best.SNATCH.Amator || {}).find(k => {
       const up = k.toUpperCase();
@@ -1854,7 +1839,6 @@ bestOrder.forEach(item => {
       if(item.cat === "K +65") return up.includes("K") && up.includes("+65");
       if(item.cat === "M 85") return up.includes("M") && up.includes("85") && !up.includes("+");
       if(item.cat === "M +85") return up.includes("M") && up.includes("+85");
-      return false;
     });
 
     if(!key) return;
@@ -1867,7 +1851,6 @@ bestOrder.forEach(item => {
     return;
   }
 
-  // ===== PRO =====
   if(item.type === "PRO"){
     const gender = item.cat.includes("K") ? "K" : "M";
     const label = gender === "K" ? "Kobiety PRO" : "Mężczyźni PRO";
@@ -1876,18 +1859,14 @@ bestOrder.forEach(item => {
     (best.SNATCH.Pro[gender]||[]).forEach((r,i)=>{
       html += `<div>${i+1}. ${r.zawodnik} (${r.wynik})</div>`;
     });
-
-    return;
   }
 
 });
 
-
 html += `</div>`;
 
-
 document.getElementById("content").innerHTML = html;
-  }
+}
  function generateCeremonyProtocol(){
 
   const best = window.BEST;
