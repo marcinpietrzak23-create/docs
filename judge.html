@@ -454,7 +454,7 @@ for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
   });
 
   const json = await res.json();
-
+console.log("API RESPONSE:", json);
 // 🔥 NOWE — backend wykrył overwrite
 if (json.overwrite) {
 
@@ -494,7 +494,7 @@ if (json.overwrite) {
 }
 
   // 🔴 JEŚLI PACZKA PADNIE → debug 1 po 1
-  if (!json.ok) {
+  if (!json.ok && !json.overwrite) {
 
     console.warn("⚠️ PACZKA PADŁA — szukam winnego...");
 
