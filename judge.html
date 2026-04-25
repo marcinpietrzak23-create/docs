@@ -408,121 +408,107 @@ if (!waga) {
 
   const rows = collectResults();
 
-   
   if (rows.length === 0) {
     alert("Brak danych do zapisania");
-    btn.classList.remove("loading");
-    btn.innerHTML = "ZAPISZ";
-    return;
-  }
-
- const payload = {
-  kategoria,
-  konkurencja,
-  rows: rows.map(r => ({
-    zawodnik: r.zawodnik,
-    p1: r.p1,
-    p2: r.p2,
-    p3: r.p3
-  }))
-};
-
-
-const checkRes = await fetch(API, {
-  method: "POST",
-  body: JSON.stringify({
-    api: "checkOverwrite",
-    token: TOKEN,
-    kategoria: payload.kategoria,
-    konkurencja: payload.konkurencja,
-    rows: payload.rows
-  })
-});
-
-  const check = await checkRes.json();
-
-  let rowsToSave = rows;
-
-if (check.overwrite) {
-
-  const lista = check.conflicts.join("\n");
-
-  const confirmOverwrite = confirm(
-    "Nadpiszesz wyniki dla:\n\n" + lista + "\n\nKontynuować?"
-  );
-
-  if (!confirmOverwrite) {
     resetBtn();
     return;
   }
-}
 
-  try {
+  // 🔍 CHECK OVERWRITE
+  const checkRes = await fetch(API, {
+    method: "POST",
+    body: JSON.stringify({
+      api: "checkOverwrite",
+      token: TOKEN,
+      kategoria,
+      konkurencja,
+      rows
+    })
+  });
 
-  
-  for (const r of rowsToSave) {
-    if (!r.zawodnik || r.zawodnik.trim() === "") {
-      alert("❌ Brak nazwiska zawodnika!");
-      console.error("BAD ROW:", r);
+  const check = await checkRes.json();
+
+  if (check.overwrite) {
+
+    const lista = (check.conflicts || []).join("\n");
+
+    const confirmOverwrite = confirm(
+      "Nadpiszesz wyniki dla:\n\n" + lista + "\n\nKontynuować?"
+    );
+
+    if (!confirmOverwrite) {
       resetBtn();
       return;
     }
   }
 
-  
-  const payload = {
-    api: "saveResults",
-    token: TOKEN,
-    force: 1,
-    kategoria,
-    konkurencja,
-    rows: rowsToSave
-  };
+  try {
 
-  console.log(
-    "🚀 WYSYŁAM CAŁOŚĆ:",
-    rowsToSave.length,
-    "zawodników | SIZE:",
-    JSON.stringify(payload).length
-  );
+    // 🔥 WALIDACJA
+    for (const r of rows) {
+      if (!r.zawodnik || r.zawodnik.trim() === "") {
+        alert("❌ Brak nazwiska zawodnika!");
+        console.error("BAD ROW:", r);
+        resetBtn();
+        return;
+      }
+    }
 
-  
-  const res = await fetch(API, {
-    method: "POST",
-    body: JSON.stringify(payload)
-  });
+    // 🚀 CHUNK SAVE (KLUCZ FIXA)
+    const CHUNK_SIZE = 10; // możesz zmienić na 15
 
-  const json = await res.json();
+    for (let i = 0; i < rows.length; i += CHUNK_SIZE) {
 
-  if (!json.ok) {
-    console.error("SERVER ERROR:", json);
-    alert("❌ Błąd zapisu");
+      const chunk = rows.slice(i, i + CHUNK_SIZE);
+
+      console.log(
+        `🚀 PACZKA ${Math.floor(i/CHUNK_SIZE)+1}:`,
+        chunk.length
+      );
+
+      const res = await fetch(API, {
+        method: "POST",
+        body: JSON.stringify({
+          api: "saveResults",
+          token: TOKEN,
+          force: 1,
+          kategoria,
+          konkurencja,
+          rows: chunk
+        })
+      });
+
+      const json = await res.json();
+
+      if (!json.ok) {
+        console.error("SERVER ERROR:", json);
+        alert("❌ Błąd zapisu (paczka)");
+        resetBtn();
+        return;
+      }
+    }
+
+  } catch (err) {
+
+    console.error("❌ FETCH ERROR:", err);
+    alert("❌ Błąd zapisu (sieć)");
     resetBtn();
     return;
   }
 
-} catch (err) {
+  // 🔔 INFO O WADZE
+  const brakWagi = athletes.some(a => !a.waga);
 
-  console.error("❌ FETCH ERROR:", err);
+  if (brakWagi) {
+    alert("Zapisano! Część zawodników bez wagi została pominięta");
+  } else {
+    alert("Zapisano!");
+  }
 
-  alert("❌ Błąd zapisu (sieć)");
+  await loadResultsRaw();
 
   resetBtn();
-  return;
 }
-
-
-const brakWagi = athletes.some(a => !a.waga);
-
-if (brakWagi) {
-  alert("Zapisano! Część zawodników bez wagi została pominięta");
-} else {
-  alert("Zapisano!");
-}
-await loadResultsRaw();
-btn.classList.remove("loading");
-btn.innerHTML = "ZAPISZ";
- }
   function resetBtn() {
   const btn = document.getElementById("saveBtn");
   btn.classList.remove("loading");
