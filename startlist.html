@@ -1860,7 +1860,12 @@ const allowedComps = ALL_COMPS.filter(comp => {
     const medals = ["🥇","🥈","🥉"];
 
     list.forEach((a,i)=>{
-      html += `<div>${medals[i]||""} ${a.name} (${a.sum})</div>`;
+      html += `
+  <div>
+    ${medals[i]||""} ${a.name}
+    (miejsce: ${i+1}, pkt: ${a.sum})
+  </div>
+`;
     });
 
     html += `</div>`;
@@ -2071,13 +2076,39 @@ const allowedComps = ALL_COMPS.filter(comp => {
   async function printCeremony(){
 
   
+  async function printCeremony(){
+
+  // ✅ popup MUSI być pierwszy
+  const win = window.open("", "_blank");
+
+  if(!win){
+    alert("Popup zablokowany ❌");
+    return;
+  }
+
   if(!document.querySelector(".ceremony-block")){
     await renderCeremony();
   }
 
   const content = document.getElementById("content").innerHTML;
 
-  const win = window.open("", "_blank");
+  win.document.write(`
+    <html>
+    <head>
+      <title>Dekoracje</title>
+      <style>
+        body{font-family:Arial;padding:20px;}
+        h2,h3,h4{margin:10px 0;}
+        .ceremony-block{page-break-inside:avoid;margin-bottom:30px;}
+      </style>
+    </head>
+    <body>${content}</body>
+    </html>
+  `);
+
+  win.document.close();
+  win.print();
+}
 
 if(!win){
   alert("Popup zablokowany ❌");
@@ -2310,7 +2341,9 @@ if(isJunior && (isM || c.includes("CH"))) return "JUNIOR CH";
 
   if(wynik <= 0) return 0;
 
-  // PRZYKŁAD (dopasuj do tabeli!)
+  // ✅ KLUCZOWE
+  if(waga <= 0) return wynik;
+
   return wynik / waga;
 }
 </script>
