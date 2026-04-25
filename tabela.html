@@ -357,14 +357,20 @@ const byCompRank = {};
 (bojeRows || []).forEach(r => {
 
   const comp = r.konkurencja;
-  if(!byCompRank[comp]) byCompRank[comp] = [];
+  if(!byCompRank[comp]) byCompRank[comp] = {};
 
-  byCompRank[comp].push(r);
+  const key = norm(r.zawodnik);
+
+  // zapisujemy tylko JEDEN rekord na zawodnika
+  if(!byCompRank[comp][key]){
+    byCompRank[comp][key] = r;
+  }
+
 });
 
 Object.keys(byCompRank).forEach(comp => {
 
-  const list = byCompRank[comp];
+  const list = Object.values(byCompRank[comp]);
 
   list.sort((a,b)=>{
     const wa = Number(window.PUNKTY_MAP?.[norm(a.ZAWODNIK)+"|"+norm(comp)]?.wynik ?? -Infinity);
