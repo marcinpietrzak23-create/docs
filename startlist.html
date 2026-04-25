@@ -1966,13 +1966,15 @@ document.getElementById("content").innerHTML = html;
 
     // ===== TGU =====
     if(item.type === "TGU"){
-      (best.TGU[item.gender]||[]).forEach(r=>{
-        rows.push({
-          lp: lp++,
-          prize: `BEST TGU ${item.gender==="K"?"K":"M"}`,
-          name: r.zawodnik
-        });
-      });
+     (best.TGU[item.gender]||[]).forEach((r,i)=>{
+  const place = i + 1;
+
+  rows.push({
+    lp: lp++,
+    prize: `BEST TGU ${item.gender==="K"?"K":"M"} – miejsce ${place}`,
+    name: r.zawodnik
+  });
+});
     }
 
   });
@@ -2017,7 +2019,7 @@ document.getElementById("content").innerHTML = html;
     await renderCeremony();
   }
 
-  const content = generateCeremonyProtocol();
+  const content = document.getElementById("content").innerHTML;
 
   const win = window.open("", "_blank");
 
