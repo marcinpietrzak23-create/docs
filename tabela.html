@@ -381,13 +381,14 @@ rows.forEach(r => {
   const isTiebreak = /TIEBREAK/i.test(r.KONKURENCJA);
 
 // jeśli już mamy wartość z API_VIEW, nie nadpisuj jej gorszą
-if (isTiebreak && byAth[r.ZAWODNIK].pts[r.KONKURENCJA] != null) {
-  return;
-}
 
 const key = norm(r.ZAWODNIK)+"|"+norm(r.KONKURENCJA);
 
-const val = window.RANKING_POINTS?.[key] ?? 0;
+const val = window.RANKING_POINTS?.[key];
+
+if (val != null) {
+  byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = val;
+}
 
 byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = val;
 });
