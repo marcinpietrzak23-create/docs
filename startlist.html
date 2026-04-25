@@ -1668,11 +1668,11 @@ async function renderCeremony(){
     const key = r.zawodnik;
 
     if(
-      !byComp[comp][cat][key] ||
-      Number(r.wynik || 0) > Number(byComp[comp][cat][key].wynik || 0)
-    ){
-      byComp[comp][cat][key] = r;
-    }
+  !byComp[comp][cat][key] ||
+  getScore(r) > getScore(byComp[comp][cat][key])
+){
+  byComp[comp][cat][key] = r;
+}
 
   });
 
@@ -1683,18 +1683,14 @@ async function renderCeremony(){
       const list = Object.values(byComp[comp][cat]);
 
       list.sort((a,b)=>{
-
-  const wa = Number(a["%MC"] ?? a.wynik ?? -Infinity);
-  const wb = Number(b["%MC"] ?? b.wynik ?? -Infinity);
-
-  return wb - wa;
+  return getScore(b) - getScore(a);
 });
 
       let place = 0;
       let last = null;
 
       list.forEach((r,i)=>{
-        const score = Number(r.wynik || 0);
+        const score = getScore(r);
 
         if(score !== last){
           place = i + 1;
@@ -2277,6 +2273,45 @@ if(isJunior && (isM || c.includes("CH"))) return "JUNIOR CH";
   if(c.includes("ZĄBKOWICZANIN")) return "NAJLEPSZY ZĄBKOWICZANIN";
 
   return "OTHER";
+}
+  function buildFullResults(startlist, boje){
+
+  const map = {};
+
+  // index po zawodniku
+  startlist.forEach(s => {
+    map[s.zawodnik] = {
+      ...s,
+      results: []
+    };
+  });
+
+  boje.forEach(b => {
+
+    if(!map[b.zawodnik]){
+      map[b.zawodnik] = {
+        zawodnik: b.zawodnik,
+        kategoria: b.kategoria,
+        waga: b.waga,
+        results: []
+      };
+    }
+
+    map[b.zawodnik].results.push(b);
+
+  });
+
+  return Object.values(map);
+}
+  function getScore(r){
+
+  const wynik = Number(r.wynik || 0);
+  const waga = Number(r.waga || 0);
+
+  if(wynik <= 0) return 0;
+
+  // PRZYKŁAD (dopasuj do tabeli!)
+  return wynik / waga;
 }
 </script>
 
