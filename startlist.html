@@ -2141,59 +2141,7 @@ function printCeremony(){
 
 }
 
-if(!win){
-  alert("Popup zablokowany ❌");
-  return;
-}
 
-  win.document.write(`
-    <html>
-    <head>
-      <title>Dekoracje</title>
-      <style>
-  body{
-    font-family: Arial;
-    padding: 20px;
-  }
-
-  h2,h3,h4{
-    margin:10px 0;
-  }
-
-  .ceremony-block{
-    page-break-inside: avoid; 
-    margin-bottom:30px;
-  }
-  table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top:20px;
-}
-
-th, td {
-  border: 1px solid black;
-  padding: 8px;
-  text-align: left;
-}
-
-th {
-  background: #eee;
-}
-
-td:last-child {
-  height: 60px;
-}
-</style>
-    </head>
-    <body>
-      ${content}
-    </body>
-    </html>
-  `);
-
-  win.document.close();
-  win.print();
-}
 
   function renderSelectedCategories(){
 
