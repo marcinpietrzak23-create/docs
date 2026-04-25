@@ -1646,7 +1646,45 @@ const TOKEN = sessionStorage.getItem("session_token");
 const view = await fetch(API_BASE + "?arkusz=API_VIEW&token=" + TOKEN).then(r=>r.json());
 const extra = await fetch(API_BASE + "?arkusz=API_DODATKOWE&token=" + TOKEN).then(r=>r.json());
 const boje = await fetch(API_BASE + "?api=boje&token=" + TOKEN).then(r=>r.json());
+const rankingPoints = {};
 
+// grupowanie po konkurencji
+const byComp = {};
+
+(boje || []).forEach(r => {
+  if(!byComp[r.konkurencja]) byComp[r.konkurencja] = {};
+  
+  const key = r.zawodnik;
+
+  if(!byComp[r.konkurencja][key]){
+    byComp[r.konkurencja][key] = r;
+  }
+});
+
+// liczenie miejsc IDENTYCZNIE jak w bojach
+Object.keys(byComp).forEach(comp => {
+
+  const list = Object.values(byComp[comp]);
+
+  list.sort((a,b)=>{
+    return Number(b.wynik || 0) - Number(a.wynik || 0);
+  });
+
+  let place = 0;
+  let last = null;
+
+  list.forEach((r,i)=>{
+    const score = Number(r.wynik || 0);
+
+    if(score !== last){
+      place = i + 1;
+      last = score;
+    }
+
+    rankingPoints[r.zawodnik + "|" + comp] = place;
+  });
+
+});
 // ================== KLUCZOWE: punktyMap ==================
 const punktyMap = {};
 
@@ -1752,8 +1790,7 @@ Object.keys(byCategory)
 
     // ✅ KLUCZOWA ZMIANA
     const key = r.ZAWODNIK + "|" + r.KONKURENCJA;
-    const val = Number(punktyMap[key] ?? 0);
-
+const val = rankingPoints[key] ?? 0;
     if (
       athletes[athleteKey].pts[r.KONKURENCJA] == null ||
       val < athletes[athleteKey].pts[r.KONKURENCJA]
