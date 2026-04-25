@@ -52,7 +52,8 @@
       Hardstyle Kettlebell European Championship
     </div>
     <div class="header-links">
-      <a id="liveLink" href="#" target="_blank" style="display:none">🔴 LIVE</a>
+      <a id="liveLink" href="#" target="_blank" style="display:none">🔴 LIVE 1</a>
+<a id="liveLink2" href="#" target="_blank" style="display:none">🔴 LIVE 2</a>
       <a href="final.html">Lista zawodników</a>
       <a href="live.html" style="color:#fff;">📺 Tablica startowa</a>
       <a id="regulaminLink" href="#" target="_blank" style="display:none">📄 Regulamin</a>
@@ -166,12 +167,20 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyWhUsE8mxQeGs2LBGN3lWT
 fetch(`${API_URL}?settings=1`)
   .then(r => r.json())
   .then(res => {
-    // LIVE
+    // LIVE 1
     const liveBtn = document.getElementById("liveLink");
     if (res?.settings?.live_url) {
       liveBtn.href = res.settings.live_url;
-      liveBtn.textContent = res.settings.live_text || "🔴 LIVE";
+      liveBtn.textContent = res.settings.live_text || "🔴 LIVE 1";
       liveBtn.style.display = "inline-block";
+    }
+
+    // LIVE 2
+    const liveBtn2 = document.getElementById("liveLink2");
+    if (res?.settings?.live_url2) {
+      liveBtn2.href = res.settings.live_url2;
+      liveBtn2.textContent = res.settings.live_text2 || "🔴 LIVE 2";
+      liveBtn2.style.display = "inline-block";
     }
 
     // REGULAMIN
