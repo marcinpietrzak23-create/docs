@@ -222,7 +222,29 @@ COMP_ORDER.forEach(c=>{
   
 const punktyMap = {};
 
-[...extraRows, ...baseRows].forEach(r=>{
+const specialKeys = ["junior", "masters", "zabkowicz"];
+
+function isSpecialCategory(cat){
+  const c = norm(cat);
+  return specialKeys.some(k => c.includes(k));
+}
+
+// 1️⃣ najpierw wszystko z API_VIEW
+(baseRows || []).forEach(r=>{
+  const key = norm(r.ZAWODNIK)+"|"+norm(r.KONKURENCJA);
+
+  punktyMap[key] = {
+    pkt: r.PKT,
+    wynik: r["%MC"]
+  };
+});
+
+// 2️⃣ nadpisanie tylko dla specjalnych kategorii
+(extraRows || []).forEach(r=>{
+
+  // KLUCZOWE — sprawdzamy kategorię dodatkową
+  if (!isSpecialCategory(r.KATEGORIA_DODATKOWA)) return;
+
   const key = norm(r.ZAWODNIK)+"|"+norm(r.KONKURENCJA);
 
   punktyMap[key] = {
