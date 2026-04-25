@@ -1690,7 +1690,8 @@ async function renderCeremony(){
           last = score;
         }
 
-        rankingPoints[r.zawodnik + "|" + comp] = place;
+        const key = r.zawodnik + "|" + comp + "|" + cat;
+        rankingPoints[key] = place;
       });
 
     });
@@ -1789,8 +1790,22 @@ async function renderCeremony(){
         };
       }
 
-      const key = r.ZAWODNIK + "|" + r.KONKURENCJA;
-      const val = rankingPoints[key] ?? 0;
+      const possibleCats = [
+  r.KATEGORIA,
+  r.KATEGORIA_PODSTAWOWA,
+  r.KATEGORIA_DODATKOWA
+].filter(Boolean);
+
+let val = 999;
+
+possibleCats.forEach(catKey => {
+  const k = r.ZAWODNIK + "|" + r.KONKURENCJA + "|" + catKey;
+  if(rankingPoints[k] != null){
+    val = Math.min(val, rankingPoints[k]);
+  }
+});
+
+if(val === 999) val = 0;
 
       if (
         athletes[athleteKey].pts[r.KONKURENCJA] == null ||
