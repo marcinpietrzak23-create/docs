@@ -1669,17 +1669,23 @@ function isSpecial(cat){
 
 const rows = [];
 
-// PODSTAWOWE
+// 1️⃣ VIEW tylko dla NORMALNYCH kategorii
 (view.data||[]).forEach(r=>{
-  if(r.KATEGORIA_PODSTAWOWA){
-    rows.push(r);
+  if(!isSpecial(r.KATEGORIA_PODSTAWOWA)){
+    rows.push({
+      ...r,
+      __source: "view"
+    });
   }
 });
 
-// DODATKOWE
+// 2️⃣ EXTRA tylko dla SPECIAL (Junior/Masters/Ząbkowicz)
 (extra.data||[]).forEach(r=>{
-  if(r.KATEGORIA_DODATKOWA){
-    rows.push(r);
+  if(isSpecial(r.KATEGORIA_DODATKOWA)){
+    rows.push({
+      ...r,
+      __source: "extra"
+    });
   }
 });
 
