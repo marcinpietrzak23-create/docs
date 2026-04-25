@@ -221,6 +221,7 @@ COMP_ORDER.forEach(c=>{
 
   
 const punktyMap = {};
+  window.PUNKTY_MAP = punktyMap;
 
 const specialKeys = ["junior", "masters", "zabkowicz"];
 
@@ -374,7 +375,12 @@ if (isTiebreak && byAth[r.ZAWODNIK].pts[r.KONKURENCJA] != null) {
   return;
 }
 
-byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = Number(r.PKT) || 0;
+const key = norm(r.ZAWODNIK)+"|"+norm(r.KONKURENCJA);
+
+// bierzemy punkty z punktyMap jeśli istnieją
+const val = window.PUNKTY_MAP?.[key]?.pkt ?? r.PKT;
+
+byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = Number(val) || 0;
 });
 
   const athletesCount = Object.keys(byAth).length;
