@@ -1654,94 +1654,7 @@ async function renderCeremony(){
   const extra = await fetch(API_BASE + "?arkusz=API_DODATKOWE&token=" + TOKEN).then(r=>r.json());
   const boje = await fetch(API_BASE + "?api=boje&token=" + TOKEN).then(r=>r.json());
 
-  // ===== RANKING =====
-  const byComp = {};
-
-  (boje || []).forEach(r => {
-
-    const comp = r.konkurencja;
-    const cat = r.kategoria || r.kategoria_dodatkowa || "OTHER";
-
-    if(!byComp[comp]) byComp[comp] = {};
-    if(!byComp[comp][cat]) byComp[comp][cat] = {};
-
-    const key = r.zawodnik;
-
-    if(
-  !byComp[comp][cat][key] ||
-  getScore(r) > getScore(byComp[comp][cat][key])
-){
-  byComp[comp][cat][key] = r;
-}
-
-  });
-
-  Object.keys(byComp).forEach(comp => {
-
-    Object.keys(byComp[comp]).forEach(cat => {
-
-      const list = Object.values(byComp[comp][cat]);
-
-      list.sort((a,b)=>{
-  return getScore(b) - getScore(a);
-});
-
-      let place = 0;
-      let last = null;
-
-      list.forEach((r,i)=>{
-
-  const cleanCat = (cat || "").replace(/^k:/i,"").trim();
-
-  const score = getScore(r);
-
-  console.log("RANK DEBUG", {
-    zawodnik: r.zawodnik,
-    konkurencja: comp,
-    kategoria_RAW: cat,
-    kategoria_CLEAN: cleanCat,
-    wynik: r.wynik,
-    waga: r.waga,
-    score: score,
-    miejsce: i+1
-  });
-
-  if(score !== last){
-    place = i + 1;
-    last = score;
-  }
-
-  const key = r.zawodnik + "|" + comp + "|" + cleanCat;
-
-  rankingPoints[key] = place;
-
-});
-
-    });
-
-  });
-
-  // ===== PUNKTY =====
-  const punktyMap = {};
-
-  const specialKeys = ["junior","masters","zabkowicz"];
-
-  function isSpecial(cat){
-    const c = (cat || "").toLowerCase();
-    return specialKeys.some(k => c.includes(k));
-  }
-
-  (view.data||[]).forEach(r=>{
-    const key = r.ZAWODNIK + "|" + r.KONKURENCJA;
-    punktyMap[key] = r.PKT;
-  });
-
-  (extra.data||[]).forEach(r=>{
-    if(!isSpecial(r.KATEGORIA_DODATKOWA)) return;
-
-    const key = r.ZAWODNIK + "|" + r.KONKURENCJA;
-    punktyMap[key] = r.PKT;
-  });
+ 
 
   // ===== ROWS =====
   const rows = [];
@@ -1819,37 +1732,15 @@ async function renderCeremony(){
   r.KATEGORIA_DODATKOWA
 ].filter(Boolean);
 
-let val = 999;
+const key = r.ZAWODNIK + "|" + r.KONKURENCJA;
+const val = Number(punktyMap[key] || 0);
 
-possibleCats.forEach(catKey => {
-
-  const cleanCatKey = (catKey || "").replace(/^k:/i,"").trim();
-
-  const k = r.ZAWODNIK + "|" + r.KONKURENCJA + "|" + cleanCatKey;
-
-  console.log("LOOKUP:", {
-    zawodnik: r.ZAWODNIK,
-    konkurencja: r.KONKURENCJA,
-    raw: catKey,
-    clean: cleanCatKey,
-    key: k,
-    value: rankingPoints[k]
-  });
-
-  if(rankingPoints[k] != null){
-    val = Math.min(val, rankingPoints[k]);
-  }
-
-});
-
-if(val === 999) val = 0;
-
-      if (
-        athletes[athleteKey].pts[r.KONKURENCJA] == null ||
-        val < athletes[athleteKey].pts[r.KONKURENCJA]
-      ) {
-        athletes[athleteKey].pts[r.KONKURENCJA] = val;
-      }
+if (
+  athletes[athleteKey].pts[r.KONKURENCJA] == null ||
+  val < athletes[athleteKey].pts[r.KONKURENCJA]
+) {
+  athletes[athleteKey].pts[r.KONKURENCJA] = val;
+}
 
     });
 
