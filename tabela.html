@@ -493,16 +493,19 @@ function buildBoje(rows, punktyMap){
 
     /* ===== DODAJEMY PUNKTY ===== */
 
-    list.forEach(a=>{
+   list.forEach(a=>{
   const key = norm(a.zawodnik)+"|"+norm(comp);
 
-  a.punkty = Number(punktyMap[key]?.pkt ?? 0);
   a.wynikFinal = punktyMap[key]?.wynik ?? null;
 });
 
     /* ===== SORTOWANIE ===== */
 
-    list.sort((a,b)=>a.punkty-b.punkty);
+   list.sort((a,b)=>{
+  const wa = Number(a.wynikFinal ?? -Infinity);
+  const wb = Number(b.wynikFinal ?? -Infinity);
+  return wb - wa;
+});
 
     const fullName = window.COMP_MAP[comp]?.full || comp;
 
@@ -527,14 +530,18 @@ box.insertAdjacentHTML("beforeend",`<h2>🏋️ ${fullName}</h2>`);
   html+=`</tr></thead><tbody>`;
 
 let place = 0;
-let lastPts = null;
+let lastScore = null;
 
 list.forEach((a,i)=>{
 
-  if (a.punkty !== lastPts) {
+  const score = Number(a.wynikFinal ?? -Infinity);
+
+  if (score !== lastScore) {
     place = i + 1;
-    lastPts = a.punkty;
+    lastScore = score;
   }
+
+  a.punkty = place;
 
   html+=`<tr>
     <td>${place}</td>
