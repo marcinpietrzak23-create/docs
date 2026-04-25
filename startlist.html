@@ -1174,6 +1174,11 @@ else{
 
   const win = window.open("", "_blank");
 
+if(!win){
+  alert("Popup zablokowany ❌");
+  return;
+}
+
   win.document.write(`
     <html>
     <head>
@@ -1677,7 +1682,13 @@ async function renderCeremony(){
 
       const list = Object.values(byComp[comp][cat]);
 
-      list.sort((a,b)=>Number(b.wynik||0)-Number(a.wynik||0));
+      list.sort((a,b)=>{
+
+  const wa = Number(a["%MC"] ?? a.wynik ?? -Infinity);
+  const wb = Number(b["%MC"] ?? b.wynik ?? -Infinity);
+
+  return wb - wa;
+});
 
       let place = 0;
       let last = null;
@@ -2071,6 +2082,11 @@ const allowedComps = ALL_COMPS.filter(comp => {
   const content = document.getElementById("content").innerHTML;
 
   const win = window.open("", "_blank");
+
+if(!win){
+  alert("Popup zablokowany ❌");
+  return;
+}
 
   win.document.write(`
     <html>
