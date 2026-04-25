@@ -211,7 +211,7 @@ function renderAll(baseRes, extraRes, bojeRows){
   });
 
 console.log("FINAL EXTRA ROWS:", extraRows.length);
-
+buildBoje(filteredBoje, punktyMap);
   buildGeneralka([...baseRows,...extraRows], bojeRows);
   console.log("COMP_ORDER:", COMP_ORDER);
 console.log("COMP_MAP:", window.COMP_MAP);
@@ -302,7 +302,7 @@ console.log("CATEGORY_KEY:", CATEGORY_KEY);
     konk: r.konkurencja
   });
 });
-  buildBoje(filteredBoje, punktyMap);
+  
 }
 
 /* ================= GENERALKA ================= */
@@ -390,7 +390,6 @@ if (val != null) {
   byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = val;
 }
 
-byAth[r.ZAWODNIK].pts[r.KONKURENCJA] = val;
 });
 
   const athletesCount = Object.keys(byAth).length;
@@ -588,16 +587,12 @@ list.forEach((a,i)=>{
     a.punkty = place;
   }
 
-  if(!window.RANKING_POINTS){
-    window.RANKING_POINTS = {};
-  }
-
-  window.RANKING_POINTS[norm(a.zawodnik)+"|"+norm(comp)] = a.punkty;
-  if(!window.RANKING_POINTS){
+  
+if(!window.RANKING_POINTS){
   window.RANKING_POINTS = {};
 }
 
-window.RANKING_POINTS[norm(a.zawodnik)+"|"+norm(comp)] = place;
+window.RANKING_POINTS[norm(a.zawodnik)+"|"+norm(comp)] = a.punkty;
 
   html+=`<tr>
     <td>${place}</td>
