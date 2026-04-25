@@ -1690,16 +1690,32 @@ async function renderCeremony(){
       let last = null;
 
       list.forEach((r,i)=>{
-        const score = getScore(r);
 
-        if(score !== last){
-          place = i + 1;
-          last = score;
-        }
+  const cleanCat = (cat || "").replace(/^k:/i,"").trim();
 
-        const key = r.zawodnik + "|" + comp + "|" + cat;
-        rankingPoints[key] = place;
-      });
+  const score = getScore(r);
+
+  console.log("RANK DEBUG", {
+    zawodnik: r.zawodnik,
+    konkurencja: comp,
+    kategoria_RAW: cat,
+    kategoria_CLEAN: cleanCat,
+    wynik: r.wynik,
+    waga: r.waga,
+    score: score,
+    miejsce: i+1
+  });
+
+  if(score !== last){
+    place = i + 1;
+    last = score;
+  }
+
+  const key = r.zawodnik + "|" + comp + "|" + cleanCat;
+
+  rankingPoints[key] = place;
+
+});
 
     });
 
@@ -1806,10 +1822,24 @@ async function renderCeremony(){
 let val = 999;
 
 possibleCats.forEach(catKey => {
-  const k = r.ZAWODNIK + "|" + r.KONKURENCJA + "|" + catKey;
+
+  const cleanCatKey = (catKey || "").replace(/^k:/i,"").trim();
+
+  const k = r.ZAWODNIK + "|" + r.KONKURENCJA + "|" + cleanCatKey;
+
+  console.log("LOOKUP:", {
+    zawodnik: r.ZAWODNIK,
+    konkurencja: r.KONKURENCJA,
+    raw: catKey,
+    clean: cleanCatKey,
+    key: k,
+    value: rankingPoints[k]
+  });
+
   if(rankingPoints[k] != null){
     val = Math.min(val, rankingPoints[k]);
   }
+
 });
 
 if(val === 999) val = 0;
@@ -2073,41 +2103,42 @@ const allowedComps = ALL_COMPS.filter(comp => {
 
   return html;
 }
-  async function printCeremony(){
+function printCeremony(){
 
-  
-  async function printCeremony(){
-
-  // ✅ popup MUSI być pierwszy
+  // ✅ popup MUSI być pierwszy (sync)
   const win = window.open("", "_blank");
+
+  console.log("POPUP:", win);
 
   if(!win){
     alert("Popup zablokowany ❌");
     return;
   }
 
-  if(!document.querySelector(".ceremony-block")){
-    await renderCeremony();
-  }
+  // render robimy async, ALE popup już istnieje
+  renderCeremony().then(() => {
 
-  const content = document.getElementById("content").innerHTML;
+    const content = document.getElementById("content").innerHTML;
 
-  win.document.write(`
-    <html>
-    <head>
-      <title>Dekoracje</title>
-      <style>
-        body{font-family:Arial;padding:20px;}
-        h2,h3,h4{margin:10px 0;}
-        .ceremony-block{page-break-inside:avoid;margin-bottom:30px;}
-      </style>
-    </head>
-    <body>${content}</body>
-    </html>
-  `);
+    win.document.write(`
+      <html>
+      <head>
+        <title>Dekoracje</title>
+        <style>
+          body{font-family:Arial;padding:20px;}
+          h2,h3,h4{margin:10px 0;}
+          .ceremony-block{page-break-inside:avoid;margin-bottom:30px;}
+        </style>
+      </head>
+      <body>${content}</body>
+      </html>
+    `);
 
-  win.document.close();
-  win.print();
+    win.document.close();
+    win.print();
+
+  });
+
 }
 
 if(!win){
