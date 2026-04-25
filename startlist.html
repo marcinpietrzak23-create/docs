@@ -1656,9 +1656,12 @@ const byComp = {};
   
   const key = r.zawodnik;
 
-  if(!byComp[r.konkurencja][key]){
-    byComp[r.konkurencja][key] = r;
-  }
+ if(
+  !byComp[r.konkurencja][key] ||
+  Number(r.wynik || 0) > Number(byComp[r.konkurencja][key].wynik || 0)
+){
+  byComp[r.konkurencja][key] = r;
+}
 });
 
 // liczenie miejsc IDENTYCZNIE jak w bojach
