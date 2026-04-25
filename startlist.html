@@ -1606,6 +1606,17 @@ const payload = {
 
   alert("Zapisano blok startowy ✅");
 }
+  function isSpecial(cat){
+  if(!cat) return false;
+
+  const c = cat.toLowerCase();
+
+  return (
+    c.includes("junior") ||
+    c.includes("masters") ||
+    c.includes("ząbkow")
+  );
+}
 async function renderCeremony(){
 
   const rankingPoints = {};
@@ -1654,7 +1665,21 @@ async function renderCeremony(){
   const extra = await fetch(API_BASE + "?arkusz=API_DODATKOWE&token=" + TOKEN).then(r=>r.json());
   const boje = await fetch(API_BASE + "?api=boje&token=" + TOKEN).then(r=>r.json());
 
- 
+ const punktyMap = {};
+
+// VIEW
+(view.data||[]).forEach(r=>{
+  const key = r.ZAWODNIK + "|" + r.KONKURENCJA;
+  punktyMap[key] = Number(r.PKT || 0);
+});
+
+// EXTRA (tylko specjalne)
+(extra.data||[]).forEach(r=>{
+  if(!isSpecial(r.KATEGORIA_DODATKOWA)) return;
+
+  const key = r.ZAWODNIK + "|" + r.KONKURENCJA;
+  punktyMap[key] = Number(r.PKT || 0);
+});
 
   // ===== ROWS =====
   const rows = [];
